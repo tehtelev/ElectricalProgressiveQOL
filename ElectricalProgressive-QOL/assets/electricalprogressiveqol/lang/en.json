@@ -1,4 +1,101 @@
 {
+  "block-charger-*": "Charging Station",
+  "block-charger-burned-south": "Charging Station (Burned)",
 
+  "block-estove-*": "Electric Stove",
+  "block-estove-burned-south": "Electric Stove (Burned)",
 
+  "block-efreezer-*": "Electric Freezer",
+  "block-efreezer-burned-closed-north": "Electric Freezer (Burned)",
+  "block-efreezer-burned-open-north": "Electric Freezer (Burned)",
+
+  "block-eoven-*": "Electric Oven",
+  "block-eoven-burned-north": "Electric Oven (Burned)",
+
+  "block-ehorn-*": "Electric Forge",
+  "block-ehorn-burned-south": "Electric Forge (Burned)",
+
+  "block-heater-*": "Electric Heater",
+  "block-heater-burned": "Electric Heater (Burned)",
+
+  "block-elamp-3000-*": "Electric Lamp: Orange-Warm (3000K)",
+  "block-elamp-4000-*": "Electric Lamp: Yellow-Warm (4000K)",
+  "block-elamp-5000-*": "Electric Lamp: Warm White (5000K)",
+  "block-elamp-6000-*": "Electric Lamp: Neutral White (6000K)",
+  "block-elamp-7000-*": "Electric Lamp: Cool White (7000K)",
+  "block-elamp-8000-*": "Electric Lamp: Cold White (8000K)",
+  "block-elamp-9000-*": "Electric Lamp: Blue-Cold (9000K)",
+
+  "block-elamp-3000-burned": "Electric Lamp (Burned)",
+  "block-elamp-4000-burned": "Electric Lamp (Burned)",
+  "block-elamp-6000-burned": "Electric Lamp (Burned)",
+  "block-elamp-7000-burned": "Electric Lamp (Burned)",
+  "block-elamp-8000-burned": "Electric Lamp (Burned)",
+  "block-elamp-9000-burned": "Electric Lamp (Burned)",
+
+  "block-elamp_small-3000-*": "Small Electric Lamp: Orange-Warm (3000K)",
+  "block-elamp_small-4000-*": "Small Electric Lamp: Yellow-Warm (4000K)",
+  "block-elamp_small-5000-*": "Small Electric Lamp: Warm White (5000K)",
+  "block-elamp_small-6000-*": "Small Electric Lamp: Neutral White (6000K)",
+  "block-elamp_small-7000-*": "Small Electric Lamp: Cool White (7000K)",
+  "block-elamp_small-8000-*": "Small Electric Lamp: Cold White (8000K)",
+  "block-elamp_small-9000-*": "Small Electric Lamp: Blue-Cold (9000K)",
+
+  "block-elamp_small-3000-burned": "Small Electric Lamp (Burned)",
+  "block-elamp_small-4000-burned": "Small Electric Lamp (Burned)",
+  "block-elamp_small-6000-burned": "Small Electric Lamp (Burned)",
+  "block-elamp_small-7000-burned": "Small Electric Lamp (Burned)",
+  "block-elamp_small-8000-burned": "Small Electric Lamp (Burned)",
+  "block-elamp_small-9000-burned": "Small Electric Lamp (Burned)",
+
+  "item-edrill": "Electric Drill",
+  "item-echisel": "Electric Chisel",
+  "item-edrilltip": "Drill Tip",
+  "item-eaxe": "Electric Axe",
+
+  "game:drill1": "Mines 1X1 block",
+  "game:drill2": "Mines 1X3 blocks",
+
+  "block-handbooktitle-eoven": "Usage",
+  "block-handbooktext-eoven": "The electric oven fully replaces the furnace. Automatically turns off when baking is complete. No more burnt items!",
+
+  "block-handbooktitle-heater": "Usage",
+  "block-handbooktext-heater": "A small heat source.",
+
+  "block-handbooktitle-elamp": "Usage",
+  "block-handbooktext-elamp": "A reliable light source that consumes electricity.<br><br>Maximum light level: 21.",
+
+  "block-handbooktitle-elamp_small": "Usage",
+  "block-handbooktext-elamp_small": "A compact light source that consumes electricity.<br><br>Maximum light level: 14.",
+
+  "block-handbooktitle-ehorn": "Usage",
+  "block-handbooktext-ehorn": "The electric forge fully replaces the traditional forge.<br><br>Maximum heating temperature: 1100 °C.",
+
+  "block-handbooktitle-charger": "Usage",
+  "block-handbooktext-charger": "The charging station allows recharging batteries and devices with built-in batteries.",
+
+  "block-handbooktitle-estove": "Usage",
+  "block-handbooktext-estove": "The electric stove fully replaces the campfire.<br><br>Maximum heating temperature: 1325 °C.",
+
+  "block-handbooktitle-efreezer": "Usage",
+  "block-handbooktext-efreezer": "The electric freezer extends food preservation.<br><br>Storage slots: 6.<br>Food spoilage rate: 0.05x",
+
+  "item-handbooktitle-edrill": "Usage",
+  "item-handbooktext-edrill": "Mining reaches a new level. Operates in two modes: 1x1 and 1x3.<br>Stops working when discharged. Remember to recharge!",
+
+  "item-handbooktitle-echisel": "Usage",
+  "item-handbooktext-echisel": "A chisel with a battery! Not used in recipes.<br>Stops working when discharged. Remember to recharge!",
+
+  "item-handbooktitle-edrilltip": "Usage",
+  "item-handbooktext-edrilltip": "Core component for the electric drill.",
+
+  "item-handbooktitle-eaxe": "Usage",
+  "item-handbooktext-eaxe": "Excellent for chopping. Not used in recipes.<br>Stops working when discharged. Remember to recharge!",
+
+  "game:BlockEStove": "Electric Stove",
+  "game:freezer-title-gui": "Freezer",
+  "game:freezer-over-sneak-help": "Open/close door.",
+  "game:freezer-over-help": "Open the door and place food to preserve it.",
+
+  "game:Put-into-4-items": "At least 4 items required for baking."
 }

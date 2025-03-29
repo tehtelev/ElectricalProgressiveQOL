@@ -112,7 +112,7 @@ public class EDrill1 : Vintagestory.API.Common.Item, IEnergyStorageItem
 
     public int receiveEnergy(ItemStack itemstack, int maxReceive)
     {
-        int received = Math.Min(maxcapacity - itemstack.Attributes.GetInt("electricity:energy"), maxReceive);
+        int received = Math.Min(maxcapacity - itemstack.Attributes.GetInt("electricalprogressive:energy"), maxReceive);
         itemstack.Attributes.SetInt("electricalprogressive:energy", itemstack.Attributes.GetInt("electricalprogressive:energy") + received);
         int durab = Math.Max(1, itemstack.Attributes.GetInt("electricalprogressive:energy") / consume);
         itemstack.Attributes.SetInt("durability", durab);
