@@ -48,7 +48,10 @@ public class BEBehaviorEOven : BlockEntityBehavior, IElectricConsumer
 
     public float Consume_request()
     {
-        return maxConsumption;
+        if (working)
+            return maxConsumption;
+        else
+            return 0;
     }
 
     public void Consume_receive(float amount)
@@ -130,6 +133,9 @@ public class BEBehaviorEOven : BlockEntityBehavior, IElectricConsumer
 
     public float getPowerRequest()
     {
-        return maxConsumption;
+        if (working)
+            return maxConsumption;
+        else
+            return 0;
     }
 }

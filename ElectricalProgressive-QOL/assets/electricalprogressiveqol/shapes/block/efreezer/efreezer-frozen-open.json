@@ -17,7 +17,7 @@
 		"stainlesssteel": "electricalprogressivebasics:block/stainlesssteel" ,
 		"steel":  "electricalprogressivebasics:block/steel" ,
 		"zinc":  "electricalprogressivebasics:block/zinc" ,
-		"insideFridge":  "game:electricalprogressivebasics:block/liquid/snow/normal2"
+		"insideFridge":  "game:block/liquid/snow/normal2"
 	},
 		"elements": [
 			{

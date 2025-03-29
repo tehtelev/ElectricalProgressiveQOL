@@ -16,7 +16,7 @@ using ElectricalProgressive.Content.Item.Tool;
 [assembly: ModInfo(
     "Electrical Progressive: QoL",
     "electricalprogressiveqol",
-    Website = "https://git",
+    Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
     Description = "Brings electricity into the game!",
     Version = "0.9.0",
     Authors = new[] {

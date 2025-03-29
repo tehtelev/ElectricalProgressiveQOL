@@ -72,7 +72,10 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
 
     public float Consume_request()
     {
-        return maxConsumption;
+        if (working)
+            return maxConsumption;
+        else
+            return 0;
     }
 
 
@@ -103,7 +106,10 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
 
     public float getPowerRequest()
     {
-        return maxConsumption;
+        if (working)
+            return maxConsumption;
+        else
+            return 0;
     }
 
     public void Update()

@@ -130,7 +130,7 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
             {
                 float temperature = this.Contents.Collectible.GetTemperature(this.Api.World, this.Contents);
                 float power = GetBehavior<BEBehaviorEHorn>().getPowerReceive();
-                if ((double) temperature < power * maxTargetTemp / maxConsumption)
+                if (temperature < power * maxTargetTemp / maxConsumption)
                 {
                     float num2 = (float) (num1 * 1500.0);
                     

@@ -57,7 +57,10 @@ public class BEBehaviorEHorn : BlockEntityBehavior, IElectricConsumer
 
     public float Consume_request()
     {
-        return this.powerRequest;
+        if (hasItems)
+            return this.powerRequest;
+        else
+            return 0;
     }
 
 
@@ -108,7 +111,11 @@ public class BEBehaviorEHorn : BlockEntityBehavior, IElectricConsumer
 
     public float getPowerRequest()
     {
-        return this.powerRequest;
+        if (hasItems)
+            return this.powerRequest;
+        else
+            return 0;
+        
     }
 
 
