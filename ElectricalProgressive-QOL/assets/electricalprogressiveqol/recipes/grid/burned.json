@@ -1,0 +1,195 @@
+[
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:charger-burned-south"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-iron",
+      "quantity": 20
+    }
+  },
+
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:estove-burned-south"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-iron",
+      "quantity": 20
+    }
+  },
+
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:efreezer-burned-closed-north"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-copper",
+      "quantity": 160
+    }
+  },
+
+
+
+
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:heater-burned"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-iron",
+      "quantity": 20
+    }
+  },
+
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:ehorn-burned-south"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-iron",
+      "quantity": 20
+    }
+  },
+
+
+
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:eoven-burned-north"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-iron",
+      "quantity": 80
+    }
+  },
+
+
+
+
+
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:elamp-*-burned"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-iron",
+      "quantity": 40
+    }
+  },
+
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:elamp_small-*-burned"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-iron",
+      "quantity": 10
+    }
+  }
+
+]
