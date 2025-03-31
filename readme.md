@@ -1,4 +1,4 @@
-# ElectricalProgressiveCore
+# ElectricalProgressiveQOL
 
 Brings electricity into the game!
 
