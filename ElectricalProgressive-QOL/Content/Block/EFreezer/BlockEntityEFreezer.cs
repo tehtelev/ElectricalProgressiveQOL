@@ -268,8 +268,8 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
                 coreClientAPI!.Tesselator.TesselateItem(stack.Item, out meshData, this);
                 meshData.RenderPassesAndExtraBits.Fill((short)2);
 
-                coreClientAPI.TesselatorManager.ThreadDispose();
-                
+                coreClientAPI.TesselatorManager.ThreadDispose(); //обязательно?
+
             }
         }
 

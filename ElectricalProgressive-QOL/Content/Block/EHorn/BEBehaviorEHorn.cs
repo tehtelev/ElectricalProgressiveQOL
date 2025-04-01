@@ -101,7 +101,16 @@ public class BEBehaviorEHorn : BlockEntityBehavior, IElectricConsumer
                 this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariants(types, variants)).BlockId, Pos);
             }
         }
-                
+
+        if (this.powerReceive == 0.0F && this.Block.Variant["state"] == "enabled")                            //гасим если питание меньше 1
+        {
+            this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
+        }
+
+        if (this.powerReceive > 0.0F && this.Block.Variant["state"] == "disabled")                            //гасим если питание меньше 1
+        {
+            this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
+        }
     }
 
     public float getPowerReceive()

@@ -276,9 +276,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
                     }
                     coreClientAPI.Tesselator.TesselateItem(stack.Item, out meshData, this);
                     meshData.RenderPassesAndExtraBits.Fill((short)2);
-                    coreClientAPI.TesselatorManager.ThreadDispose(); //обязательно
+                    coreClientAPI.TesselatorManager.ThreadDispose(); //обязательно?
             }
-            }
+        }
             return meshData;
         }
         
@@ -946,14 +946,14 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             stringBuilder.AppendLine();
                 if (temp <= 25)
                 {
-                    stringBuilder.AppendLine(Lang.Get("Contents") + inputStack.StackSize + "×" +
+                    stringBuilder.AppendLine(Lang.Get("Contents") +" "+ inputStack.StackSize + "×" +
                                              inputStack.GetName() +
-                                             "\n└ " + Lang.Get("Temperature") + Lang.Get("Cold"));
+                                             "\n└ " + Lang.Get("Temperature") +" "+ Lang.Get("Cold"));
                 }
                 else
                     stringBuilder.AppendLine(Lang.Get("Contents") + inputStack.StackSize + "×" +
                                              inputStack.GetName() +
-                                             "\n└ " + Lang.Get("Temperature") + temp + " °C");  
+                                             "\n└ " + Lang.Get("Temperature") +" "+ temp + " °C");  
             
         }
     }

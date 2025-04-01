@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -45,7 +45,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
         public override bool DoPlaceBlock(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ItemStack byItemStack) {
 
 
-            // если блок сгорел, то не ставим
+            // РµСЃР»Рё Р±Р»РѕРє СЃРіРѕСЂРµР», С‚Рѕ РЅРµ СЃС‚Р°РІРёРј
             if (byItemStack.Block.Variant["state"] == "burned")
             {
                 return false;
@@ -60,7 +60,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
             ) {
                 entity.Facing = facing;
 
-                //задаем параметры блока/проводника
+                //Р·Р°РґР°РµРј РїР°СЂР°РјРµС‚СЂС‹ Р±Р»РѕРєР°/РїСЂРѕРІРѕРґРЅРёРєР°
                 var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
                 var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
                 var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
@@ -261,7 +261,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
 
 
                     clientApi.Tesselator.TesselateBlock(this, out meshData);
-                    clientApi.TesselatorManager.ThreadDispose(); //обязательно
+                    clientApi.TesselatorManager.ThreadDispose(); //РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ?
 
                     if ((key.Facing & Facing.NorthEast) != 0) {
                         meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 270.0f * GameMath.DEG2RAD, 0.0f);
@@ -368,7 +368,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
 
 
         /// <summary>
-        /// Получение информации о предмете в инвентаре
+        /// РџРѕР»СѓС‡РµРЅРёРµ РёРЅС„РѕСЂРјР°С†РёРё Рѕ РїСЂРµРґРјРµС‚Рµ РІ РёРЅРІРµРЅС‚Р°СЂРµ
         /// </summary>
         /// <param name="inSlot"></param>
         /// <param name="dsc"></param>
@@ -384,7 +384,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
 
 
         /// <summary>
-        /// Структура ключа для кеширования данных блока.
+        /// РЎС‚СЂСѓРєС‚СѓСЂР° РєР»СЋС‡Р° РґР»СЏ РєРµС€РёСЂРѕРІР°РЅРёСЏ РґР°РЅРЅС‹С… Р±Р»РѕРєР°.
         /// </summary>
         internal struct CacheDataKey
         {

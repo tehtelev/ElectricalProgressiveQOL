@@ -1,4 +1,4 @@
-{
+﻿{
   "code": "efreezer",
   "class": "BlockEFreezer",
   "entityClass": "BlockEntityEFreezer",
@@ -65,11 +65,18 @@
     {
       "code": "side",
       "loadFromProperties": "abstract/horizontalorientation"
-    } 
+    }
   ],
 
-  "drawtype": "json",
 
+
+
+
+  "drawtype": "json",
+  "lightHsvByType": {
+    "*-frozen-open-*": [ 0, 0, 11 ],
+    "*": [ 0, 0, 0 ]
+  },
 
   "shapebytype": {
     "*-north": {

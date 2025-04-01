@@ -1,0 +1,101 @@
+﻿{
+  "block-charger-*": "Station de charge",
+  "block-charger-burned-south": "Station de charge (brûlée)",
+
+  "block-estove-*": "Plaque électrique",
+  "block-estove-burned-south": "Plaque électrique (brûlée)",
+
+  "block-efreezer-*": "Congélateur électrique",
+  "block-efreezer-burned-closed-north": "Congélateur électrique (brûlé)",
+  "block-efreezer-burned-open-north": "Congélateur électrique (brûlé)",
+
+  "block-eoven-*": "Four électrique",
+  "block-eoven-burned-north": "Four électrique (brûlé)",
+
+  "block-ehorn-*": "Forge électrique",
+  "block-ehorn-burned-south": "Forge électrique (brûlée)",
+
+  "block-heater-*": "Radiateur électrique",
+  "block-heater-burned": "Radiateur électrique (brûlé)",
+
+  "block-elamp-3000-*": "Lampe électrique : Orange-chaud (3000K)",
+  "block-elamp-4000-*": "Lampe électrique : Jaune-chaud (4000K)",
+  "block-elamp-5000-*": "Lampe électrique : Blanc chaud (5000K)",
+  "block-elamp-6000-*": "Lampe électrique : Blanc neutre (6000K)",
+  "block-elamp-7000-*": "Lampe électrique : Blanc bleuté (7000K)",
+  "block-elamp-8000-*": "Lampe électrique : Blanc froid (8000K)",
+  "block-elamp-9000-*": "Lampe électrique : Bleu-froid (9000K)",
+
+  "block-elamp-3000-burned": "Lampe électrique (brûlée)",
+  "block-elamp-4000-burned": "Lampe électrique (brûlée)",
+  "block-elamp-6000-burned": "Lampe électrique (brûlée)",
+  "block-elamp-7000-burned": "Lampe électrique (brûlée)",
+  "block-elamp-8000-burned": "Lampe électrique (brûlée)",
+  "block-elamp-9000-burned": "Lampe électrique (brûlée)",
+
+  "block-elamp_small-3000-*": "Petite lampe électrique : Orange-chaud (3000K)",
+  "block-elamp_small-4000-*": "Petite lampe électrique : Jaune-chaud (4000K)",
+  "block-elamp_small-5000-*": "Petite lampe électrique : Blanc chaud (5000K)",
+  "block-elamp_small-6000-*": "Petite lampe électrique : Blanc neutre (6000K)",
+  "block-elamp_small-7000-*": "Petite lampe électrique : Blanc bleuté (7000K)",
+  "block-elamp_small-8000-*": "Petite lampe électrique : Blanc froid (8000K)",
+  "block-elamp_small-9000-*": "Petite lampe électrique : Bleu-froid (9000K)",
+
+  "block-elamp_small-3000-burned": "Petite lampe électrique (brûlée)",
+  "block-elamp_small-4000-burned": "Petite lampe électrique (brûlée)",
+  "block-elamp_small-6000-burned": "Petite lampe électrique (brûlée)",
+  "block-elamp_small-7000-burned": "Petite lampe électrique (brûlée)",
+  "block-elamp_small-8000-burned": "Petite lampe électrique (brûlée)",
+  "block-elamp_small-9000-burned": "Petite lampe électrique (brûlée)",
+
+  "item-edrill": "Foreuse électrique",
+  "item-echisel": "Ciseau électrique",
+  "item-edrilltip": "Embout de foreuse",
+  "item-eaxe": "Hache électrique",
+
+  "game:drill1": "Creuse 1X1 bloc",
+  "game:drill2": "Creuse 1X3 blocs",
+
+  "block-handbooktitle-eoven": "Utilisation",
+  "block-handbooktext-eoven": "Le four électrique remplace entièrement le four traditionnel. Il s'éteint automatiquement une fois la cuisson terminée. Plus de nourriture brûlée !",
+
+  "block-handbooktitle-heater": "Utilisation",
+  "block-handbooktext-heater": "Une petite source de chaleur.",
+
+  "block-handbooktitle-elamp": "Utilisation",
+  "block-handbooktext-elamp": "Une bonne source de lumière consommant de l'énergie électrique.<br><br>Niveau de lumière maximal : 21.",
+
+  "block-handbooktitle-elamp_small": "Utilisation",
+  "block-handbooktext-elamp_small": "Source de lumière compacte consommant de l'énergie électrique.<br><br>Niveau de lumière maximal : 14.",
+
+  "block-handbooktitle-ehorn": "Utilisation",
+  "block-handbooktext-ehorn": "La forge électrique remplace entièrement la forge traditionnelle.<br><br>Température de chauffe maximale : 1100 °C.",
+
+  "block-handbooktitle-charger": "Utilisation",
+  "block-handbooktext-charger": "La station de charge permet de recharger les batteries et les appareils avec batterie intégrée.",
+
+  "block-handbooktitle-estove": "Utilisation",
+  "block-handbooktext-estove": "La plaque électrique remplace entièrement le feu de camp.<br><br>Température de chauffe maximale : 1325 °C.",
+
+  "block-handbooktitle-efreezer": "Utilisation",
+  "block-handbooktext-efreezer": "Le congélateur électrique prolonge la conservation des aliments.<br><br>Emplacements de stockage : 6.<br>Taux de détérioration : 0,05x",
+
+  "item-handbooktitle-edrill": "Utilisation",
+  "item-handbooktext-edrill": "L'extraction minière passe à un niveau supérieur. Fonctionne en deux modes : 1x1 et 1x3.<br>Cesse de fonctionner une fois déchargée. N'oubliez pas de la recharger !",
+
+  "item-handbooktitle-echisel": "Utilisation",
+  "item-handbooktext-echisel": "Un ciseau sur batterie ! Non utilisé dans les recettes.<br>Cesse de fonctionner une fois déchargé. N'oubliez pas de le recharger !",
+
+  "item-handbooktitle-edrilltip": "Utilisation",
+  "item-handbooktext-edrilltip": "Composant principal pour la foreuse électrique.",
+
+  "item-handbooktitle-eaxe": "Utilisation",
+  "item-handbooktext-eaxe": "Excellente pour couper du bois. Non utilisée dans les recettes.<br>Cesse de fonctionner une fois déchargée. N'oubliez pas de la recharger !",
+
+  "game:BlockEStove": "Plaque électrique",
+  "game:freezer-title-gui": "Congélateur",
+  "game:freezer-over-sneak-help": "Ouvrir/fermer la porte.",
+  "game:freezer-over-help": "Ouvrez la porte et placez la nourriture pour la conserver.",
+
+  "game:Put-into-4-items": "Au moins 4 objets requis pour la cuisson."
+}

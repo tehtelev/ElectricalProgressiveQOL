@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Text;
 using ElectricalProgressive.Content.Block.ELamp;
@@ -17,7 +17,6 @@ namespace ElectricalProgressive.Content.Block.EHeater
             maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 4);
         }
 
-        private int[] null_HSV = { 0, 0, 0 };   //заглушка
         public int maxConsumption;              //максимальное потребление
 
         public bool isBurned => this.Block.Variant["state"] == "burned";
@@ -58,20 +57,9 @@ namespace ElectricalProgressive.Content.Block.EHeater
                         api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
                     }
 
-                    int[] bufHSV = MyMiniLib.GetAttributeArrayInt(this.Block, "HSV", null_HSV);
-                    //теперь нужно поделить H и S на 6, чтобы в игре правильно считало цвет
-                    bufHSV[0] = (int)Math.Round((bufHSV[0] / 6.0), MidpointRounding.AwayFromZero);
-                    bufHSV[1] = (int)Math.Round((bufHSV[1] / 6.0), MidpointRounding.AwayFromZero);
 
-                    //применяем цвет и яркость
-                    this.Blockentity.Block.LightHsv = new[] {
-                            (byte)bufHSV[0],
-                            (byte)bufHSV[1],
-                            (byte)FloatHelper.Remap((int)Math.Round(amount, MidpointRounding.AwayFromZero), 0, maxConsumption, 0, bufHSV[2])
-                        };
-
-                    this.Blockentity.MarkDirty(true);
                     this.HeatLevel = (int)Math.Round(amount, MidpointRounding.AwayFromZero);
+                    this.Blockentity.MarkDirty(true);
                 }
             }
         }

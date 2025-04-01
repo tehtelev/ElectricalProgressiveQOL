@@ -3,11 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ElectricalProgressive.Content.Block.EStove;
 using ElectricalProgressive.Utils;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
+using Vintagestory.GameContent;
 
 namespace ElectricalProgressive.Content.Block.ELamp
 {
@@ -17,12 +19,13 @@ namespace ElectricalProgressive.Content.Block.ELamp
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> SelectionBoxesCache = new();
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> CollisionBoxesCache = new();
 
-        
+        private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
+
 
         public override void OnLoaded(ICoreAPI coreApi)
         {
             base.OnLoaded(coreApi);
-            
+
         }
         public override void OnUnloaded(ICoreAPI api)
         {
@@ -31,6 +34,17 @@ namespace ElectricalProgressive.Content.Block.ELamp
             BlockELamp.SelectionBoxesCache.Clear();
             BlockELamp.CollisionBoxesCache.Clear();
         }
+
+
+
+        public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
+        {
+            base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
+
+            this.api.World.BlockAccessor.RemoveBlockLight(new byte[] { 0, 0, 0 },pos);
+        }
+
+
 
         public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemstack, BlockSelection blockSel, ref string failureCode)
         {
@@ -363,6 +377,47 @@ namespace ElectricalProgressive.Content.Block.ELamp
             return Array.Empty<Cuboidf>();
         }
 
+
+        /// <summary>
+        /// Обновляем свет тут
+        /// </summary>
+        /// <param name="blockAccessor"></param>
+        /// <param name="pos"></param>
+        /// <param name="stack"></param>
+        /// <returns></returns>
+        public override byte[] GetLightHsv(IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack = null)
+        {
+
+            if (pos == null || this.Variant["state"] == "burned" || this.Variant["state"] == "disabled")
+                return new byte[] { 0, 0,0};
+
+            int[] bufHSV = MyMiniLib.GetAttributeArrayInt(this, "HSV", null_HSV);
+            int maxConsumption = MyMiniLib.GetAttributeInt(this, "maxConsumption", 4);
+
+            BEBehaviorELamp beh= this.GetBEBehavior<BEBehaviorELamp>(pos);
+
+            if (beh == null) return base.GetLightHsv(blockAccessor, pos, stack); //стандартная хрень
+
+            //берем уровень света вычисленный
+            int amountInt= beh.LightLevel;
+
+            //теперь нужно поделить H и S на 6, чтобы в игре правильно считало цвет
+            bufHSV[0] = (int)Math.Round((bufHSV[0] / 6.0), MidpointRounding.AwayFromZero);
+            bufHSV[1] = (int)Math.Round((bufHSV[1] / 6.0), MidpointRounding.AwayFromZero);
+
+
+            //применяем цвет и яркость
+            return new[] {
+                            (byte)bufHSV[0],
+                            (byte)bufHSV[1],
+                            (byte)FloatHelper.Remap(amountInt, 0, maxConsumption, 0, bufHSV[2])
+                        };
+
+
+
+        }
+
+
         public override void OnJsonTesselation(ref MeshData sourceMesh, ref int[] lightRgbsByCorner, BlockPos pos, Vintagestory.API.Common.Block[] chunkExtBlocks, int extIndex3d)
         {
             if (
@@ -379,7 +434,8 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
 
                     clientApi.Tesselator.TesselateBlock(this, out meshData);
-                    clientApi.TesselatorManager.ThreadDispose(); //обязательно
+
+                    clientApi.TesselatorManager.ThreadDispose(); //обязательно?
 
                     if ((key.Facing & Facing.NorthEast) != 0)
                     {

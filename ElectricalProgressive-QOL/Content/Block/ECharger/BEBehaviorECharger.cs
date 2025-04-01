@@ -63,9 +63,10 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
             amount = 0;
         }
 
-        if (powerSetting != amount)
+        if (this.powerSetting != amount)
         {
-            powerSetting = (int)amount;
+            this.powerSetting = (int)amount;
+            //this.Blockentity.MarkDirty(true);
         }
 
     }
