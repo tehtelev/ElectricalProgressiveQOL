@@ -7,19 +7,19 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using System.Linq;
 
-namespace ElectricalProgressive.Content.Block.ELamp
+namespace ElectricalProgressive.Content.Block.EFonar
 {
-    public class BEBehaviorELamp : BlockEntityBehavior, IElectricConsumer
+    public class BEBehaviorEFonar : BlockEntityBehavior, IElectricConsumer
     {
-        public BEBehaviorELamp(BlockEntity blockEntity) : base(blockEntity)
+        public BEBehaviorEFonar(BlockEntity blockEntity) : base(blockEntity)
         {
-            maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 4);
+            maxConsumption = MyMiniLib.GetAttributeInt(Block, "maxConsumption", 4);
         }
 
 
 
         public int maxConsumption;              //максимальное потребление
-        public bool isBurned => this.Block.Variant["state"] == "burned";
+        public bool isBurned => Block.Variant["state"] == "burned";
         public int LightLevel { get; private set; }
 
 
@@ -46,31 +46,31 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
         public void Consume_receive(float amount)
         {
-            if (this.Api is { } api)
+            if (Api is { } api)
             {
                 int amountInt = (int)Math.Round(amount, MidpointRounding.AwayFromZero);
 
-                if (amountInt != this.LightLevel && this.Block.Variant["state"] != "burned")
+                if (amountInt != LightLevel && Block.Variant["state"] != "burned")
                 {
 
-                    if (amountInt >= 1 && this.Block.Variant["state"] == "disabled")                               //включаем если питание больше 1
+                    if (amountInt >= 1 && Block.Variant["state"] == "disabled")                               //включаем если питание больше 1
                     {
                         api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
 
                     }
-                    else if (amountInt < 1 && this.Block.Variant["state"] == "enabled")                            //гасим если питание меньше 1
+                    else if (amountInt < 1 && Block.Variant["state"] == "enabled")                            //гасим если питание меньше 1
                     {
                         api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
 
                     }
                     else
                     {
-                        api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(this.Blockentity.Block.BlockId).BlockId, Pos);
+                        api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Blockentity.Block.BlockId).BlockId, Pos);
                     }
 
                     // в любом случае обновляем значение
-                    this.LightLevel = amountInt;
-                    this.Blockentity.MarkDirty(true);
+                    LightLevel = amountInt;
+                    Blockentity.MarkDirty(true);
 
 
                 }
@@ -82,7 +82,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
         public float getPowerReceive()
         {
-            return this.LightLevel;
+            return LightLevel;
         }
 
         public float getPowerRequest()
@@ -93,20 +93,13 @@ namespace ElectricalProgressive.Content.Block.ELamp
         public void Update()
         {
             //смотрим надо ли обновить модельку когда сгорает прибор
-            if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityELamp entity && entity.AllEparams != null)
+            if (Api.World.BlockAccessor.GetBlockEntity(Blockentity.Pos) is BlockEntityEFonar entity && entity.AllEparams != null)
             {
 
                 bool hasBurnout = entity.AllEparams.Any(e => e.burnout);
                 if (hasBurnout && entity.Block.Variant["state"] != "burned")
                 {
-                    string tempK = entity.Block.Variant["tempK"];
-
-                    string[] types = new string[2] { "tempK", "state" };   //типы лампы
-                    string[] variants = new string[2] { tempK, "burned" };     //нужный вариант лампы
-
-                    this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariants(types, variants)).BlockId, Pos);
-
-
+                    Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "burned")).BlockId, Pos);
                 }
 
             }
@@ -121,7 +114,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
             base.GetBlockInfo(forPlayer, stringBuilder);
 
             //проверяем не сгорел ли прибор
-            if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityELamp entity)
+            if (Api.World.BlockAccessor.GetBlockEntity(Blockentity.Pos) is BlockEntityEFonar entity)
             {
                 if (isBurned)
                 {
@@ -129,8 +122,8 @@ namespace ElectricalProgressive.Content.Block.ELamp
                 }
                 else
                 {
-                    stringBuilder.AppendLine(StringHelper.Progressbar(this.LightLevel * 100.0f / maxConsumption));
-                    stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + this.LightLevel + "/" + maxConsumption + " " + Lang.Get("W"));
+                    stringBuilder.AppendLine(StringHelper.Progressbar(LightLevel * 100.0f / maxConsumption));
+                    stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + LightLevel + "/" + maxConsumption + " " + Lang.Get("W"));
                 }
 
             }

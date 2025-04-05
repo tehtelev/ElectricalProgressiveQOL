@@ -12,7 +12,6 @@ namespace ElectricalProgressive.Content.Block.EStove;
 public class BEBehaviorEStove : BlockEntityBehavior, IElectricConsumer
 {
     public int powerSetting;
-    public bool working;
     private int stoveTemperature;
     public int maxConsumption = 0;
     public BEBehaviorEStove(BlockEntity blockEntity) : base(blockEntity)
@@ -22,6 +21,25 @@ public class BEBehaviorEStove : BlockEntityBehavior, IElectricConsumer
 
 
     public bool isBurned => this.Block.Variant["state"] == "burned";
+
+    public bool working
+    {
+        get
+        {
+            bool w = false;
+            BlockEntityEStove? entity = null;
+            if (Blockentity is BlockEntityEStove temp)
+            {
+                entity = temp;
+                w = entity.canHeatInput();
+                stoveTemperature = (int)entity.stoveTemperature;
+            }
+
+            return w;
+        }
+    }
+
+
 
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
@@ -54,22 +72,20 @@ public class BEBehaviorEStove : BlockEntityBehavior, IElectricConsumer
         if (working)
             return maxConsumption;
         else
+        {
+            powerSetting = 0;
             return 0;
+        }
     }
 
     public void Consume_receive(float amount)
     {
-        BlockEntityEStove? entity = null;
-        if (Blockentity is BlockEntityEStove temp)
-        {
-            entity = temp;
-            working = entity.canHeatInput();
-            stoveTemperature = (int)entity.stoveTemperature;
-        }
+
         if (!working)
         {
             amount = 0;
         }
+
         if (powerSetting != amount)
         {
             powerSetting = (int)amount;
@@ -99,11 +115,15 @@ public class BEBehaviorEStove : BlockEntityBehavior, IElectricConsumer
         return this.powerSetting;
     }
 
+
     public float getPowerRequest()
     {
         if (working)
             return maxConsumption;
         else
+        {
+            powerSetting = 0;
             return 0;
+        }
     }
 }

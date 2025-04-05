@@ -28,14 +28,22 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     //передает значения из Block в BEBehaviorElectricalProgressive
     public (EParams, int) Eparams
     {
-        get => this.ElectricalProgressive!.Eparams;
+        get => this.ElectricalProgressive?.Eparams ?? (new EParams(), 0);
         set => this.ElectricalProgressive!.Eparams = value;
     }
 
     //передает значения из Block в BEBehaviorElectricalProgressive
     public EParams[] AllEparams
     {
-        get => this.ElectricalProgressive?.AllEparams ?? null;
+        get => this.ElectricalProgressive?.AllEparams ?? new EParams[]
+                    {
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams()
+                    };
         set
         {
             if (this.ElectricalProgressive != null)

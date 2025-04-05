@@ -4,15 +4,15 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
 using Vintagestory.API.Util;
 
-namespace ElectricalProgressive.Content.Block.ELamp
+namespace ElectricalProgressive.Content.Block.EFonar
 {
-    internal class BlockEntityELamp : BlockEntity
+    internal class BlockEntityEFonar : BlockEntity
     {
         private Facing facing = Facing.None;
 
         private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
 
-        private BEBehaviorELamp Behavior => this.GetBehavior<BEBehaviorELamp>();
+        private BEBehaviorEFonar Behavior => GetBehavior<BEBehaviorEFonar>();
 
         //передает значения из Block в BEBehaviorElectricalProgressive
         public (EParams, int) Eparams
@@ -44,33 +44,24 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
         public Facing Facing
         {
-            get => this.facing;
+            get => facing;
             set
             {
-                if (value != this.facing)
-                {
-                    if (this.Block.Code.ToString().Contains("small") || this.Block.Code.ToString().Contains("nasteniy"))                           //смотрим какая все же лампочка вызвала
-                    {
-                        //если лампа маленькая                    
-                        this.ElectricalProgressive!.Connection = value;
-                        this.facing = value;
-                    }
-                    else
-                    {
-                        //если лампа обычная
-                        this.ElectricalProgressive!.Connection = FacingHelper.FullFace(this.facing = value);  
-                    }
+                if (value != facing)
+                {                
+                        ElectricalProgressive!.Connection = value;
+                        facing = value;
                 }
             }
         }
 
-        public bool IsEnabled => this.Behavior.LightLevel >= 1;
+        public bool IsEnabled => Behavior.LightLevel >= 1;
 
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
 
-            tree.SetBytes("electricalprogressive:facing", SerializerUtil.Serialize(this.facing));
+            tree.SetBytes("electricalprogressive:facing", SerializerUtil.Serialize(facing));
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -79,13 +70,11 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
             try
             {
-                this.facing = SerializerUtil.Deserialize<Facing>(tree.GetBytes("electricalprogressive:facing"));
+                facing = SerializerUtil.Deserialize<Facing>(tree.GetBytes("electricalprogressive:facing"));
             }
             catch (Exception exception)
             {
-                if (!this.Block.Code.ToString().Contains("small") && !this.Block.Code.ToString().Contains("nasteniy"))
-                    this.facing = Facing.UpNorth;
-                this.Api?.Logger.Error(exception.ToString());
+                Api?.Logger.Error(exception.ToString());
             }
         }
     }

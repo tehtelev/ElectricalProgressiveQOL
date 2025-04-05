@@ -12,7 +12,7 @@ namespace ElectricalProgressive.Content.Block.EOven;
 public class BEBehaviorEOven : BlockEntityBehavior, IElectricConsumer
 {
     public int powerSetting;
-    public bool working;
+    
     private float OvenTemperature;
     public int maxConsumption;
     public BEBehaviorEOven(BlockEntity blockEntity) : base(blockEntity)
@@ -23,6 +23,57 @@ public class BEBehaviorEOven : BlockEntityBehavior, IElectricConsumer
 
     public bool isBurned => this.Block.Variant["state"] == "burned";
 
+
+    public bool working
+    {
+        get
+        {
+            bool w=false;
+            BlockEntityEOven? entity = null;
+            if (Blockentity is BlockEntityEOven temp)
+            {
+                entity = temp;
+                OvenTemperature = (int)entity.ovenTemperature;
+
+                //проверяем количество занятых слотов и готовой еды
+                int stack_count = 0;
+                int stack_count_perfect = 0;
+                for (int index = 0; index < entity.bakeableCapacity; ++index)
+                {
+                    ItemStack itemstack = entity.ovenInv[index].Itemstack;
+                    if (itemstack != null)
+                    {
+                        if (itemstack.Class == EnumItemClass.Block)
+                        {
+                            if (itemstack.Block.Code.ToString().Contains("perfect") || itemstack.Block.Code.ToString().Contains("charred"))
+                                stack_count_perfect++;
+                        }
+                        else
+                        {
+                            if (itemstack.Item.Code.ToString().Contains("perfect") || itemstack.Item.Code.ToString().Contains("rot") || itemstack.Item.Code.ToString().Contains("charred"))
+                                stack_count_perfect++;
+                        }
+
+                        stack_count++;
+                    }
+                }
+
+                if (stack_count > 0)   //если еда есть - греем печку
+                {
+                    w = true;
+                    if (stack_count_perfect == stack_count) //если еда вся готова - не греем
+                    {
+                        w = false;
+                    }
+                }
+                else                      //если еды нет - не греем
+                    w = false;
+            }
+
+            return w;
+        }
+    }
+        
 
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
@@ -46,60 +97,29 @@ public class BEBehaviorEOven : BlockEntityBehavior, IElectricConsumer
         stringBuilder.AppendLine();
     }
 
+
+
     public float Consume_request()
     {
         if (working)
             return maxConsumption;
         else
-            return 0;
+        {
+            powerSetting = 0;
+            return 0;            
+        }
     }
+
+
 
     public void Consume_receive(float amount)
     {
-        BlockEntityEOven? entity = null;
-        if (Blockentity is BlockEntityEOven temp)
-        {
-            entity = temp;
-            OvenTemperature = (int)entity.ovenTemperature;
 
-            //проверяем количество занятых слотов и готовой еды
-            int stack_count = 0;
-            int stack_count_perfect = 0;
-            for (int index = 0; index < entity.bakeableCapacity; ++index)
-            {
-                ItemStack itemstack = entity.ovenInv[index].Itemstack;
-                if (itemstack != null)
-                {
-                    if (itemstack.Class == EnumItemClass.Block)
-                    {
-                        if (itemstack.Block.Code.ToString().Contains("perfect") || itemstack.Block.Code.ToString().Contains("charred"))
-                            stack_count_perfect++;
-                    }
-                    else
-                    {
-                        if (itemstack.Item.Code.ToString().Contains("perfect") || itemstack.Item.Code.ToString().Contains("rot") || itemstack.Item.Code.ToString().Contains("charred"))
-                            stack_count_perfect++;
-                    }
-
-                    stack_count++;
-                }
-            }
-
-            if (stack_count > 0)   //если еда есть - греем печку
-            {
-                working = true;
-                if (stack_count_perfect == stack_count) //если еда вся готова - не греем
-                {
-                    working = false;
-                }
-            }
-            else                      //если еды нет - не греем
-                working = false;
-        }
         if (!working)
         {
             amount = 0;
         }
+
         if (powerSetting != amount)
         {
             powerSetting = (int)amount;
@@ -131,11 +151,15 @@ public class BEBehaviorEOven : BlockEntityBehavior, IElectricConsumer
         return this.powerSetting;
     }
 
+
     public float getPowerRequest()
     {
         if (working)
             return maxConsumption;
         else
+        {
+            powerSetting = 0;
             return 0;
+        }
     }
 }

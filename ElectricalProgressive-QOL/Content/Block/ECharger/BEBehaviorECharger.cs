@@ -12,7 +12,6 @@ namespace ElectricalProgressive.Content.Block.ECharger;
 public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
 {
     public int powerSetting;
-    public bool working;
     public int maxConsumption;
 
 
@@ -24,39 +23,55 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
 
     public bool isBurned => this.Block.Variant["state"] == "burned";
 
+
+    public bool working
+    {
+        get
+        {
+            bool w= false;
+            BlockEntityECharger? entity = null;
+            if (Blockentity is BlockEntityECharger temp)
+            {
+                entity = temp;
+                if (entity.inventory[0]?.Itemstack?.StackSize > 0)
+                {
+                    if (entity.inventory[0]?.Itemstack?.Item is IEnergyStorageItem)
+                    {
+                        var storageEnergyItem = entity.inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
+                        var maxStorageItem = MyMiniLib.GetAttributeInt(entity.inventory[0].Itemstack.Item, "maxcapacity");
+                        if (storageEnergyItem < maxStorageItem)
+                        {
+                            w = true;
+                        }
+                        else
+                            w = false;
+                    }
+                    else if (entity.inventory[0]?.Itemstack?.Block is IEnergyStorageItem)
+                    {
+                        var storageEnergyBlock = entity.inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
+                        var maxStorageBlock = MyMiniLib.GetAttributeInt(entity.inventory[0].Itemstack.Block, "maxcapacity");
+                        if (storageEnergyBlock < maxStorageBlock)
+                        {
+                            w = true;
+                        }
+                        else
+                            w = false;
+                    }
+                }
+                else
+                    w = false;
+
+
+            }
+
+            return w;
+        }
+    }
+
+
+
     public void Consume_receive(float amount)
     {
-        BlockEntityECharger? entity = null;
-        if (Blockentity is BlockEntityECharger temp)
-        {
-            entity = temp;
-            if (entity.inventory[0]?.Itemstack?.StackSize > 0)
-            {
-                if (entity.inventory[0]?.Itemstack?.Item is IEnergyStorageItem)
-                {
-                    var storageEnergyItem = entity.inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
-                    var maxStorageItem = MyMiniLib.GetAttributeInt(entity.inventory[0].Itemstack.Item, "maxcapacity");
-                    if (storageEnergyItem < maxStorageItem)
-                    {
-                        working = true;
-                    }
-                    else working = false;
-                }
-                else if (entity.inventory[0]?.Itemstack?.Block is IEnergyStorageItem)
-                {
-                    var storageEnergyBlock = entity.inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
-                    var maxStorageBlock = MyMiniLib.GetAttributeInt(entity.inventory[0].Itemstack.Block, "maxcapacity");
-                    if (storageEnergyBlock < maxStorageBlock)
-                    {
-                        working = true;
-                    }
-                    else working = false;
-                }
-            }
-            else working = false;
-
-
-        }
 
         if (!working)
         {
@@ -66,7 +81,6 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
         if (this.powerSetting != amount)
         {
             this.powerSetting = (int)amount;
-            //this.Blockentity.MarkDirty(true);
         }
 
     }
@@ -76,7 +90,11 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
         if (working)
             return maxConsumption;
         else
+        {
+            powerSetting = 0;
             return 0;
+        }
+
     }
 
 
@@ -110,7 +128,11 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
         if (working)
             return maxConsumption;
         else
+        {
+            powerSetting = 0;
             return 0;
+        }
+
     }
 
     public void Update()

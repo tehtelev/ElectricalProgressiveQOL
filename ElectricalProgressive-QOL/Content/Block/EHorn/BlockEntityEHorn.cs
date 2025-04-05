@@ -55,14 +55,22 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
     //передает значения из Block в BEBehaviorElectricalProgressive
     public (EParams, int) Eparams
     {
-        get => this.ElectricalProgressive!.Eparams;
+        get => this.ElectricalProgressive?.Eparams ?? (new EParams(), 0);
         set => this.ElectricalProgressive!.Eparams = value;
     }
 
     //передает значения из Block в BEBehaviorElectricalProgressive
     public EParams[] AllEparams
     {
-        get => this.ElectricalProgressive?.AllEparams ?? null;
+        get => this.ElectricalProgressive?.AllEparams ?? new EParams[]
+                    {
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams()
+                    };
         set
         {
             if (this.ElectricalProgressive != null)
@@ -106,6 +114,10 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
         this.RegisterGameTickListener(this.OnCommonTick, 200);
     }
 
+    /// <summary>
+    /// Клиентский тик
+    /// </summary>
+    /// <param name="dt"></param>
     private void OnClientTick(float dt)
     {
         ICoreAPI api = this.Api;
@@ -114,32 +126,52 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
             this.ToggleAmbientSounds(this.IsBurning);
             this.clientSidePrevBurning = this.IsBurning;
         }
-        if (this.burning && this.Api.World.Rand.NextDouble() < 0.13)
+
+
+        //рисуем дым, если горн включен
+        if (this.burning && this.Api.World.Rand.NextDouble() < 0.13 && this.Block.Variant["state"]=="enabled")
             BlockEntityCoalPile.SpawnBurningCoalParticles(this.Api, this.Pos.ToVec3d().Add(0.25, 0.875, 0.25), 0.5f, 0.5f);
+
+
         if (this.renderer == null)
             return;
         this.renderer.SetContents(this.Contents, 0, this.burning, false);
     }
 
+
+    /// <summary>
+    /// Тики в общем потоке
+    /// </summary>
+    /// <param name="dt"></param>
     private void OnCommonTick(float dt)
     {
         if (this.burning)
         {
             double num1 = this.Api.World.Calendar.TotalHours - this.lastTickTotalHours;
-            if (this.Contents != null)
+            if (this.Contents != null)  //внутри есть что-то?
             {
                 float temperature = this.Contents.Collectible.GetTemperature(this.Api.World, this.Contents);
                 float power = GetBehavior<BEBehaviorEHorn>().getPowerReceive();
+
+                if (power > 0.0F && this.Block.Variant["state"] == "disabled")
+                {
+                    Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
+                }
+                else if (power== 0.0F && this.Block.Variant["state"] == "enabled")
+                {
+                    Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
+                }
+
                 if (temperature < power * maxTargetTemp / maxConsumption)
                 {
-                    float num2 = (float) (num1 * 1500.0);
-                    
+                    float num2 = (float)(num1 * 1500.0);
+
                     this.Contents.Collectible.SetTemperature(this.Api.World, this.Contents, Math.Min(power * 11F, temperature + num2));
                 }
                 else
                 {
 
-                    if (this.Api.Side != EnumAppSide.Client &&  this.Api.World.Calendar.TotalHours - this.lastPlaySoundDin > 1)  //если нагрелось до максимума, то какждый раз в час звоним, чтобы игрок не забыл за горн
+                    if (this.Api.Side != EnumAppSide.Client && this.Api.World.Calendar.TotalHours - this.lastPlaySoundDin > 1)  //если нагрелось до максимума, то какждый раз в час звоним, чтобы игрок не забыл за горн
                     {
                         Api.World.PlaySoundAt(new AssetLocation("electricalprogressiveqol:sounds/din_din_din"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F);
                         this.lastPlaySoundDin = this.Api.World.Calendar.TotalHours;
@@ -150,6 +182,12 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
             else
             {
                 this.IsBurning = false;
+
+                if (this.Block.Variant["state"] == "enabled")
+                {
+                    Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
+                }
+
             }
         }
         this.tmpPos.Set(this.Pos.X + 0.5, this.Pos.Y + 0.5, this.Pos.Z + 0.5);
@@ -210,7 +248,7 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
                 );
 
                 this.ambientSound.Start();
-                Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
+                
                 
             }
         }
@@ -219,7 +257,7 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
             this.ambientSound?.Stop();
             this.ambientSound?.Dispose();
             this.ambientSound = null;
-            Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
+            
 
         }
     }

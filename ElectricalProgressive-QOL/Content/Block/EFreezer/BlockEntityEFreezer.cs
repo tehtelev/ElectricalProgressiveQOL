@@ -35,14 +35,22 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     //передает значения из Block в BEBehaviorElectricalProgressive
     public (EParams, int) Eparams
     {
-        get => this.ElectricalProgressive!.Eparams;
+        get => this.ElectricalProgressive?.Eparams ?? (new EParams(), 0);
         set => this.ElectricalProgressive!.Eparams = value;
     }
 
     //передает значения из Block в BEBehaviorElectricalProgressive
     public EParams[] AllEparams
     {
-        get => this.ElectricalProgressive?.AllEparams ?? null!;
+        get => this.ElectricalProgressive?.AllEparams ?? new EParams[]
+                    {
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams()
+                    };
         set
         {
             if (this.ElectricalProgressive != null)
@@ -471,8 +479,8 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
-        var electricity = ElectricalProgressive;
-        electricity!.Connection = Facing.None;
+        //var electricity = ElectricalProgressive;
+        //electricity!.Connection = Facing.None;
         if (freezerDialog != null)
         {
             freezerDialog.TryClose();

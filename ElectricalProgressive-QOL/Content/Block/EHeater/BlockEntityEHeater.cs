@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using ElectricalProgressive.Utils;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -25,17 +25,25 @@ namespace ElectricalProgressive.Content.Block.EHeater {
             }
         }
 
-        //передает значения из Block в BEBehaviorElectricalProgressive
+        //РїРµСЂРµРґР°РµС‚ Р·РЅР°С‡РµРЅРёСЏ РёР· Block РІ BEBehaviorElectricalProgressive
         public (EParams, int) Eparams
         {
-            get => this.ElectricalProgressive!.Eparams;
+            get => this.ElectricalProgressive?.Eparams ?? (new EParams(), 0);
             set => this.ElectricalProgressive!.Eparams = value;
         }
 
-        //передает значения из Block в BEBehaviorElectricalProgressive
+        //РїРµСЂРµРґР°РµС‚ Р·РЅР°С‡РµРЅРёСЏ РёР· Block РІ BEBehaviorElectricalProgressive
         public EParams[] AllEparams
         {
-            get => this.ElectricalProgressive?.AllEparams ?? null;
+            get => this.ElectricalProgressive?.AllEparams ?? new EParams[]
+                        {
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams(),
+                        new EParams()
+                        };
             set
             {
                 if (this.ElectricalProgressive != null)
@@ -48,7 +56,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
         public bool IsEnabled => this.Behavior?.HeatLevel >= 1;
 
         /// <summary>
-        /// Отвечает за тепло отдаваемое в окружающую среду
+        /// РћС‚РІРµС‡Р°РµС‚ Р·Р° С‚РµРїР»Рѕ РѕС‚РґР°РІР°РµРјРѕРµ РІ РѕРєСЂСѓР¶Р°СЋС‰СѓСЋ СЃСЂРµРґСѓ
         /// </summary>
         /// <param name="world"></param>
         /// <param name="heatSourcePos"></param>

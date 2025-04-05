@@ -21,7 +21,24 @@ public class BEBehaviorEHorn : BlockEntityBehavior, IElectricConsumer
     public bool isBurned => this.Block.Variant["state"] == "burned";
 
 
-    private bool hasItems;
+    public bool hasItems
+    {
+        get
+        {
+            bool w = false;
+            BlockEntityEHorn? entity = null;
+            if (Blockentity is BlockEntityEHorn temp)
+            {
+                entity = temp;
+                w = entity?.Contents?.StackSize > 0;
+            }
+            return w;
+        }
+    }
+
+
+
+
     public static int maxConsumption;
 
     public BEBehaviorEHorn(BlockEntity blockEntity) : base(blockEntity)
@@ -66,12 +83,7 @@ public class BEBehaviorEHorn : BlockEntityBehavior, IElectricConsumer
 
     public void Consume_receive(float amount)
     {
-        BlockEntityEHorn? entity = null;
-        if (Blockentity is BlockEntityEHorn temp)
-        {
-            entity = temp;
-            hasItems = entity?.Contents?.StackSize > 0;
-        }
+
         if (!hasItems)
         {
             amount = 0;
@@ -102,15 +114,7 @@ public class BEBehaviorEHorn : BlockEntityBehavior, IElectricConsumer
             }
         }
 
-        if (this.powerReceive == 0.0F && this.Block.Variant["state"] == "enabled")                            //гасим если питание меньше 1
-        {
-            this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
-        }
 
-        if (this.powerReceive > 0.0F && this.Block.Variant["state"] == "disabled")                            //гасим если питание меньше 1
-        {
-            this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
-        }
     }
 
     public float getPowerReceive()
