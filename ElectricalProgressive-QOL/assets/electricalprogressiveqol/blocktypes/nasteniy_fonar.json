@@ -12,9 +12,9 @@
   ],
   "attributes": {
     "maxConsumption": 16, //максимальное потребление
-    "voltage": 32,
+    "voltage": 128,
     "maxCurrent": 20.0,
-    "isolated": false,
+    "isolated": true,
     "HSV": [ 58, 32, 20 ],
     "handbook": {
       "groupBy": [ "nasteniy_fonar-*" ],
@@ -90,48 +90,32 @@
   },
   "guiTransform": {
     "translation": {
-      "x": 0,
-      "y": 3,
+      "x": -14,
+      "y": 0,
       "z": 0
     },
     "rotation": {
-      "x": -51,
-      "y": -63,
-      "z": 0
-    },
-    "origin": {
-      "x": 0.5,
-      "y": 0.0,
-      "z": 0.5
-    }
-  },
-  "fpHandTransform": {
-    "translation": {
-      "x": 0,
-      "y": 0.75,
-      "z": 0.5
-    },
-    "rotation": {
-      "x": -39,
-      "y": -35,
-      "z": 27
+      "x": -95,
+      "y": 1,
+      "z": -38
     },
     "origin": {
       "x": 0.5,
       "y": 0,
       "z": 0.5
-    }
+    },
+    "scale": 1.65
   },
   "tpHandTransform": {
     "translation": {
-      "x": -1.8,
-      "y": -0.6,
-      "z": -1.75
+      "x": -1.7,
+      "y": -0.5,
+      "z": -1.6
     },
     "rotation": {
-      "x": -83,
-      "y": -2,
-      "z": -19
+      "x": 93,
+      "y": 1,
+      "z": -180
     },
     "origin": {
       "x": 0.5,
@@ -142,19 +126,19 @@
   "groundTransform": {
     "translation": {
       "x": 0,
-      "y": 0,
+      "y": 0.07,
       "z": 0
     },
     "rotation": {
-      "x": 0,
-      "y": 0,
-      "z": 0
+      "x": 18,
+      "y": -29,
+      "z": -87
     },
     "origin": {
       "x": 0.5,
-      "y": 0.0,
+      "y": 0,
       "z": 0.5
     },
-    "scale": 2.0
+    "scale": 2.65
   }
 }

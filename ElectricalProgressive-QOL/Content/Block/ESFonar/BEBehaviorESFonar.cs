@@ -7,11 +7,11 @@ using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using System.Linq;
 
-namespace ElectricalProgressive.Content.Block.ELamp
+namespace ElectricalProgressive.Content.Block.ESFonar
 {
-    public class BEBehaviorELamp : BlockEntityBehavior, IElectricConsumer
+    public class BEBehaviorESFonar : BlockEntityBehavior, IElectricConsumer
     {
-        public BEBehaviorELamp(BlockEntity blockEntity) : base(blockEntity)
+        public BEBehaviorESFonar(BlockEntity blockEntity) : base(blockEntity)
         {
             maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 4);
         }
@@ -111,16 +111,17 @@ namespace ElectricalProgressive.Content.Block.ELamp
         public void Update()
         {
             //смотрим надо ли обновить модельку когда сгорает прибор
-            if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityELamp entity && entity.AllEparams != null)
+            if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityESFonar entity && entity.AllEparams != null)
             {
 
                 bool hasBurnout = entity.AllEparams.Any(e => e.burnout);
                 if (hasBurnout && entity.Block.Variant["state"] != "burned")
                 {
-                    string tempK = entity.Block.Variant["tempK"];
+                    string height = entity.Block.Variant["heght"];
+                    string format = entity.Block.Variant["format"];
 
-                    string[] types = new string[2] { "tempK", "state" };   //типы лампы
-                    string[] variants = new string[2] { tempK, "burned" };     //нужный вариант лампы
+                    string[] types = new string[3] { "height", "format", "state" };   //типы лампы
+                    string[] variants = new string[3] { height, format, "burned" };     //нужный вариант лампы
 
                     this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariants(types, variants)).BlockId, Pos);
 
@@ -139,7 +140,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
             base.GetBlockInfo(forPlayer, stringBuilder);
 
             //проверяем не сгорел ли прибор
-            if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityELamp entity)
+            if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityESFonar entity)
             {
                 if (isBurned)
                 {

@@ -367,6 +367,9 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
 
         var electricity = this.ElectricalProgressive;
 
+        if (electricity == null || byItemStack == null)
+            return;
+
         if (electricity != null)
         {
             electricity.Connection = Facing.DownAll;

@@ -9,17 +9,18 @@ using Vintagestory.API.Client;
 using ElectricalProgressive.Content.Block.EHeater;
 using ElectricalProgressive.Content.Item.Tool;
 using ElectricalProgressive.Content.Block.EFonar;
+using ElectricalProgressive.Content.Block.ESFonar;
 
 
 [assembly: ModDependency("game", "1.20.0")]
 [assembly: ModDependency("electricalprogressivecore", "0.9.3")]
-[assembly: ModDependency("electricalprogressivebasics", "0.9.3")]
+[assembly: ModDependency("electricalprogressivebasics", "0.9.4")]
 [assembly: ModInfo(
     "Electrical Progressive: QoL",
     "electricalprogressiveqol",
     Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
     Description = "Brings electricity into the game!",
-    Version = "0.9.3",
+    Version = "0.9.4",
     Authors = new[] {
         "Tehtelev",
         "Kotl"
@@ -55,6 +56,10 @@ public class ElectricalProgressiveQOL : ModSystem
         api.RegisterBlockClass("BlockEFonar", typeof(BlockEFonar));
         api.RegisterBlockEntityClass("BlockEntityEFonar", typeof(BlockEntityEFonar));
         api.RegisterBlockEntityBehaviorClass("BEBehaviorEFonar", typeof(BEBehaviorEFonar));
+
+        api.RegisterBlockClass("BlockESFonar", typeof(BlockESFonar));
+        api.RegisterBlockEntityClass("BlockEntityESFonar", typeof(BlockEntityESFonar));
+        api.RegisterBlockEntityBehaviorClass("BEBehaviorESFonar", typeof(BEBehaviorESFonar));
 
         api.RegisterBlockClass("BlockEHeater", typeof(BlockEHeater));
         api.RegisterBlockEntityClass("BlockEntityEHeater", typeof(BlockEntityEHeater));

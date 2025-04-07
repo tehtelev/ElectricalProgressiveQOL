@@ -1,25 +1,23 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ElectricalProgressive.Content.Block.EStove;
 using ElectricalProgressive.Utils;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
-using Vintagestory.GameContent;
 
-namespace ElectricalProgressive.Content.Block.ELamp
+
+namespace ElectricalProgressive.Content.Block.ESFonar
 {
-    internal class BlockELamp : Vintagestory.API.Common.Block
+    internal class BlockESFonar : Vintagestory.API.Common.Block
     {
         private readonly static Dictionary<CacheDataKey, MeshData> MeshDataCache = new();
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> SelectionBoxesCache = new();
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> CollisionBoxesCache = new();
 
-        private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
+
 
 
         public override void OnLoaded(ICoreAPI coreApi)
@@ -30,18 +28,17 @@ namespace ElectricalProgressive.Content.Block.ELamp
         public override void OnUnloaded(ICoreAPI api)
         {
             base.OnUnloaded(api);
-            BlockELamp.MeshDataCache.Clear();
-            BlockELamp.SelectionBoxesCache.Clear();
-            BlockELamp.CollisionBoxesCache.Clear();
+            BlockESFonar.MeshDataCache.Clear();
+            BlockESFonar.SelectionBoxesCache.Clear();
+            BlockESFonar.CollisionBoxesCache.Clear();
         }
 
-
+        
 
         public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
         {
             base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
 
-            
         }
 
 
@@ -64,6 +61,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
             return base.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
         }
 
+
         public override bool DoPlaceBlock(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ItemStack byItemStack)
         {
 
@@ -73,12 +71,14 @@ namespace ElectricalProgressive.Content.Block.ELamp
                 return false;
             }
 
+            
+
             var selection = new Selection(blockSel);
             var facing = FacingHelper.From(selection.Face, selection.Direction);
 
             if (
                 base.DoPlaceBlock(world, byPlayer, blockSel, byItemStack) &&
-                world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityELamp entity
+                world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityESFonar entity
             )
             {
                 entity.Facing = facing;
@@ -98,11 +98,13 @@ namespace ElectricalProgressive.Content.Block.ELamp
             return false;
         }
 
+
         public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
         {
             AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
         {
-            { "tempK", this.Variant["tempK"] },
+            { "height", this.Variant["height"] },
+            { "format", this.Variant["format"] },
             { "state", (this.Variant["state"]=="enabled")? "enabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
         });
 
@@ -117,11 +119,12 @@ namespace ElectricalProgressive.Content.Block.ELamp
             return new[] { OnPickBlock(world, pos) };
         }
 
+
         public override void OnNeighbourBlockChange(IWorldAccessor world, BlockPos pos, BlockPos neibpos)
         {
             base.OnNeighbourBlockChange(world, pos, neibpos);
 
-            if (world.BlockAccessor.GetBlockEntity(pos) is BlockEntityELamp entity)
+            if (world.BlockAccessor.GetBlockEntity(pos) is BlockEntityESFonar entity)
             {
                 var blockFacing = BlockFacing.FromVector(neibpos.X - pos.X, neibpos.Y - pos.Y, neibpos.Z - pos.Z);
                 var selectedFacing = FacingHelper.FromFace(blockFacing);
@@ -138,13 +141,13 @@ namespace ElectricalProgressive.Content.Block.ELamp
             var origin = new Vec3d(0.5, 0.5, 0.5);
 
             if (
-                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityELamp entity &&
+                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityESFonar entity &&
                 entity.Facing != Facing.None
             )
             {
                 var key = CacheDataKey.FromEntity(entity);
 
-                if (!BlockELamp.CollisionBoxesCache.TryGetValue(key, out var boxes))
+                if (!BlockESFonar.CollisionBoxesCache.TryGetValue(key, out var boxes))
                 {
                     if ((key.Facing & Facing.NorthEast) != 0)
                     {
@@ -243,7 +246,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         boxes = this.CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) BlockELamp.CollisionBoxesCache.Add(key, boxes);
+                    if (boxes != null) BlockESFonar.CollisionBoxesCache.Add(key, boxes);
                 }
 
                 if (boxes != null)
@@ -260,13 +263,13 @@ namespace ElectricalProgressive.Content.Block.ELamp
             var origin = new Vec3d(0.5, 0.5, 0.5);
 
             if (
-                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityELamp entity &&
+                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityESFonar entity &&
                 entity.Facing != Facing.None
             )
             {
                 var key = CacheDataKey.FromEntity(entity);
 
-                if (!BlockELamp.SelectionBoxesCache.TryGetValue(key, out var boxes))
+                if (!BlockESFonar.SelectionBoxesCache.TryGetValue(key, out var boxes))
                 {
                     if ((key.Facing & Facing.NorthEast) != 0)
                     {
@@ -365,7 +368,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         boxes = this.SelectionBoxes.Select(selectionBox => selectionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) BlockELamp.SelectionBoxesCache.Add(key, boxes);
+                    if (boxes != null) BlockESFonar.SelectionBoxesCache.Add(key, boxes);
                 }
 
                 if (boxes != null)
@@ -380,18 +383,17 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
 
 
-
         public override void OnJsonTesselation(ref MeshData sourceMesh, ref int[] lightRgbsByCorner, BlockPos pos, Vintagestory.API.Common.Block[] chunkExtBlocks, int extIndex3d)
         {
             if (
                 this.api is ICoreClientAPI clientApi &&
-                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityELamp entity &&
+                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityESFonar entity &&
                 entity.Facing != Facing.None
             )
             {
                 var key = CacheDataKey.FromEntity(entity);
 
-                if (!BlockELamp.MeshDataCache.TryGetValue(key, out var meshData))
+                if (!BlockESFonar.MeshDataCache.TryGetValue(key, out var meshData))
                 {
                     var origin = new Vec3f(0.5f, 0.5f, 0.5f);
 
@@ -520,7 +522,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         meshData.Rotate(origin, 0.0f, 90.0f * GameMath.DEG2RAD, 0.0f);
                     }
 
-                    BlockELamp.MeshDataCache.Add(key, meshData);
+                    BlockESFonar.MeshDataCache.Add(key, meshData);
                 }
 
                 sourceMesh = meshData;
@@ -560,7 +562,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                 this.code = code;
             }
 
-            public static CacheDataKey FromEntity(BlockEntityELamp entity)
+            public static CacheDataKey FromEntity(BlockEntityESFonar entity)
             {
                 return new CacheDataKey(
                     entity.Facing,

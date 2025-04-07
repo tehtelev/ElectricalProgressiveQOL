@@ -541,7 +541,12 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     public override void OnBlockPlaced(ItemStack? byItemStack = null)
     {
         base.OnBlockPlaced(byItemStack);
+
         var electricity = ElectricalProgressive;
+
+        if (electricity == null || byItemStack == null)
+            return;
+
         if (electricity != null)
         {
             electricity.Connection = Facing.DownAll;

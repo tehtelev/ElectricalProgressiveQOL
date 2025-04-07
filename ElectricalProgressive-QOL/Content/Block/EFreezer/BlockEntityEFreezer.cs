@@ -461,6 +461,10 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     {
         base.OnBlockPlaced(byItemStack!);
         var electricity = ElectricalProgressive;
+
+        if (electricity == null || byItemStack == null)
+            return;
+
         if (electricity != null)
         {
             electricity.Connection = Facing.DownAll;
@@ -479,8 +483,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
-        //var electricity = ElectricalProgressive;
-        //electricity!.Connection = Facing.None;
+
         if (freezerDialog != null)
         {
             freezerDialog.TryClose();

@@ -246,7 +246,12 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     public override void OnBlockPlaced(ItemStack? byItemStack = null)
     {
         base.OnBlockPlaced(byItemStack);
+
         var electricity = ElectricalProgressive;
+
+        if (electricity == null || byItemStack == null)
+            return;
+
         if (electricity != null)
         {
             electricity.Connection = Facing.DownAll;
@@ -265,8 +270,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
-        var electricity = ElectricalProgressive;
-        electricity.Connection = Facing.DownAll;
+
     }
 
     public override void OnBlockBroken(IPlayer? byPlayer = null)
@@ -285,7 +289,8 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
 
         mesher.AddMeshData(mesh);
 
-        if (toolMeshes[0] != null) mesher.AddMeshData(toolMeshes[0]);
+        if (toolMeshes[0] != null)
+            mesher.AddMeshData(toolMeshes[0]);
 
 
         return true;

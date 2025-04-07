@@ -734,7 +734,12 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
     public override void OnBlockPlaced(ItemStack? byItemStack = null) {
         base.OnBlockPlaced(byItemStack);
+
         var electricity = ElectricalProgressive;
+
+        if (electricity == null || byItemStack == null)
+            return;
+
         if (electricity != null) {
             electricity.Connection = Facing.DownAll;
 
@@ -743,7 +748,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
             var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
 
-            this.ElectricalProgressive.Eparams = (
+            this.ElectricalProgressive!.Eparams = (
                 new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated),
                 FacingHelper.Faces(Facing.DownAll).First().Index);
         }
@@ -766,6 +771,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     
     public override void OnBlockBroken(IPlayer? byPlayer = null) {
         base.OnBlockBroken(byPlayer);
+
         if (inputStack != null) {
             Api.World.SpawnItemEntity(inputStack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
         }

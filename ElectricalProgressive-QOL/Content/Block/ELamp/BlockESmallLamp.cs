@@ -365,44 +365,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
         }
 
 
-        /// <summary>
-        /// Обновляем свет тут
-        /// </summary>
-        /// <param name="blockAccessor"></param>
-        /// <param name="pos"></param>
-        /// <param name="stack"></param>
-        /// <returns></returns>
-        public override byte[] GetLightHsv(IBlockAccessor blockAccessor, BlockPos pos, ItemStack stack = null)
-        {
 
-            if (pos == null || this.Variant["state"] == "burned" || this.Variant["state"] == "disabled")
-                return new byte[] { 0, 0, 0 };
-
-            int[] bufHSV = MyMiniLib.GetAttributeArrayInt(this, "HSV", null_HSV);
-            int maxConsumption = MyMiniLib.GetAttributeInt(this, "maxConsumption", 4);
-
-            BEBehaviorELamp beh = this.GetBEBehavior<BEBehaviorELamp>(pos);
-
-            if (beh == null) return base.GetLightHsv(blockAccessor, pos, stack); //стандартная хрень
-
-            //берем уровень света вычисленный
-            int amountInt = beh.LightLevel;
-
-            //теперь нужно поделить H и S на 6, чтобы в игре правильно считало цвет
-            bufHSV[0] = (int)Math.Round((bufHSV[0] / 6.0), MidpointRounding.AwayFromZero);
-            bufHSV[1] = (int)Math.Round((bufHSV[1] / 6.0), MidpointRounding.AwayFromZero);
-
-
-            //применяем цвет и яркость
-            return new[] {
-                            (byte)bufHSV[0],
-                            (byte)bufHSV[1],
-                            (byte)FloatHelper.Remap(amountInt, 0, maxConsumption, 0, bufHSV[2])
-                        };
-
-
-
-        }
 
 
 

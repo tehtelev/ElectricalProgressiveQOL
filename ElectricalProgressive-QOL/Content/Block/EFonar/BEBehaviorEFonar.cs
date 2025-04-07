@@ -17,7 +17,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
         }
 
 
-
+        private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
         public int maxConsumption;              //максимальное потребление
         public bool isBurned => Block.Variant["state"] == "burned";
         public int LightLevel { get; private set; }
@@ -48,7 +48,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
         {
             if (Api is { } api)
             {
-                int amountInt = (int)Math.Round(amount, MidpointRounding.AwayFromZero);
+                int amountInt =  (int)Math.Round(Math.Min(amount,maxConsumption), MidpointRounding.AwayFromZero);
 
                 if (amountInt != LightLevel && Block.Variant["state"] != "burned")
                 {
@@ -67,6 +67,24 @@ namespace ElectricalProgressive.Content.Block.EFonar
                     {
                         api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Blockentity.Block.BlockId).BlockId, Pos);
                     }
+
+
+                    int[] bufHSV = MyMiniLib.GetAttributeArrayInt(this.Block, "HSV", null_HSV);
+
+                    //теперь нужно поделить H и S на 6, чтобы в игре правильно считало цвет
+                    bufHSV[0] = (int)Math.Round((bufHSV[0] / 6.0), MidpointRounding.AwayFromZero);
+                    bufHSV[1] = (int)Math.Round((bufHSV[1] / 6.0), MidpointRounding.AwayFromZero);
+
+
+                    //применяем цвет и яркость
+                    this.Block.LightHsv = new[] {
+                            (byte)bufHSV[0],
+                            (byte)bufHSV[1],
+                            (byte)FloatHelper.Remap(amountInt, 0, maxConsumption, 0, bufHSV[2])
+                        };
+
+
+
 
                     // в любом случае обновляем значение
                     LightLevel = amountInt;
