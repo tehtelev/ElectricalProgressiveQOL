@@ -87,7 +87,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
         {
             AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
         {
-            { "state", Variant["state"]=="enabled"? "enabled":Variant["state"]=="disabled"? "disabled":"burned" }
+            { "state", (this.Variant["state"]=="enabled")? "disabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
         });
 
             Vintagestory.API.Common.Block block = world.BlockAccessor.GetBlock(blockCode);

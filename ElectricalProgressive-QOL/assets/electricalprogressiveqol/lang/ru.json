@@ -1,4 +1,4 @@
-{
+﻿{
   "block-charger-*": "Зарядная станция",
   "block-charger-burned-south": "Зарядная станция (сгоревшая)",
 
@@ -12,6 +12,16 @@
 
   "block-eoven-*": "Электрическая духовка",
   "block-eoven-burned-north": "Электрическая духовка (сгоревшая)",
+
+
+
+
+  "block-nasteniy_fonar-*": "Уличный настенный фонарь",
+  "block-nasteniy_fonar-burned": "Уличный настенный фонарь (сгоревший)",
+
+  "block-stolb_fonar-*": "Уличный наземный фонарь",
+  "block-stolb_fonar-*-burned": "Уличный наземный фонарь (сгоревший)",
+
 
 
   "block-ehorn-*": "Электрический горн",
@@ -79,10 +89,23 @@
   "block-handbooktitle-elamp_small": "Используется",
   "block-handbooktext-elamp_small": "Источник света, потребляющий электрическую энергию.<br><br>Максимальный уровень света: 14.",
 
+
+
+
+
+  "block-handbooktitle-nasteniy_fonar": "Используется",
+  "block-handbooktext-nasteniy_fonar": "Вариант электрического фонаря с креплением на стену.<br><br>Максимальный уровень света: 20.",
+
+  "block-handbooktitle-stolb_fonar": "Используется",
+  "block-handbooktext-stolb_fonar": "Вариант электрического фонаря для уличного освещения.<br><br>Максимальный уровень света: 31.",
+
+
+
+
   "block-handbooktitle-ehorn": "Используется",
   "block-handbooktext-ehorn": "Электрический горн позволяет полностью заменить обычный кузнечный горн.<br><br>Максимальная температура нагрева: 1100 °C.",
 
- 
+
 
 
   "block-handbooktitle-charger": "Используется",
@@ -116,7 +139,7 @@
   "game:freezer-over-sneak-help": "Откр/закр дверцу.",
   "game:freezer-over-help": "Откройте дверцу и положите еду что бы сохранить ее.",
 
-  "game:Put-into-4-items": "Нужно минимум 4 предмета для выпечки.",
+  "game:Put-into-4-items": "Нужно минимум 4 предмета для выпечки."
 
 
 }

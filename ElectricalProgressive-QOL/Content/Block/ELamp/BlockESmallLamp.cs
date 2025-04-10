@@ -90,7 +90,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
             AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
         {
             { "tempK", this.Variant["tempK"] },
-            { "state", (this.Variant["state"]=="enabled")? "enabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
+            { "state", (this.Variant["state"]=="enabled")? "disabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
         });
 
             Vintagestory.API.Common.Block block = world.BlockAccessor.GetBlock(blockCode);

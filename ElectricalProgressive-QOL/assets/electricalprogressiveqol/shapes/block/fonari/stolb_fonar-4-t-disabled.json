@@ -1,6 +1,6 @@
 ﻿{
 	"editor": {
-		"collapsedPaths": "Root/Korpus/Kreplenia-K-Zemle1/Detal-Niz11,Root/Korpus/Kreplenia-K-Zemle1/Detal-Niz10,Root/Korpus/Kreplenia-K-Zemle2/Detal-Niz7,Root/Korpus/Kreplenia-K-Zemle2/Detal-Niz6,Root/Korpus/Kreplenia-K-Zemle2/Detal-Niz8,Root/Korpus/Kreplenia-K-Zemle1/Detal-Niz9,Root/Korpus/Kreplenia-K-Zemle2/Detal-Niz5,Root/Korpus/Kreplenia-K-Zemle1/Detal-Niz4",
+		"collapsedPaths": "Root/Korpus/Kreplenia-K-Zemle1/Detal-Niz11,Root/Korpus/Kreplenia-K-Zemle1/Detal-Niz10,Root/Korpus,Root/Korpus/Kreplenia-K-Zemle2/Detal-Niz7,Root/Korpus/Kreplenia-K-Zemle2/Detal-Niz6,Root/Korpus/Kreplenia-K-Zemle2/Detal-Niz8,Root/Korpus/Kreplenia-K-Zemle1/Detal-Niz9,Root/Verh-S-Fonarem5,Root/Korpus/Kreplenia-K-Zemle2/Detal-Niz5,Root/Korpus/Kreplenia-K-Zemle1/Detal-Niz4,Root/Verh-S-Fonarem3,Root/Verh-S-Fonarem4",
 		"allAngles": false,
 		"entityTextureMode": false
 	},
@@ -841,6 +841,7 @@
 			"from": [ 0.0, 16.0, 0.0 ],
 			"to": [ 0.0, 16.0, 0.0 ],
 			"rotationOrigin": [ 8.0, 0.0, 8.0 ],
+			"rotationY": -90.0,
 			"faces": {
 				"north": {
 					"texture": "#frame",
@@ -1008,7 +1009,7 @@
 			"from": [ 0.0, 16.0, 0.0 ],
 			"to": [ 0.0, 16.0, 0.0 ],
 			"rotationOrigin": [ 8.0, 0.0, 8.0 ],
-			"rotationY": -180.0,
+			"rotationY": 90.0,
 			"faces": {
 				"north": {
 					"texture": "#frame",
@@ -1173,9 +1174,9 @@
 		},
 		{
 			"name": "Verh-S-Fonarem3",
-			"from": [ 5.5, 16.0, 21.0 ],
-			"to": [ 5.5, 16.0, 21.0 ],
-			"rotationOrigin": [ 13.5, 50.0, 21.0 ],
+			"from": [ -15.5, 16.0, 26.0 ],
+			"to": [ -15.5, 16.0, 26.0 ],
+			"rotationOrigin": [ -13.0, 0.0, 13.0 ],
 			"rotationX": -90.0,
 			"rotationY": 90.0,
 			"rotationZ": 90.0,
@@ -4339,9 +4340,9 @@
 		},
 		{
 			"name": "Verh-S-Fonarem5",
-			"from": [ -21.5, 16.0, 21.0 ],
-			"to": [ -21.5, 16.0, 21.0 ],
-			"rotationOrigin": [ -13.5, 50.0, 21.0 ],
+			"from": [ -42.5, 16.0, 26.0 ],
+			"to": [ -42.5, 16.0, 26.0 ],
+			"rotationOrigin": [ -13.0, 0.0, 13.0 ],
 			"rotationX": -90.0,
 			"rotationY": 90.0,
 			"rotationZ": 90.0,

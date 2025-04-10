@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ElectricalProgressive.Utils;
 using Vintagestory.API.Common;
 using Vintagestory.API.Datastructures;
@@ -50,36 +51,43 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             {
                 if (value != this.facing)
                 {
+                  
+                        this.ElectricalProgressive!.Connection = value;
+                        this.facing = value;
 
-                        //если лампа обычная
-                        this.ElectricalProgressive!.Connection = FacingHelper.FullFace(this.facing = value);  
-                   
                 }
             }
         }
 
+
+
         public bool IsEnabled => this.Behavior.LightLevel >= 1;
 
-        public override void ToTreeAttributes(ITreeAttribute tree)
-        {
-            base.ToTreeAttributes(tree);
 
-            tree.SetBytes("electricalprogressive:facing", SerializerUtil.Serialize(this.facing));
+
+
+
+        public override void OnBlockPlaced(ItemStack? byItemStack = null)
+        {
+            base.OnBlockPlaced(byItemStack);
+
+            if (this.ElectricalProgressive == null || byItemStack == null)
+                return;
+
+
+
+            //задаем параметры блока/проводника
+            var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
+            var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
+            var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
+
+            this.ElectricalProgressive!.Connection = Facing.DownAll;
+            this.ElectricalProgressive.Eparams = (
+                new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated),
+                FacingHelper.Faces(Facing.DownAll).First().Index);
+
         }
 
-        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
-        {
-            base.FromTreeAttributes(tree, worldAccessForResolve);
-
-            try
-            {
-                this.facing = SerializerUtil.Deserialize<Facing>(tree.GetBytes("electricalprogressive:facing"));
-            }
-            catch (Exception exception)
-            {
-                this.Api?.Logger.Error(exception.ToString());
-            }
-        }
     }
 }
 

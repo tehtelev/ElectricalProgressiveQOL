@@ -1,4 +1,4 @@
-{
+﻿{
 	"editor": {
 		"collapsedPaths": "Root/Cube2/Cube3/Cube124/Cube246,Root/Cube2/Cube3/Cube9/Cube11/Cube12,Root/Cube2/Cube3/Cube124/Cube127,Root/Cube2/Cube3/Cube4",
 		"allAngles": false,
@@ -21,8 +21,10 @@
 	"elements": [
 		{
 			"name": "Cube2",
-			"from": [ 0.0, 0.0, 0.0 ],
-			"to": [ 16.0, 0.5, 16.0 ],
+			"from": [ 16.0, 0.0, 16.0 ],
+			"to": [ 32.0, 0.5, 32.0 ],
+			"rotationOrigin": [ 16.0, 0.0, 16.0 ],
+			"rotationY": -180.0,
 			"faces": {
 				"north": { "texture": "#iron", "uv": [ 0.0, 15.0, 16.0, 16.0 ], "autoUv": false },
 				"east": { "texture": "#iron", "uv": [ 0.0, 15.0, 16.0, 16.0 ], "autoUv": false },

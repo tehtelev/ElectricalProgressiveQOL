@@ -41,7 +41,7 @@
     },
     "*-x-*": {
       "maxConsumption": 64,
-      "HSV": [ 58, 32, 32 ]
+      "HSV": [ 58, 32, 31 ]
     }
   },
 
@@ -81,9 +81,12 @@
   ],
 
 
-  "shape": {
-    "base": "block/fonari/stolb_fonar-{height}-{format}-{state}"
-  },
+
+
+  "shape":  {
+      "base": "block/fonari/stolb_fonar-{height}-{format}-{state}"
+    },
+
 
   "resistance": 1,
   "drawType": "JSON",
@@ -106,39 +109,125 @@
     "place": "game:block/anvil",
     "walk": "game:walk/stone"
   },
+
+  "behaviors": [
+    { "name": "HorizontalOrientable" }
+  ],
+
+  "behaviorsByType": {
+    "*-2-*": [
+      {
+        "name": "Multiblock",
+        "properties": {
+          "sizex": 1,
+          "sizey": 2,
+          "sizez": 1,
+          "cposition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      }
+    ],
+    "*-3-*": [
+      {
+        "name": "Multiblock",
+        "properties": {
+          "sizex": 1,
+          "sizey": 3,
+          "sizez": 1,
+          "cposition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      }
+    ],
+    "*-4-*": [
+      {
+        "name": "Multiblock",
+        "properties": {
+          "sizex": 1,
+          "sizey": 4,
+          "sizez": 1,
+          "cposition": {
+            "x": 0,
+            "y": 0,
+            "z": 0
+          }
+        }
+      }
+    ]
+  },
+
+
+
+
   "collisionBox": {
-    "x1": 0.0,
+    "x1": 0.35,
     "y1": 0.0,
-    "z1": 0.0,
-    "x2": 1.0,
-    "y2": 0.25,
-    "z2": 1.0
+    "z1": 0.35,
+    "x2": 0.65,
+    "y2": 1.0,
+    "z2": 0.65
   },
+
+
+
   "selectionBox": {
-    "x1": 0.0,
+    "x1": 0.35,
     "y1": 0.0,
-    "z1": 0.0,
-    "x2": 1.0,
-    "y2": 0.25,
-    "z2": 1.0
+    "z1": 0.35,
+    "x2": 0.65,
+    "y2": 1.0,
+    "z2": 0.65
   },
-  "guiTransform": {
-    "translation": {
-      "x": 0,
-      "y": 3,
-      "z": 0
+
+
+  "guiTransformByType": {
+    "*-2-*": {
+      "translation": {
+        "x": 0,
+        "y": 28,
+        "z": 0
+      },
+      "rotation": {
+        "x": -21,
+        "y": -53,
+        "z": 0
+      },
+      "scale": 0.96
     },
-    "rotation": {
-      "x": -51,
-      "y": -63,
-      "z": 0
+    "*-3-*": {
+      "translation": {
+        "x": 0,
+        "y": 50,
+        "z": 0
+      },
+      "rotation": {
+        "x": -21,
+        "y": -53,
+        "z": 0
+      },
+      "scale": 0.96
     },
-    "origin": {
-      "x": 0.5,
-      "y": 0.0,
-      "z": 0.5
+    "*-4-*": {
+      "translation": {
+        "x": 0,
+        "y": 68,
+        "z": 0
+      },
+      "rotation": {
+        "x": -21,
+        "y": -53,
+        "z": 0
+      },
+      "scale": 0.96
     }
   },
+
   "groundTransform": {
     "translation": {
       "x": 0,
@@ -157,20 +246,23 @@
     },
     "scale": 2.0
   },
+
   "heldTpIdleAnimation": "holdbothhandslarge",
   "heldRightReadyAnimation": "heldblockready",
   "heldTpUseAnimation": "twohandplaceblock",
+
   "tpHandTransform": {
     "translation": {
-      "x": -1.43,
-      "y": -0.91,
-      "z": -0.7
+      "x": -1.2,
+      "y": -0.99,
+      "z": -1.2
     },
     "rotation": {
-      "x": -2,
-      "y": 25,
+      "x": 5,
+      "y": 99,
       "z": -78
     },
-    "scale": 0.4
+    "scale": 0.51
   }
+
 }

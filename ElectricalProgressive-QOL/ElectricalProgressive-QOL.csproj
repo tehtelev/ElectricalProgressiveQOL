@@ -67,7 +67,6 @@
     <ItemGroup>
       <Folder Include="assets\electricalprogressiveqol\shapes\entity\" />
       <Folder Include="assets\electricalprogressiveqol\textures\" />
-      <Folder Include="assets\game\" />
     </ItemGroup>
     <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

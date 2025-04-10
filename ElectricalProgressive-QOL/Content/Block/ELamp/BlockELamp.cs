@@ -19,7 +19,6 @@ namespace ElectricalProgressive.Content.Block.ELamp
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> SelectionBoxesCache = new();
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> CollisionBoxesCache = new();
 
-        private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
 
 
         public override void OnLoaded(ICoreAPI coreApi)
@@ -103,7 +102,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
             AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
         {
             { "tempK", this.Variant["tempK"] },
-            { "state", (this.Variant["state"]=="enabled")? "enabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
+            { "state", (this.Variant["state"]=="enabled")? "disabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
         });
 
             Vintagestory.API.Common.Block block = world.BlockAccessor.GetBlock(blockCode);
