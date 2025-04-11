@@ -527,6 +527,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
             dsc.AppendLine(Lang.Get("Voltage") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "voltage", 0) + " " + Lang.Get("V"));
             dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
+            dsc.AppendLine(Lang.Get("max-light") + ": " + MyMiniLib.GetAttributeArrayInt(inSlot.Itemstack.Block, "HSV", null_HSV)[2]);
         }
 
 

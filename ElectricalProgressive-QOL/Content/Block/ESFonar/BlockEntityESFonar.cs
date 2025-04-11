@@ -52,7 +52,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
                 if (value != this.facing)
                 {
                   
-                        this.ElectricalProgressive!.Connection = value;
+                        this.ElectricalProgressive!.Connection = Facing.DownAll;
                         this.facing = value;
 
                 }
@@ -64,28 +64,25 @@ namespace ElectricalProgressive.Content.Block.ESFonar
         public bool IsEnabled => this.Behavior.LightLevel >= 1;
 
 
-
-
-
-        public override void OnBlockPlaced(ItemStack? byItemStack = null)
+        public override void ToTreeAttributes(ITreeAttribute tree)
         {
-            base.OnBlockPlaced(byItemStack);
+            base.ToTreeAttributes(tree);
 
-            if (this.ElectricalProgressive == null || byItemStack == null)
-                return;
+            tree.SetBytes("electricalprogressive:facing", SerializerUtil.Serialize(facing));
+        }
 
+        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+        {
+            base.FromTreeAttributes(tree, worldAccessForResolve);
 
-
-            //задаем параметры блока/проводника
-            var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
-            var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
-            var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
-
-            this.ElectricalProgressive!.Connection = Facing.DownAll;
-            this.ElectricalProgressive.Eparams = (
-                new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated),
-                FacingHelper.Faces(Facing.DownAll).First().Index);
-
+            try
+            {
+                facing = SerializerUtil.Deserialize<Facing>(tree.GetBytes("electricalprogressive:facing"));
+            }
+            catch (Exception exception)
+            {
+                Api?.Logger.Error(exception.ToString());
+            }
         }
 
     }

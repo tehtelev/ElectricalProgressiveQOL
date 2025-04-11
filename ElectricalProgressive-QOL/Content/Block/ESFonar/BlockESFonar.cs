@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using ElectricalProgressive.Utils;
 using Vintagestory.API.Client;
@@ -13,7 +14,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
     {
         private readonly static Dictionary<CacheDataKey, MeshData> MeshDataCache = new();
 
-
+        private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
         public override void OnLoaded(ICoreAPI coreApi)
         {
             base.OnLoaded(coreApi);
@@ -60,16 +61,30 @@ namespace ElectricalProgressive.Content.Block.ESFonar
                 return false;
             }
 
-
+            var selection = new Selection(blockSel);
+            var facing = FacingHelper.From(BlockFacing.DOWN, selection.Direction);
 
             if (
+                facing != Facing.None &&
                 base.DoPlaceBlock(world, byPlayer, blockSel, byItemStack) &&
                 world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityESFonar entity
             )
             {
-                var selection = new Selection(blockSel);
-                var facing = FacingHelper.From(BlockFacing.DOWN, selection.Direction);
+
                 entity.Facing = facing;
+
+
+                //задаем параметры блока/проводника
+                var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
+                var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
+                var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
+
+
+                entity.Eparams = (
+                    new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated),
+                    FacingHelper.Faces(Facing.DownAll).First().Index);
+
+
 
                 return true;
             }
@@ -118,19 +133,6 @@ namespace ElectricalProgressive.Content.Block.ESFonar
 
 
 
-        /// <summary>
-        /// Получение информации о предмете в инвентаре
-        /// </summary>
-        /// <param name="inSlot"></param>
-        /// <param name="dsc"></param>
-        /// <param name="world"></param>
-        /// <param name="withDebugInfo"></param>
-        public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
-        {
-            base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
-            dsc.AppendLine(Lang.Get("Voltage") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "voltage", 0) + " " + Lang.Get("V"));
-            dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
-        }
 
 
 
@@ -283,6 +285,23 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             }
         }
 
+
+
+        /// <summary>
+        /// Получение информации о предмете в инвентаре
+        /// </summary>
+        /// <param name="inSlot"></param>
+        /// <param name="dsc"></param>
+        /// <param name="world"></param>
+        /// <param name="withDebugInfo"></param>
+        public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
+        {
+            base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
+            dsc.AppendLine(Lang.Get("Voltage") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "voltage", 0) + " " + Lang.Get("V"));
+            dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
+            dsc.AppendLine(Lang.Get("max-light") + ": " + MyMiniLib.GetAttributeArrayInt(inSlot.Itemstack.Block, "HSV", null_HSV)[2]);
+            dsc.AppendLine(Lang.Get("height") + ": " + this.Variant["height"]);
+        }
 
 
 

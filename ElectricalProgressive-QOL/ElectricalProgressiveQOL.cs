@@ -14,13 +14,13 @@ using ElectricalProgressive.Content.Block.ESFonar;
 
 [assembly: ModDependency("game", "1.20.0")]
 [assembly: ModDependency("electricalprogressivecore", "0.9.3")]
-[assembly: ModDependency("electricalprogressivebasics", "0.9.4")]
+[assembly: ModDependency("electricalprogressivebasics", "0.9.5")]
 [assembly: ModInfo(
     "Electrical Progressive: QoL",
     "electricalprogressiveqol",
     Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
     Description = "Brings electricity into the game!",
-    Version = "0.9.4",
+    Version = "0.9.5",
     Authors = new[] {
         "Tehtelev",
         "Kotl"

@@ -17,7 +17,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> SelectionBoxesCache = new();
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> CollisionBoxesCache = new();
 
-        
+        private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
 
         public override void OnLoaded(ICoreAPI coreApi)
         {
@@ -35,10 +35,14 @@ namespace ElectricalProgressive.Content.Block.EFonar
         public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemstack, BlockSelection blockSel, ref string failureCode)
         {
             var selection = new Selection(blockSel);
-            var facing = FacingHelper.From(selection.Face, selection.Direction);
+            var facing = FacingHelper.From(selection.Face, BlockFacing.DOWN);
 
+            //только на стену и смотрит вниз
             if (
+                facing != Facing.None &&
                 FacingHelper.Faces(facing).First() is { } blockFacing &&
+                selection.Face != BlockFacing.UP &&
+                selection.Face != BlockFacing.DOWN &&
                 !world.BlockAccessor
                     .GetBlock(blockSel.Position.AddCopy(blockFacing))
                     .SideSolid[blockFacing.Opposite.Index]
@@ -58,14 +62,18 @@ namespace ElectricalProgressive.Content.Block.EFonar
                 return false;
             }
 
+
             var selection = new Selection(blockSel);
-            var facing = FacingHelper.From(selection.Face, selection.Direction);
+            var facing = FacingHelper.From(selection.Face, BlockFacing.DOWN); //только на стену и смотрит вниз
+            
 
             if (
+                facing != Facing.None &&
                 base.DoPlaceBlock(world, byPlayer, blockSel, byItemStack) &&
                 world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityEFonar entity
             )
             {
+
                 entity.Facing = facing;
 
                 //задаем параметры блока/проводника
@@ -524,6 +532,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
             dsc.AppendLine(Lang.Get("Voltage") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "voltage", 0) + " " + Lang.Get("V"));
             dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
+            dsc.AppendLine(Lang.Get("max-light") + ": " + MyMiniLib.GetAttributeArrayInt(inSlot.Itemstack.Block, "HSV", null_HSV)[2]);
         }
 
 

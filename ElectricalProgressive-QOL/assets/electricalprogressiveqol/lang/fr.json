@@ -18,6 +18,22 @@
   "block-heater-*": "Radiateur électrique",
   "block-heater-burned": "Radiateur électrique (brûlé)",
 
+
+  "block-nasteniy_fonar-*": "Lampadaire mural extérieur",
+  "block-nasteniy_fonar-burned": "Lampadaire mural extérieur (brûlé)",
+
+  "block-stolb_fonar-*": "Lampadaire au sol extérieur",
+  "block-stolb_fonar-2-i-burned": "Lampadaire au sol extérieur (brûlé)",
+  "block-stolb_fonar-3-i-burned": "Lampadaire au sol extérieur (brûlé)",
+  "block-stolb_fonar-3-r-burned": "Lampadaire au sol extérieur (brûlé)",
+  "block-stolb_fonar-3-t-burned": "Lampadaire au sol extérieur (brûlé)",
+  "block-stolb_fonar-3-x-burned": "Lampadaire au sol extérieur (brûlé)",
+  "block-stolb_fonar-4-i-burned": "Lampadaire au sol extérieur (brûlé)",
+  "block-stolb_fonar-4-r-burned": "Lampadaire au sol extérieur (brûlé)",
+  "block-stolb_fonar-4-t-burned": "Lampadaire au sol extérieur (brûlé)",
+  "block-stolb_fonar-4-x-burned": "Lampadaire au sol extérieur (brûlé)",
+
+
   "block-elamp-3000-*": "Lampe électrique : Orange-chaud (3000K)",
   "block-elamp-4000-*": "Lampe électrique : Jaune-chaud (4000K)",
   "block-elamp-5000-*": "Lampe électrique : Blanc chaud (5000K)",
@@ -28,6 +44,7 @@
 
   "block-elamp-3000-burned": "Lampe électrique (brûlée)",
   "block-elamp-4000-burned": "Lampe électrique (brûlée)",
+  "block-elamp-5000-burned": "Lampe électrique (brûlée)",
   "block-elamp-6000-burned": "Lampe électrique (brûlée)",
   "block-elamp-7000-burned": "Lampe électrique (brûlée)",
   "block-elamp-8000-burned": "Lampe électrique (brûlée)",
@@ -63,10 +80,17 @@
   "block-handbooktext-heater": "Une petite source de chaleur.",
 
   "block-handbooktitle-elamp": "Utilisation",
-  "block-handbooktext-elamp": "Une bonne source de lumière consommant de l'énergie électrique.<br><br>Niveau de lumière maximal : 21.",
+  "block-handbooktext-elamp": "Une bonne source de lumière consommant de l'énergie électrique.",
 
   "block-handbooktitle-elamp_small": "Utilisation",
-  "block-handbooktext-elamp_small": "Source de lumière compacte consommant de l'énergie électrique.<br><br>Niveau de lumière maximal : 14.",
+  "block-handbooktext-elamp_small": "Source de lumière compacte consommant de l'énergie électrique.",
+
+  "block-handbooktitle-nasteniy_fonar": "Utilisation",
+  "block-handbooktext-nasteniy_fonar": "Variante de lampe électrique montée sur mur.",
+
+  "block-handbooktitle-stolb_fonar": "Utilisation",
+  "block-handbooktext-stolb_fonar": "Variante de lampe électrique pour l'éclairage public.",
+
 
   "block-handbooktitle-ehorn": "Utilisation",
   "block-handbooktext-ehorn": "La forge électrique remplace entièrement la forge traditionnelle.<br><br>Température de chauffe maximale : 1100 °C.",
@@ -97,5 +121,7 @@
   "game:freezer-over-sneak-help": "Ouvrir/fermer la porte.",
   "game:freezer-over-help": "Ouvrez la porte et placez la nourriture pour la conserver.",
 
-  "game:Put-into-4-items": "Au moins 4 objets requis pour la cuisson."
+  "game:Put-into-4-items": "Au moins 4 objets requis pour la cuisson.",
+  "game:max-light": "Lumière maximale",
+  "game:height": "Hauteur"
 }

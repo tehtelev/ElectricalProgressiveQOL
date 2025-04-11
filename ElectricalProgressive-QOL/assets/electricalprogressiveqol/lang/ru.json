@@ -20,8 +20,15 @@
   "block-nasteniy_fonar-burned": "Уличный настенный фонарь (сгоревший)",
 
   "block-stolb_fonar-*": "Уличный наземный фонарь",
-  "block-stolb_fonar-*-burned": "Уличный наземный фонарь (сгоревший)",
-
+  "block-stolb_fonar-2-i-burned": "Уличный наземный фонарь (сгоревший)",
+  "block-stolb_fonar-3-i-burned": "Уличный наземный фонарь (сгоревший)",
+  "block-stolb_fonar-3-r-burned": "Уличный наземный фонарь (сгоревший)",
+  "block-stolb_fonar-3-t-burned": "Уличный наземный фонарь (сгоревший)",
+  "block-stolb_fonar-3-x-burned": "Уличный наземный фонарь (сгоревший)",
+  "block-stolb_fonar-4-i-burned": "Уличный наземный фонарь (сгоревший)",
+  "block-stolb_fonar-4-r-burned": "Уличный наземный фонарь (сгоревший)",
+  "block-stolb_fonar-4-t-burned": "Уличный наземный фонарь (сгоревший)",
+  "block-stolb_fonar-4-x-burned": "Уличный наземный фонарь (сгоревший)",
 
 
   "block-ehorn-*": "Электрический горн",
@@ -41,6 +48,7 @@
 
   "block-elamp-3000-burned": "Электрическая лампа (сгоревшая)",
   "block-elamp-4000-burned": "Электрическая лампа (сгоревшая)",
+  "block-elamp-5000-burned": "Электрическая лампа (сгоревшая)",
   "block-elamp-6000-burned": "Электрическая лампа (сгоревшая)",
   "block-elamp-7000-burned": "Электрическая лампа (сгоревшая)",
   "block-elamp-8000-burned": "Электрическая лампа (сгоревшая)",
@@ -84,20 +92,20 @@
   "block-handbooktext-heater": "Небольшой источник тепла.",
 
   "block-handbooktitle-elamp": "Используется",
-  "block-handbooktext-elamp": "Хороший источник света, потребляющий электрическую энергию.<br><br>Максимальный уровень света: 21.",
+  "block-handbooktext-elamp": "Хороший источник света, потребляющий электрическую энергию.",
 
   "block-handbooktitle-elamp_small": "Используется",
-  "block-handbooktext-elamp_small": "Источник света, потребляющий электрическую энергию.<br><br>Максимальный уровень света: 14.",
+  "block-handbooktext-elamp_small": "Источник света, потребляющий электрическую энергию.",
 
 
 
 
 
   "block-handbooktitle-nasteniy_fonar": "Используется",
-  "block-handbooktext-nasteniy_fonar": "Вариант электрического фонаря с креплением на стену.<br><br>Максимальный уровень света: 20.",
+  "block-handbooktext-nasteniy_fonar": "Вариант электрического фонаря с креплением на стену.",
 
   "block-handbooktitle-stolb_fonar": "Используется",
-  "block-handbooktext-stolb_fonar": "Вариант электрического фонаря для уличного освещения.<br><br>Максимальный уровень света: 31.",
+  "block-handbooktext-stolb_fonar": "Вариант электрического фонаря для уличного освещения.",
 
 
 
@@ -139,7 +147,8 @@
   "game:freezer-over-sneak-help": "Откр/закр дверцу.",
   "game:freezer-over-help": "Откройте дверцу и положите еду что бы сохранить ее.",
 
-  "game:Put-into-4-items": "Нужно минимум 4 предмета для выпечки."
+  "game:Put-into-4-items": "Нужно минимум 4 предмета для выпечки.",
 
-
+  "game:max-light": "Максимальный свет",
+  "game:height": "Высота"
 }

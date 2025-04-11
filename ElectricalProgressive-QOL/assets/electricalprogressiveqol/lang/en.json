@@ -1,4 +1,4 @@
-{
+﻿{
   "block-charger-*": "Charging Station",
   "block-charger-burned-south": "Charging Station (Burned)",
 
@@ -18,6 +18,22 @@
   "block-heater-*": "Electric Heater",
   "block-heater-burned": "Electric Heater (Burned)",
 
+
+  "block-nasteniy_fonar-*": "Street wall lamp",
+  "block-nasteniy_fonar-burned": "Street wall lamp (Burned)",
+
+  "block-stolb_fonar-*": "Street ground lamp",
+  "block-stolb_fonar-2-i-burned": "Street ground lamp (Burned)",
+  "block-stolb_fonar-3-i-burned": "Street ground lamp (Burned)",
+  "block-stolb_fonar-3-r-burned": "Street ground lamp (Burned)",
+  "block-stolb_fonar-3-t-burned": "Street ground lamp (Burned)",
+  "block-stolb_fonar-3-x-burned": "Street ground lamp (Burned)",
+  "block-stolb_fonar-4-i-burned": "Street ground lamp (Burned)",
+  "block-stolb_fonar-4-r-burned": "Street ground lamp (Burned)",
+  "block-stolb_fonar-4-t-burned": "Street ground lamp (Burned)",
+  "block-stolb_fonar-4-x-burned": "Street ground lamp (Burned)",
+
+
   "block-elamp-3000-*": "Electric Lamp: Orange-Warm (3000K)",
   "block-elamp-4000-*": "Electric Lamp: Yellow-Warm (4000K)",
   "block-elamp-5000-*": "Electric Lamp: Warm White (5000K)",
@@ -28,6 +44,7 @@
 
   "block-elamp-3000-burned": "Electric Lamp (Burned)",
   "block-elamp-4000-burned": "Electric Lamp (Burned)",
+  "block-elamp-5000-burned": "Electric Lamp (Burned)",
   "block-elamp-6000-burned": "Electric Lamp (Burned)",
   "block-elamp-7000-burned": "Electric Lamp (Burned)",
   "block-elamp-8000-burned": "Electric Lamp (Burned)",
@@ -63,10 +80,20 @@
   "block-handbooktext-heater": "A small heat source.",
 
   "block-handbooktitle-elamp": "Usage",
-  "block-handbooktext-elamp": "A reliable light source that consumes electricity.<br><br>Maximum light level: 21.",
+  "block-handbooktext-elamp": "A reliable light source that consumes electricity.",
 
   "block-handbooktitle-elamp_small": "Usage",
-  "block-handbooktext-elamp_small": "A compact light source that consumes electricity.<br><br>Maximum light level: 14.",
+  "block-handbooktext-elamp_small": "A compact light source that consumes electricity.",
+
+
+
+  "block-handbooktitle-nasteniy_fonar": "Usage",
+  "block-handbooktext-nasteniy_fonar": "A wall-mounted electric lamp variant.",
+
+  "block-handbooktitle-stolb_fonar": "Usage",
+  "block-handbooktext-stolb_fonar": "An electric lamp variant for street lighting.",
+
+
 
   "block-handbooktitle-ehorn": "Usage",
   "block-handbooktext-ehorn": "The electric forge fully replaces the traditional forge.<br><br>Maximum heating temperature: 1100 °C.",
@@ -97,5 +124,7 @@
   "game:freezer-over-sneak-help": "Open/close door.",
   "game:freezer-over-help": "Open the door and place food to preserve it.",
 
-  "game:Put-into-4-items": "At least 4 items required for baking."
+  "game:Put-into-4-items": "At least 4 items required for baking.",
+  "game:max-light": "Max light",
+  "game:height": "Height"
 }
