@@ -1,4 +1,4 @@
-{
+﻿{
   "code": "ehorn",
   "class": "BlockEHorn",
   "entityClass": "BlockEntityEHorn",
@@ -12,7 +12,7 @@
   ],
 
   "attributes": {
-    "maxConsumption": 100,
+    "maxConsumption": 200,
     "maxTargetTemp": 1100.0,
     "voltage": 128,
     "maxCurrent": 20.0,

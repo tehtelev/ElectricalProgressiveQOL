@@ -1,9 +1,9 @@
-{
+﻿{
   "code": "estove",
   "class": "BlockEStove",
   "entityClass": "BlockEntityEStove",
   "attributes": {
-    "maxConsumption": 100,
+    "maxConsumption": 150,
     "voltage": 128,
     "maxCurrent": 20.0,
     "isolated": false,
