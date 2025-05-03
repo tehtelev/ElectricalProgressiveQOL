@@ -25,24 +25,40 @@ class EAxe : ItemAxe,IEnergyStorageItem
 
         consume = MyMiniLib.GetAttributeInt(this, "consume", 20);
         maxcapacity = MyMiniLib.GetAttributeInt(this, "maxcapacity", 20000);
-        Durability = maxcapacity / consume;
+
     }
 
+    /// <summary>
+    /// Уменьшаем прочность
+    /// </summary>
+    /// <param name="world"></param>
+    /// <param name="byEntity"></param>
+    /// <param name="itemslot"></param>
+    /// <param name="amount"></param>
     public override void DamageItem(IWorldAccessor world, Entity byEntity, ItemSlot itemslot, int amount = 1)
     {
         int energy = itemslot.Itemstack.Attributes.GetInt("electricalprogressive:energy");
         if (energy >= consume * amount)
         {
             energy -= consume * amount;
-            itemslot.Itemstack.Attributes.SetInt("durability", Math.Max(1, energy / consume));
+            itemslot.Itemstack.Item.SetDurability(itemslot.Itemstack, Math.Max(1, energy / consume));
             itemslot.Itemstack.Attributes.SetInt("electricalprogressive:energy", energy);
         }
         else
         {
-            itemslot.Itemstack.Attributes.SetInt("durability", 1);
+            itemslot.Itemstack.Item.SetDurability(itemslot.Itemstack, 1);
         }
     }
 
+
+    /// <summary>
+    /// Нажатие левой кнопки
+    /// </summary>
+    /// <param name="slot"></param>
+    /// <param name="byEntity"></param>
+    /// <param name="blockSel"></param>
+    /// <param name="entitySel"></param>
+    /// <param name="handling"></param>
     public override void OnHeldAttackStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, ref EnumHandHandling handling)
     {
         int energy = slot.Itemstack.Attributes.GetInt("electricalprogressive:energy");
@@ -60,6 +76,16 @@ class EAxe : ItemAxe,IEnergyStorageItem
         slot.MarkDirty();
     }
 
+
+    /// <summary>
+    /// Нажатие правой кнопки
+    /// </summary>
+    /// <param name="slot"></param>
+    /// <param name="byEntity"></param>
+    /// <param name="blockSel"></param>
+    /// <param name="entitySel"></param>
+    /// <param name="firstEvent"></param>
+    /// <param name="handling"></param>
     public override void OnHeldInteractStart(ItemSlot slot, EntityAgent byEntity, BlockSelection blockSel, EntitySelection entitySel, bool firstEvent, ref EnumHandHandling handling)
     {
         int energy = slot.Itemstack.Attributes.GetInt("electricalprogressive:energy");
@@ -77,6 +103,15 @@ class EAxe : ItemAxe,IEnergyStorageItem
         slot.MarkDirty();
     }
 
+    /// <summary>
+    /// Ломаем блок топором
+    /// </summary>
+    /// <param name="world"></param>
+    /// <param name="byEntity"></param>
+    /// <param name="itemslot"></param>
+    /// <param name="blockSel"></param>
+    /// <param name="dropQuantityMultiplier"></param>
+    /// <returns></returns>
     public override bool OnBlockBrokenWith(
       IWorldAccessor world,
       Entity byEntity,
@@ -140,12 +175,26 @@ class EAxe : ItemAxe,IEnergyStorageItem
 
     }
 
+    /// <summary>
+    /// Информация о предмете
+    /// </summary>
+    /// <param name="inSlot"></param>
+    /// <param name="dsc"></param>
+    /// <param name="world"></param>
+    /// <param name="withDebugInfo"></param>
     public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
     {
         base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
         dsc.AppendLine(inSlot.Itemstack.Attributes.GetInt("electricalprogressive:energy") + "/" + maxcapacity + " " + Lang.Get("W"));
     }
 
+
+    /// <summary>
+    /// Зарядка
+    /// </summary>
+    /// <param name="itemstack"></param>
+    /// <param name="maxReceive"></param>
+    /// <returns></returns>
     public int receiveEnergy(ItemStack itemstack, int maxReceive)
     {
         int received = Math.Min(maxcapacity - itemstack.Attributes.GetInt("electricalprogressive:energy"), maxReceive);

@@ -454,7 +454,8 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         EnumAppSide side = Api.Side;
         if (GetBehavior<BEBehaviorEFreezer>().powerSetting < 10)
             return initial;
-        return initial-((initial-0.05F)* GetBehavior<BEBehaviorEFreezer>().powerSetting/maxConsumption);
+        return 0.05F;
+        //return initial-((initial-0.05F)* GetBehavior<BEBehaviorEFreezer>().powerSetting/maxConsumption);
     }
 
     public override void OnBlockPlaced(ItemStack? byItemStack = null)

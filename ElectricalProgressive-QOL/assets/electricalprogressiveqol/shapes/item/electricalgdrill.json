@@ -1,4 +1,4 @@
-{
+﻿{
 	"editor": {
 		"allAngles": true,
 		"entityTextureMode": false
@@ -2724,8 +2724,8 @@
 	],
 	"animations": [
 		{
-			"name": "Animation 1",
-			"code": "animation1",
+			"name": "attack",
+			"code": "attack",
 			"quantityframes": 36,
 			"onActivityStopped": "Rewind",
 			"onAnimationEnd": "Repeat",
