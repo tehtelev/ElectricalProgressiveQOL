@@ -14,8 +14,6 @@
   "block-eoven-burned-north": "Электрическая духовка (сгоревшая)",
 
 
-
-
   "block-nasteniy_fonar-*": "Уличный настенный фонарь",
   "block-nasteniy_fonar-burned": "Уличный настенный фонарь (сгоревший)",
 
@@ -100,8 +98,6 @@
 
 
 
-
-
   "block-handbooktitle-nasteniy_fonar": "Используется",
   "block-handbooktext-nasteniy_fonar": "Вариант электрического фонаря с креплением на стену.",
 
@@ -110,10 +106,8 @@
 
 
 
-
   "block-handbooktitle-ehorn": "Используется",
   "block-handbooktext-ehorn": "Электрический горн позволяет полностью заменить обычный кузнечный горн.<br><br>Максимальная температура нагрева: 1100 °C.",
-
 
 
 

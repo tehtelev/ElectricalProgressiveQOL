@@ -28,6 +28,11 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     // Temperature before the half second tick
     public float prevStoveTemperature = 20;
 
+    // Max temperature of the stove
+    const float maxTemperature = 1350f;
+
+    public int maxConsumption;              //максимальное потребление
+
     // Current temperature of the furnace
     public float stoveTemperature = 20;
 
@@ -57,7 +62,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     {
         return inputSlot.Itemstack == null ? 30f : inputSlot.Itemstack.Collectible.GetMeltingDuration(Api.World, inventory, inputSlot);
     }
-    
+
     public override InventoryBase Inventory => inventory;
 
     public override string InventoryClassName => "blockestove";
@@ -127,9 +132,13 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         MarkDirty(true);
         RegisterGameTickListener(OnBurnTick, 250);
         RegisterGameTickListener(On500msTick, 500);
+
+        maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 150);
     }
-    
-        public void UpdateMesh(int slotid)
+
+
+
+    public void UpdateMesh(int slotid)
     {
         if (Api == null || Api.Side == EnumAppSide.Server)
         {
@@ -148,171 +157,171 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             meshes[slotid] = meshData;
         }
     }
-    
-            public void TranslateMesh(MeshData meshData, int slotId)
+
+    public void TranslateMesh(MeshData meshData, int slotId)
+    {
+        if (meshData == null) return;
+        float x = 0;
+        float y = 0;
+        float stdoffset = 0.2f;
+        switch (slotId)
         {
-            if (meshData == null) return;
-            float x = 0;
-            float y = 0;
-            float stdoffset = 0.2f;
-            switch (slotId)
-            {
-                case 1:
+            case 1:
                 {
                     y = 1.04f;
                     break;
                 }
-                case 2:
+            case 2:
                 {
                     y = 1.04f;
                     break;
                 }
-            }
-
-
-            if (!Inventory[slotId].Empty)
-            {
-                if (Inventory[slotId].Itemstack.Class == EnumItemClass.Block)
-                {
-                    meshData.Scale(new Vec3f(0.5f, 0, 0.5f), 0.93f, 0.93f, 0.93f);
-                    meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, 8 * GameMath.DEG2RAD, 0);
-                }
-                else
-                {
-                    meshData.Scale(new Vec3f(0.5f, 0, 0.5f), 1.0f, 1.0f, 1.0f);
-                    meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, 15 * GameMath.DEG2RAD, 0);
-
-                }
-            }
-            
-            meshData.Translate(x, y, 0.025f);
-
-            int orientationRotate = 0;
-            if (Block.Variant["horizontalorientation"] == "east") orientationRotate = 270;
-            if (Block.Variant["horizontalorientation"] == "south") orientationRotate = 180;
-            if (Block.Variant["horizontalorientation"] == "west") orientationRotate = 90;
-            meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, orientationRotate * GameMath.DEG2RAD, 0);
-        
-        }
-            
-        public Size2i AtlasSize
-        {
-            get
-            {
-                return capi.BlockTextureAtlas.Size;
-            }
         }
 
-        public TextureAtlasPosition this [string textureCode]
-        {
-            get
-            {
-                Vintagestory.API.Common.Item item = nowTesselatingObj as Vintagestory.API.Common.Item;
-                Dictionary<string, CompositeTexture> dictionary = (Dictionary<string, CompositeTexture>)((item != null) ? item.Textures : (nowTesselatingObj as Vintagestory.API.Common.Block).Textures);
-                AssetLocation assetLocation = null;
-                CompositeTexture compositeTexture;
-                if (dictionary.TryGetValue(textureCode, out compositeTexture))
-                {
-                    assetLocation = compositeTexture.Baked.BakedName;
-                }
-                if (assetLocation == null && dictionary.TryGetValue("all", out compositeTexture))
-                {
-                    assetLocation = compositeTexture.Baked.BakedName;
-                }
-                if (assetLocation == null)
-                {
-                    Shape shape = nowTesselatingShape;
-                    if (shape != null)
-                    {
-                        shape.Textures.TryGetValue(textureCode, out assetLocation);
-                    }
-                }
-                if (assetLocation == null)
-                {
-                    assetLocation = new AssetLocation(textureCode);
-                }
-                return getOrCreateTexPos(assetLocation);
-            }
-        }
 
-        private TextureAtlasPosition getOrCreateTexPos(AssetLocation texturePath)
+        if (!Inventory[slotId].Empty)
         {
-            TextureAtlasPosition textureAtlasPosition = capi.BlockTextureAtlas[texturePath];
-            if (textureAtlasPosition == null)
+            if (Inventory[slotId].Itemstack.Class == EnumItemClass.Block)
             {
-                IAsset asset = capi.Assets.TryGet(texturePath.Clone().WithPathPrefixOnce("textures/").WithPathAppendixOnce(".png"));
-                if (asset != null)
-                {
-                    int num;
-                    capi.BlockTextureAtlas.GetOrInsertTexture(texturePath, out num, out textureAtlasPosition, null, 0.005f);
-                }
-                else
-                {
-                    ILogger logger = capi.World.Logger;
-                    string str = "For render in block ";
-                    AssetLocation code = Block.Code;
-                    logger.Warning(str + ((code != null) ? code.ToString() : null) + ", item {0} defined texture {1}, not no such texture found.", nowTesselatingObj.Code, texturePath);
-                }
-            }
-            return textureAtlasPosition;
-        }
-            
-        public MeshData GenMesh(ItemStack stack)
-        {
-            IContainedMeshSource meshsource = stack.Collectible as IContainedMeshSource;
-            MeshData meshData;
-            if (meshsource != null)
-            {
-                meshData = meshsource.GenMesh(stack, capi.BlockTextureAtlas, Pos);
-                meshData.Rotate(new Vec3f(0.5f, 0.5f, 0.5f), 0f, Block.Shape.rotateY * 0.0174532924f, 0f);
+                meshData.Scale(new Vec3f(0.5f, 0, 0.5f), 0.93f, 0.93f, 0.93f);
+                meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, 8 * GameMath.DEG2RAD, 0);
             }
             else
             {
-                ICoreClientAPI coreClientAPI = Api as ICoreClientAPI;
-                if (stack.Class == EnumItemClass.Block)
-                {
-                    meshData = coreClientAPI.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
-                }
-                else
-                {
-                    nowTesselatingObj = stack.Collectible;
-                    nowTesselatingShape = null;
-                    if (stack.Item.Shape != null)
-                    {
-                        nowTesselatingShape = coreClientAPI.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
-                        
-                    }
-                    coreClientAPI.Tesselator.TesselateItem(stack.Item, out meshData, this);
-                    meshData.RenderPassesAndExtraBits.Fill((short)2);
-                    coreClientAPI.TesselatorManager.ThreadDispose(); //обязательно?
+                meshData.Scale(new Vec3f(0.5f, 0, 0.5f), 1.0f, 1.0f, 1.0f);
+                meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, 15 * GameMath.DEG2RAD, 0);
+
             }
         }
-            return meshData;
-        }
-        
-        public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
+
+        meshData.Translate(x, y, 0.025f);
+
+        int orientationRotate = 0;
+        if (Block.Variant["horizontalorientation"] == "east") orientationRotate = 270;
+        if (Block.Variant["horizontalorientation"] == "south") orientationRotate = 180;
+        if (Block.Variant["horizontalorientation"] == "west") orientationRotate = 90;
+        meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, orientationRotate * GameMath.DEG2RAD, 0);
+
+    }
+
+    public Size2i AtlasSize
+    {
+        get
         {
-            for (int i = 0; i < meshes.Length; i++)
+            return capi.BlockTextureAtlas.Size;
+        }
+    }
+
+    public TextureAtlasPosition this[string textureCode]
+    {
+        get
+        {
+            Vintagestory.API.Common.Item item = nowTesselatingObj as Vintagestory.API.Common.Item;
+            Dictionary<string, CompositeTexture> dictionary = (Dictionary<string, CompositeTexture>)((item != null) ? item.Textures : (nowTesselatingObj as Vintagestory.API.Common.Block).Textures);
+            AssetLocation assetLocation = null;
+            CompositeTexture compositeTexture;
+            if (dictionary.TryGetValue(textureCode, out compositeTexture))
             {
-                if (meshes[i] != null)
+                assetLocation = compositeTexture.Baked.BakedName;
+            }
+            if (assetLocation == null && dictionary.TryGetValue("all", out compositeTexture))
+            {
+                assetLocation = compositeTexture.Baked.BakedName;
+            }
+            if (assetLocation == null)
+            {
+                Shape shape = nowTesselatingShape;
+                if (shape != null)
                 {
-                    mesher.AddMeshData(meshes[i]);
+                    shape.Textures.TryGetValue(textureCode, out assetLocation);
                 }
             }
-            return false;
+            if (assetLocation == null)
+            {
+                assetLocation = new AssetLocation(textureCode);
+            }
+            return getOrCreateTexPos(assetLocation);
         }
+    }
+
+    private TextureAtlasPosition getOrCreateTexPos(AssetLocation texturePath)
+    {
+        TextureAtlasPosition textureAtlasPosition = capi.BlockTextureAtlas[texturePath];
+        if (textureAtlasPosition == null)
+        {
+            IAsset asset = capi.Assets.TryGet(texturePath.Clone().WithPathPrefixOnce("textures/").WithPathAppendixOnce(".png"));
+            if (asset != null)
+            {
+                int num;
+                capi.BlockTextureAtlas.GetOrInsertTexture(texturePath, out num, out textureAtlasPosition, null, 0.005f);
+            }
+            else
+            {
+                ILogger logger = capi.World.Logger;
+                string str = "For render in block ";
+                AssetLocation code = Block.Code;
+                logger.Warning(str + ((code != null) ? code.ToString() : null) + ", item {0} defined texture {1}, not no such texture found.", nowTesselatingObj.Code, texturePath);
+            }
+        }
+        return textureAtlasPosition;
+    }
+
+    public MeshData GenMesh(ItemStack stack)
+    {
+        IContainedMeshSource meshsource = stack.Collectible as IContainedMeshSource;
+        MeshData meshData;
+        if (meshsource != null)
+        {
+            meshData = meshsource.GenMesh(stack, capi.BlockTextureAtlas, Pos);
+            meshData.Rotate(new Vec3f(0.5f, 0.5f, 0.5f), 0f, Block.Shape.rotateY * 0.0174532924f, 0f);
+        }
+        else
+        {
+            ICoreClientAPI coreClientAPI = Api as ICoreClientAPI;
+            if (stack.Class == EnumItemClass.Block)
+            {
+                meshData = coreClientAPI.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
+            }
+            else
+            {
+                nowTesselatingObj = stack.Collectible;
+                nowTesselatingShape = null;
+                if (stack.Item.Shape != null)
+                {
+                    nowTesselatingShape = coreClientAPI.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
+
+                }
+                coreClientAPI.Tesselator.TesselateItem(stack.Item, out meshData, this);
+                meshData.RenderPassesAndExtraBits.Fill((short)2);
+                coreClientAPI.TesselatorManager.ThreadDispose(); //обязательно?
+            }
+        }
+        return meshData;
+    }
+
+    public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
+    {
+        for (int i = 0; i < meshes.Length; i++)
+        {
+            if (meshes[i] != null)
+            {
+                mesher.AddMeshData(meshes[i]);
+            }
+        }
+        return false;
+    }
 
     public void UpdateMeshes()
     {
-        for (int i = 0; i < inventory.Count-1; i++)
+        for (int i = 0; i < inventory.Count - 1; i++)
         {
             UpdateMesh(i);
         }
         MarkDirty(true);
     }
-    
-    
-    
+
+
+
     private void OnSlotModifid(int slotid)
     {
         Block = Api.World.BlockAccessor.GetBlock(Pos);
@@ -350,7 +359,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         // Furnace is burning: Heat furnace
         if (IsBurning)
         {
-            stoveTemperature = changeTemperature(stoveTemperature, GetBehavior<BEBehaviorEStove>().powerSetting * 13.25F, dt);
+            //stoveTemperature = changeTemperature(stoveTemperature, GetBehavior<BEBehaviorEStove>().powerSetting * 13.25F, dt);
+            stoveTemperature = changeTemperature(stoveTemperature, GetBehavior<BEBehaviorEStove>().powerSetting*1.0F/maxConsumption * maxTemperature, dt); //так лучше
         }
 
         // Ore follows furnace temperature
@@ -374,7 +384,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         {
             smeltItems();
         }
-        
+
 
         if (GetBehavior<BEBehaviorEStove>()?.powerSetting > 0)
         {
@@ -629,7 +639,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
 
     #region Events
-    
+
     public void OnBlockInteract(IPlayer byPlayer, bool isOwner, BlockSelection blockSel)
     {
         if (Api.Side == EnumAppSide.Client)
@@ -696,7 +706,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
                 UpdateMeshes();
             }
         }
-        
+
     }
 
     void SetDialogValues(ITreeAttribute dialogTree)
@@ -732,7 +742,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         tree.SetFloat("oreCookingTime", inputStackCookingTime);
     }
 
-    public override void OnBlockPlaced(ItemStack? byItemStack = null) {
+    public override void OnBlockPlaced(ItemStack? byItemStack = null)
+    {
         base.OnBlockPlaced(byItemStack);
 
         var electricity = ElectricalProgressive;
@@ -740,7 +751,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         if (electricity == null || byItemStack == null)
             return;
 
-        if (electricity != null) {
+        if (electricity != null)
+        {
             electricity.Connection = Facing.DownAll;
 
             //задаем параметры блока/проводника
@@ -753,7 +765,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
                 FacingHelper.Faces(Facing.DownAll).First().Index);
         }
     }
-    
+
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
@@ -768,15 +780,17 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             }
         }
     }
-    
-    public override void OnBlockBroken(IPlayer? byPlayer = null) {
+
+    public override void OnBlockBroken(IPlayer? byPlayer = null)
+    {
         base.OnBlockBroken(byPlayer);
 
-        if (inputStack != null) {
+        if (inputStack != null)
+        {
             Api.World.SpawnItemEntity(inputStack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
         }
     }
-    
+
     public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
     {
         if (packetid < 1000)
@@ -952,23 +966,25 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             }
         }
     }
-    
-    public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder) {
+
+    public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
+    {
         base.GetBlockInfo(forPlayer, stringBuilder);
-        if (inputStack != null) {
+        if (inputStack != null)
+        {
             var temp = (int)inputStack.Collectible.GetTemperature(Api.World, inputStack);  //беда с отобраением температуры, иногда забывает
             stringBuilder.AppendLine();
-                if (temp <= 25)
-                {
-                    stringBuilder.AppendLine(Lang.Get("Contents") +" "+ inputStack.StackSize + "×" +
-                                             inputStack.GetName() +
-                                             "\n└ " + Lang.Get("Temperature") +" "+ Lang.Get("Cold"));
-                }
-                else
-                    stringBuilder.AppendLine(Lang.Get("Contents") + inputStack.StackSize + "×" +
-                                             inputStack.GetName() +
-                                             "\n└ " + Lang.Get("Temperature") +" "+ temp + " °C");  
-            
+            if (temp <= 25)
+            {
+                stringBuilder.AppendLine(Lang.Get("Contents") + " " + inputStack.StackSize + "×" +
+                                         inputStack.GetName() +
+                                         "\n└ " + Lang.Get("Temperature") + " " + Lang.Get("Cold"));
+            }
+            else
+                stringBuilder.AppendLine(Lang.Get("Contents") + inputStack.StackSize + "×" +
+                                         inputStack.GetName() +
+                                         "\n└ " + Lang.Get("Temperature") + " " + temp + " °C");
+
         }
     }
 }

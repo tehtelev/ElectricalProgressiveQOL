@@ -115,6 +115,12 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             {
 
                 bool hasBurnout = entity.AllEparams.Any(e => e.burnout);
+
+                if (hasBurnout)
+                {
+                    ParticleManager.SpawnBlackSmoke(this.Api.World, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
+                }
+
                 if (hasBurnout && entity.Block.Variant["state"] != "burned")
                 {
                     string height = entity.Block.Variant["heght"];

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ElectricalProgressive.Utils;
@@ -10,6 +11,7 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.API.Util;
 using Vintagestory.GameContent;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace ElectricalProgressive.Content.Block.EFreezer;
 
@@ -17,7 +19,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 {
     private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
     private static readonly Vec3f center = new Vec3f(0.5f, 0.25f, 0.5f);
-    internal InventoryEFreezer inventory;
+    internal InventoryBase inventory;
     GuiEFreezer freezerDialog;
     ICoreClientAPI capi;
     public bool isOpened;
@@ -26,6 +28,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     protected Shape nowTesselatingShape;
     protected CollectibleObject nowTesselatingObj;
     public int maxConsumption;
+
 
 
     public override InventoryBase Inventory => inventory;
@@ -65,34 +68,56 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     public BlockEntityEFreezer()
     {
         maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
-        inventory = new InventoryEFreezer(null!, null!);
         isOpened = false;
         closedDelay = 0;
-        meshes = new MeshData[inventory.Count];
+        
+        
+        //инциализируем инвентарь раньше всего
+        inventory = new InventoryGeneric(6, null, null); 
+
+
     }
 
     public override void Initialize(ICoreAPI api)
     {
-        base.Initialize(api);
-        if (api.Side == EnumAppSide.Client)
-        {
-            capi = api as ICoreClientAPI;
-        }
+        //инциализируем инвентарь
+        inventory.Pos = Pos;
+        inventory.LateInitialize(InventoryClassName + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
 
-        inventory.LateInitialize("efreezer-1", api);
+        base.Initialize(api);
+
+        if (api.Side == EnumAppSide.Client)
+            capi = api as ICoreClientAPI;
+
+
+        meshes = new MeshData[inventory.Count];
+
+        // как только инвентарь изменится — подписываемся на событие изменения любого слота и перерисовываем их все
+        Inventory.SlotModified += slotId =>
+        {
+            UpdateMeshes();
+        };
+
+        //рисуем содержимое
         UpdateMeshes();
         MarkDirty(true);
+
+        //слушатель для обновления содержимого 
         RegisterGameTickListener(FreezerTick, 500);
     }
 
+
+
+
     public void UpdateMesh(int slotid)
     {
+        //если это сервер, то не обновляем ничего
         if (Api == null || Api.Side == EnumAppSide.Server)
-        {
             return;
-        }
 
-        if (slotid == inventory.Count) return;
+        if (slotid == inventory.Count)
+            return;
+
         if (inventory[slotid].Empty)
         {
             meshes[slotid] = null!;
@@ -109,7 +134,8 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 
     public void TranslateMesh(MeshData meshData, int slotId)
     {
-        if (meshData == null) return;
+        if (meshData == null)
+            return;
         float x = 0;
         float y = 0;
         float stdoffset = 0.2f;
@@ -247,6 +273,8 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         return textureAtlasPosition;
     }
 
+
+    //Рисуем meshы
     public MeshData GenMesh(ItemStack stack)
     {
         IContainedMeshSource meshsource = stack.Collectible as IContainedMeshSource;
@@ -258,10 +286,9 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         }
         else
         {
-            ICoreClientAPI coreClientAPI = Api as ICoreClientAPI;
             if (stack.Class == EnumItemClass.Block)
             {
-                meshData = coreClientAPI!.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
+                meshData = capi.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
             }
             else
             {
@@ -269,15 +296,13 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
                 nowTesselatingShape = null;
                 if (stack.Item.Shape != null)
                 {
-                    nowTesselatingShape = coreClientAPI!.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
-
+                    nowTesselatingShape = capi.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
                 }
 
-                coreClientAPI!.Tesselator.TesselateItem(stack.Item, out meshData, this);
+                capi.Tesselator.TesselateItem(stack.Item, out meshData, this);
                 meshData.RenderPassesAndExtraBits.Fill((short)2);
 
-                coreClientAPI.TesselatorManager.ThreadDispose(); //обязательно?
-
+                capi.TesselatorManager.ThreadDispose(); //обязательно?
             }
         }
 
@@ -304,6 +329,8 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
             UpdateMesh(i);
         }
 
+
+
         MarkDirty(true);
     }
 
@@ -317,7 +344,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         if (Api.Side == EnumAppSide.Server && this.Block.Variant["status"]!="burned")
         {
             TryRefuel();
-            if (GetBehavior<BEBehaviorEFreezer>().powerSetting < maxConsumption*0.1)
+            if (GetBehavior<BEBehaviorEFreezer>().powerSetting < maxConsumption*0.1F && this.Block.Variant["status"] != "melted")
             {
                 Vintagestory.API.Common.Block originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
                 AssetLocation newBlockAL = originalBlock.CodeWithVariant("status", "melted");
@@ -330,7 +357,8 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 
     private void TryRefuel()
     {
-        if (GetBehavior<BEBehaviorEFreezer>().powerSetting >= maxConsumption * 0.1)
+        //Энергии хватает?
+        if (GetBehavior<BEBehaviorEFreezer>().powerSetting >= maxConsumption * 0.1F && this.Block.Variant["status"] != "frozen")
         {
             Vintagestory.API.Common.Block originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
             AssetLocation newBlockAL = originalBlock.CodeWithVariant("status", "frozen");
@@ -371,11 +399,16 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         }
     }
 
+
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
     {
         base.FromTreeAttributes(tree, worldForResolving);
+
+
+
         closedDelay = tree.GetInt("closedDelay");
         isOpened = tree.GetBool("isOpened");
+
         if (Api != null)
         {
             inventory.AfterBlocksLoaded(Api.World);
@@ -389,6 +422,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     public override void ToTreeAttributes(ITreeAttribute tree)
     {
         base.ToTreeAttributes(tree);
+
         tree.SetInt("closedDelay", closedDelay);
         tree.SetBool("isOpened", isOpened);
     }
@@ -429,7 +463,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
                 if (freezerDialog == null)
                 {
                     freezerDialog = new GuiEFreezer(Lang.Get("freezer-title-gui"), Inventory, Pos,
-                        Api as ICoreClientAPI);
+                       Api as ICoreClientAPI);
                     freezerDialog.OnClosed += () => { freezerDialog = null!; };
                 }
 
@@ -452,10 +486,10 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     {
         float initial = base.GetPerishRate();
         EnumAppSide side = Api.Side;
-        if (GetBehavior<BEBehaviorEFreezer>().powerSetting < 10)
+        if (GetBehavior<BEBehaviorEFreezer>().powerSetting < maxConsumption*0.1F)
             return initial;
         return 0.05F;
-        //return initial-((initial-0.05F)* GetBehavior<BEBehaviorEFreezer>().powerSetting/maxConsumption);
+
     }
 
     public override void OnBlockPlaced(ItemStack? byItemStack = null)
@@ -480,6 +514,10 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
                 FacingHelper.Faces(Facing.DownAll).First().Index);
         }
     }
+
+
+
+
 
     public override void OnBlockRemoved()
     {

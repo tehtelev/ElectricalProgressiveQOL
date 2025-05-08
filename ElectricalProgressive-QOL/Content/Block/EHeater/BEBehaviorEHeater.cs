@@ -111,6 +111,12 @@ namespace ElectricalProgressive.Content.Block.EHeater
             if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityEHeater entity && entity.AllEparams != null)
             {
                 bool hasBurnout = entity.AllEparams.Any(e => e.burnout);
+
+                if (hasBurnout)
+                {
+                    ParticleManager.SpawnBlackSmoke(this.Api.World, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
+                }
+
                 if (hasBurnout && entity.Block.Variant["state"] != "burned")
                 {
                     string[] types = new string[1] {"state"};   //типы лампы

@@ -14,6 +14,8 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
 
     ElementBounds cookingSlotsSlotBounds;
 
+    const float maxTemperature = 1350f;
+
     long lastRedrawMs;
     EnumPosFlag screenPos;
 
@@ -34,6 +36,9 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
         SetupDialog();
     }
 
+    /// <summary>
+    /// Рисуем диалог, если он открыт
+    /// </summary>
     void SetupDialog()
     {
         ItemSlot hoveredSlot = capi.World.Player.InventoryManager.CurrentHoveredSlot;
@@ -42,8 +47,6 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
             //capi.Input.TriggerOnMouseLeaveSlot(hoveredSlot); - wtf is this for?
             hoveredSlot = null;
         }
-
-
 
 
         string newOutputText = Attributes.GetString("outputText", "");
@@ -189,7 +192,7 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
     {
         double top = cookingSlotsSlotBounds.fixedHeight + cookingSlotsSlotBounds.fixedY;
 
-        // 1. Fire
+        // 1. Рисовка огонька
         ctx.Save();
         Matrix m = ctx.Matrix;
         m.Translate(GuiElement.scaled(5), GuiElement.scaled(53 + top));
@@ -197,7 +200,7 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
         ctx.Matrix = m;
         capi.Gui.Icons.DrawFlame(ctx);
 
-        double dy = 210 - 210 * (Attributes.GetFloat("stoveTemperature") / 1300);
+        double dy = 210 - 210 * (Attributes.GetFloat("stoveTemperature") / maxTemperature);
         ctx.Rectangle(0, dy, 200, 210 - dy);
         ctx.Clip();
         LinearGradient gradient = new LinearGradient(0, GuiElement.scaled(250), 0, 0);
@@ -209,7 +212,7 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
         ctx.Restore();
 
 
-        // 2. Arrow Right
+        // 2. Стрелка вправо
         ctx.Save();
         m = ctx.Matrix;
         m.Translate(GuiElement.scaled(63), GuiElement.scaled(top + 2));

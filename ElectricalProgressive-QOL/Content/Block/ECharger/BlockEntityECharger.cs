@@ -353,23 +353,23 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
         base.GetBlockInfo(forPlayer, stringBuilder);
-        if (inventory[0]?.Itemstack?.Item is IEnergyStorageItem)
+        if (inventory[0]?.Itemstack?.Item is IEnergyStorageItem) //предмет
         {
             var storageEnergyItem = inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
             var maxStorageItem = MyMiniLib.GetAttributeInt(inventory[0].Itemstack.Item, "maxcapacity");
             stringBuilder.AppendLine();
             stringBuilder.AppendLine(inventory[0].Itemstack.GetName());
             stringBuilder.AppendLine(StringHelper.Progressbar(storageEnergyItem * 100.0f / maxStorageItem));
-            stringBuilder.AppendLine("└ " + Lang.Get("Storage") + ": " + storageEnergyItem + "/" + maxStorageItem + " " + Lang.Get("W"));
+            stringBuilder.AppendLine("└ " + Lang.Get("Storage") + ": " + storageEnergyItem + "/" + maxStorageItem + " " + Lang.Get("J"));
         }
-        else if (inventory[0]?.Itemstack?.Block is IEnergyStorageItem)
+        else if (inventory[0]?.Itemstack?.Block is IEnergyStorageItem) //блок
         {
             var storageEnergyBlock = inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
             var maxStorageBlock = MyMiniLib.GetAttributeInt(inventory[0].Itemstack.Block, "maxcapacity");
             stringBuilder.AppendLine();
             stringBuilder.AppendLine(inventory[0].Itemstack.GetName());
             stringBuilder.AppendLine(StringHelper.Progressbar(storageEnergyBlock * 100.0f / maxStorageBlock));
-            stringBuilder.AppendLine("└ " + Lang.Get("Storage") + ": " + storageEnergyBlock + "/" + maxStorageBlock + " " + Lang.Get("W"));
+            stringBuilder.AppendLine("└ " + Lang.Get("Storage") + ": " + storageEnergyBlock + "/" + maxStorageBlock + " " + Lang.Get("J"));
         }
     }
 

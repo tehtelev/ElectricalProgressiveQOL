@@ -6,7 +6,6 @@ using ElectricalProgressive.Content.Block.ELamp;
 using ElectricalProgressive.Content.Block.EOven;
 using Vintagestory.API.Common;
 using Vintagestory.API.Client;
-using Vintagestory.API.Client; // Ensure this namespace is included
 using ElectricalProgressive.Content.Block.EHeater;
 using ElectricalProgressive.Content.Item.Tool;
 using ElectricalProgressive.Content.Block.EFonar;
@@ -16,14 +15,14 @@ using Vintagestory.API.Common.Entities;
 
 
 [assembly: ModDependency("game", "1.20.0")]
-[assembly: ModDependency("electricalprogressivecore", "0.9.8")]
-[assembly: ModDependency("electricalprogressivebasics", "0.9.9")]
+[assembly: ModDependency("electricalprogressivecore", "0.9.10")]
+[assembly: ModDependency("electricalprogressivebasics", "0.9.10")]
 [assembly: ModInfo(
     "Electrical Progressive: QoL",
     "electricalprogressiveqol",
     Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
     Description = "Brings electricity into the game!",
-    Version = "0.9.9",
+    Version = "0.9.10",
     Authors = new[] {
         "Tehtelev",
         "Kotl"
