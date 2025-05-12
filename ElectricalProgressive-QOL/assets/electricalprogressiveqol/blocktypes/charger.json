@@ -1,4 +1,4 @@
-{
+﻿{
   "code": "charger",
   "class": "BlockECharger",
   "entityClass": "BlockEntityECharger",
@@ -17,7 +17,8 @@
     "maxConsumption": 200,
     "voltage": 128,
     "maxCurrent": 20.0,
-    "isolated": false,
+    "isolatedEnvironment": false,
+    "isolated": true,
     "handbook": {
       "groupBy": [ "charger-*" ],
       "extraSections": [

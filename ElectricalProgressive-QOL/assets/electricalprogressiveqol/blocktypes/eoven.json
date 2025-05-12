@@ -1,4 +1,4 @@
-{
+﻿{
   "code": "eoven",
   "class": "BlockEOven",
   "entityClass": "BlockEntityEOven",
@@ -56,7 +56,8 @@
     "maxConsumption": 100,
     "voltage": 128,
     "maxCurrent": 20.0,
-    "isolated": false,
+    "isolated": true,
+    "isolatedEnvironment": false,
     "reinforcable": true,
     "handbook": {
       "groupBy": [ "eoven-*" ],

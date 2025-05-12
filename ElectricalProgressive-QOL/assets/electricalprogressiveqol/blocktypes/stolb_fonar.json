@@ -15,6 +15,7 @@
     "voltage": 128,
     "maxCurrent": 20.0,
     "isolated": true,
+    "isolatedEnvironment": true,
     "handbook": {
       "groupBy": [ "stolb_fonar-*" ],
       "extraSections": [

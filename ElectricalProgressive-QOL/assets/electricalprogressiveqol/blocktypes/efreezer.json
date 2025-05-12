@@ -6,7 +6,8 @@
     "maxConsumption": 100,
     "voltage": 32,
     "maxCurrent": 20.0,
-    "isolated": false,
+    "isolated": true,
+    "isolatedEnvironment": false,
     "handbook": {
       "groupBy": [ "efreezer-*" ],
       "extraSections": [

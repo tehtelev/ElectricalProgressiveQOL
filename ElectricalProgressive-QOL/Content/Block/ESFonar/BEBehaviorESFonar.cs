@@ -6,6 +6,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
 using System.Linq;
+using Vintagestory.API.Util;
 
 namespace ElectricalProgressive.Content.Block.ESFonar
 {
@@ -118,12 +119,12 @@ namespace ElectricalProgressive.Content.Block.ESFonar
 
                 if (hasBurnout)
                 {
-                    ParticleManager.SpawnBlackSmoke(this.Api.World, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
+                    ParticleManager.SpawnBlackSmoke(this.Api.World, Pos.ToVec3d().Add(0.5, entity.Block.Variant["height"].ToFloat(), 0.5));
                 }
 
                 if (hasBurnout && entity.Block.Variant["state"] != "burned")
                 {
-                    string height = entity.Block.Variant["heght"];
+                    string height = entity.Block.Variant["height"];
                     string format = entity.Block.Variant["format"];
 
                     string[] types = new string[3] { "height", "format", "state" };   //типы лампы

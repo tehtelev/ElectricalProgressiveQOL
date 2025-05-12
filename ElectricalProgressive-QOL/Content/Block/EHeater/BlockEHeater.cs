@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ElectricalProgressive.Content.Block.ELamp;
+using ElectricalProgressive.Content.Block.EMotor;
 using ElectricalProgressive.Utils;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
+using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
@@ -25,6 +27,46 @@ namespace ElectricalProgressive.Content.Block.EHeater {
             BlockEHeater.SelectionBoxesCache.Clear();
             BlockEHeater.CollisionBoxesCache.Clear();
         }
+
+
+        /// <summary>
+        /// Кто-то или что-то коснулось блока и теперь получит урон
+        /// </summary>
+        /// <param name="world"></param>
+        /// <param name="entity"></param>
+        /// <param name="pos"></param>
+        /// <param name="facing"></param>
+        /// <param name="collideSpeed"></param>
+        /// <param name="isImpact"></param>
+        public override void OnEntityCollide(
+            IWorldAccessor world,
+            Entity entity,
+            BlockPos pos,
+            BlockFacing facing,
+            Vec3d collideSpeed,
+            bool isImpact
+        )
+        {
+            // если это клиент, то не надо 
+            if (world.Side == EnumAppSide.Client)
+                return;
+
+            // энтити не живой и не создание? выходим
+            if (!entity.Alive || !entity.IsCreature)
+                return;
+
+            // получаем блокэнтити этого блока
+            var blockentity = (BlockEntityEHeater)world.BlockAccessor.GetBlockEntity(pos);
+
+            // если блокэнтити не найден, выходим
+            if (blockentity == null)
+                return;
+
+            // передаем работу в наш обработчик урона
+            ElectricalProgressive.damageManager.DamageEntity(world, entity, pos, facing, blockentity.AllEparams, this);
+
+        }
+
 
         public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemstack, BlockSelection blockSel, ref string failureCode) {
             var selection = new Selection(blockSel);
@@ -64,9 +106,10 @@ namespace ElectricalProgressive.Content.Block.EHeater {
                 var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
                 var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
                 var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
+                var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
 
                 entity.Eparams = (
-                    new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated),
+                    new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
                     FacingHelper.Faces(facing).First().Index);
 
                 return true;
@@ -379,6 +422,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
             dsc.AppendLine(Lang.Get("Voltage") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "voltage", 0) + " " + Lang.Get("V"));
             dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
+            dsc.AppendLine(Lang.Get("WResistance") + ": " + ((MyMiniLib.GetAttributeBool(inSlot.Itemstack.Block, "isolatedEnvironment", false)) ? Lang.Get("Yes") : Lang.Get("No")));
         }
 
 

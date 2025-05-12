@@ -10,6 +10,7 @@ using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 using System.Collections.Concurrent;
 using Vintagestory.API.Config;
+using ElectricalProgressive.Content.Block.EMotor;
 
 namespace ElectricalProgressive.Content.Block.ELamp
 {
@@ -52,6 +53,45 @@ namespace ElectricalProgressive.Content.Block.ELamp
             return base.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
         }
 
+
+        /// <summary>
+        /// Кто-то или что-то коснулось блока и теперь получит урон
+        /// </summary>
+        /// <param name="world"></param>
+        /// <param name="entity"></param>
+        /// <param name="pos"></param>
+        /// <param name="facing"></param>
+        /// <param name="collideSpeed"></param>
+        /// <param name="isImpact"></param>
+        public override void OnEntityCollide(
+            IWorldAccessor world,
+            Entity entity,
+            BlockPos pos,
+            BlockFacing facing,
+            Vec3d collideSpeed,
+            bool isImpact
+        )
+        {
+            // если это клиент, то не надо 
+            if (world.Side == EnumAppSide.Client)
+                return;
+
+            // энтити не живой и не создание? выходим
+            if (!entity.Alive || !entity.IsCreature)
+                return;
+
+            // получаем блокэнтити этого блока
+            var blockentity = (BlockEntityELamp)world.BlockAccessor.GetBlockEntity(pos);
+
+            // если блокэнтити не найден, выходим
+            if (blockentity == null)
+                return;
+
+            // передаем работу в наш обработчик урона
+            ElectricalProgressive.damageManager.DamageEntity(world, entity, pos, facing, blockentity.AllEparams, this);
+
+        }
+
         public override bool DoPlaceBlock(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ItemStack byItemStack)
         {
             // если блок сгорел, то не ставим
@@ -74,9 +114,10 @@ namespace ElectricalProgressive.Content.Block.ELamp
                 var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
                 var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
                 var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
+                var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
 
                 entity.Eparams = (
-                    new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated),
+                    new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
                     FacingHelper.Faces(facing).First().Index);
 
                 return true;
@@ -528,6 +569,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
             dsc.AppendLine(Lang.Get("Voltage") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "voltage", 0) + " " + Lang.Get("V"));
             dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
             dsc.AppendLine(Lang.Get("max-light") + ": " + MyMiniLib.GetAttributeArrayInt(inSlot.Itemstack.Block, "HSV", null_HSV)[2]);
+            dsc.AppendLine(Lang.Get("WResistance") + ": " + ((MyMiniLib.GetAttributeBool(inSlot.Itemstack.Block, "isolatedEnvironment", false)) ? Lang.Get("Yes") : Lang.Get("No")));
         }
 
 

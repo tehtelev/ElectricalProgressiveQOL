@@ -25,56 +25,25 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     internal InventorySmelting inventory;
     private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
 
-    // Temperature before the half second tick
     public float prevStoveTemperature = 20;
-
-    // Max temperature of the stove
     const float maxTemperature = 1350f;
-
-    public int maxConsumption;              //максимальное потребление
-
-    // Current temperature of the furnace
+    public int maxConsumption;
     public float stoveTemperature = 20;
-
     public float inputStackCookingTime;
-
     GuiDialogBlockEntityEStove clientDialog;
     bool clientSidePrevBurning;
 
-
-
-
     #region Config
-
-    public virtual float HeatModifier
-    {
-        get { return 1f; }
-    }
-
-    // Resting temperature
-    public virtual int enviromentTemperature()
-    {
-        return 20;
-    }
-
-    // seconds it requires to melt the ore once beyond melting point
+    public virtual float HeatModifier => 1f;
+    public virtual int enviromentTemperature() => 20;
     public virtual float maxCookingTime()
     {
         return inputSlot.Itemstack == null ? 30f : inputSlot.Itemstack.Collectible.GetMeltingDuration(Api.World, inventory, inputSlot);
     }
-
     public override InventoryBase Inventory => inventory;
-
     public override string InventoryClassName => "blockestove";
-
-    public virtual string DialogTitle
-    {
-        get { return Lang.Get("BlockEStove"); }
-    }
-
+    public virtual string DialogTitle => Lang.Get("BlockEStove");
     #endregion
-
-
 
     public BlockEntityEStove()
     {
@@ -83,37 +52,23 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         meshes = new MeshData[6];
     }
 
-
-
-    //передает значения из Block в BEBehaviorElectricalProgressive
     public (EParams, int) Eparams
     {
         get => this.ElectricalProgressive?.Eparams ?? (new EParams(), 0);
         set => this.ElectricalProgressive!.Eparams = value;
     }
 
-    //передает значения из Block в BEBehaviorElectricalProgressive
     public EParams[] AllEparams
     {
         get => this.ElectricalProgressive?.AllEparams ?? new EParams[]
-                    {
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams()
-                    };
+        {
+            new EParams(), new EParams(), new EParams(), new EParams(), new EParams(), new EParams()
+        };
         set
         {
-            if (this.ElectricalProgressive != null)
-            {
-                this.ElectricalProgressive.AllEparams = value;
-            }
+            if (this.ElectricalProgressive != null) this.ElectricalProgressive.AllEparams = value;
         }
     }
-
-
 
     public override void Initialize(ICoreAPI api)
     {
@@ -121,29 +76,19 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         inventory.pos = Pos;
         inventory.LateInitialize("smelting-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
         if (api.Side == EnumAppSide.Server)
-        {
-            sapi = api as ICoreServerAPI;
-        }
+            sapi = (api as ICoreServerAPI)!;
         else
-        {
-            capi = api as ICoreClientAPI;
-        }
+            capi = (api as ICoreClientAPI)!;
         UpdateMeshes();
         MarkDirty(true);
         RegisterGameTickListener(OnBurnTick, 250);
         RegisterGameTickListener(On500msTick, 500);
-
         maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 150);
     }
 
-
-
     public void UpdateMesh(int slotid)
     {
-        if (Api == null || Api.Side == EnumAppSide.Server)
-        {
-            return;
-        }
+        if (Api == null || Api.Side == EnumAppSide.Server) return;
         if (slotid == 0) return;
         if (inventory[slotid].Empty)
         {
@@ -156,28 +101,21 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             TranslateMesh(meshData, slotid);
             meshes[slotid] = meshData;
         }
+        else
+        {
+            meshes[slotid] = null;
+        }
     }
 
     public void TranslateMesh(MeshData meshData, int slotId)
     {
         if (meshData == null) return;
-        float x = 0;
-        float y = 0;
-        float stdoffset = 0.2f;
+        float x = 0, y = 0, stdoffset = 0.2f;
         switch (slotId)
         {
-            case 1:
-                {
-                    y = 1.04f;
-                    break;
-                }
-            case 2:
-                {
-                    y = 1.04f;
-                    break;
-                }
+            case 1: y = 1.04f; break;
+            case 2: y = 1.04f; break;
         }
-
 
         if (!Inventory[slotId].Empty)
         {
@@ -190,56 +128,51 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             {
                 meshData.Scale(new Vec3f(0.5f, 0, 0.5f), 1.0f, 1.0f, 1.0f);
                 meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, 15 * GameMath.DEG2RAD, 0);
-
             }
         }
-
         meshData.Translate(x, y, 0.025f);
-
         int orientationRotate = 0;
         if (Block.Variant["horizontalorientation"] == "east") orientationRotate = 270;
         if (Block.Variant["horizontalorientation"] == "south") orientationRotate = 180;
         if (Block.Variant["horizontalorientation"] == "west") orientationRotate = 90;
         meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, orientationRotate * GameMath.DEG2RAD, 0);
-
     }
 
-    public Size2i AtlasSize
-    {
-        get
-        {
-            return capi.BlockTextureAtlas.Size;
-        }
-    }
+    public Size2i AtlasSize => capi.BlockTextureAtlas.Size;
 
     public TextureAtlasPosition this[string textureCode]
     {
         get
         {
-            Vintagestory.API.Common.Item item = nowTesselatingObj as Vintagestory.API.Common.Item;
-            Dictionary<string, CompositeTexture> dictionary = (Dictionary<string, CompositeTexture>)((item != null) ? item.Textures : (nowTesselatingObj as Vintagestory.API.Common.Block).Textures);
             AssetLocation assetLocation = null;
-            CompositeTexture compositeTexture;
-            if (dictionary.TryGetValue(textureCode, out compositeTexture))
+
+            if (nowTesselatingObj is Vintagestory.API.Common.Item item)
             {
-                assetLocation = compositeTexture.Baked.BakedName;
+                if (item.Textures.TryGetValue(textureCode, out var compositeTexture))
+                    assetLocation = compositeTexture.Baked.BakedName;
+                else if (item.Textures.TryGetValue("all", out compositeTexture))
+                    assetLocation = compositeTexture.Baked.BakedName;
             }
-            if (assetLocation == null && dictionary.TryGetValue("all", out compositeTexture))
+            else if (nowTesselatingObj is Vintagestory.API.Common.Block block)
             {
-                assetLocation = compositeTexture.Baked.BakedName;
+                if (block.Textures.TryGetValue(textureCode, out var compositeTexture))
+                    assetLocation = compositeTexture.Baked.BakedName;
+                else if (block.Textures.TryGetValue("all", out compositeTexture))
+                    assetLocation = compositeTexture.Baked.BakedName;
             }
+
+            if (assetLocation == null && nowTesselatingShape != null)
+            {
+                nowTesselatingShape.Textures.TryGetValue(textureCode, out assetLocation);
+            }
+
             if (assetLocation == null)
             {
-                Shape shape = nowTesselatingShape;
-                if (shape != null)
-                {
-                    shape.Textures.TryGetValue(textureCode, out assetLocation);
-                }
+                string domain = nowTesselatingObj.Code.Domain;
+                assetLocation = new AssetLocation(domain, "textures/item/" + textureCode);
+                Api.World.Logger.Warning("Texture {0} not found in item or shape textures, using fallback path: {1}", textureCode, assetLocation);
             }
-            if (assetLocation == null)
-            {
-                assetLocation = new AssetLocation(textureCode);
-            }
+
             return getOrCreateTexPos(assetLocation);
         }
     }
@@ -249,6 +182,13 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         TextureAtlasPosition textureAtlasPosition = capi.BlockTextureAtlas[texturePath];
         if (textureAtlasPosition == null)
         {
+            // берем только base текстуру (первую из кучи наваленных)
+            int pos = texturePath.Path.IndexOf("++");
+            if (pos >= 0)
+            {
+                texturePath.Path = texturePath.Path.Substring(0, pos);
+            }
+
             IAsset asset = capi.Assets.TryGet(texturePath.Clone().WithPathPrefixOnce("textures/").WithPathAppendixOnce(".png"));
             if (asset != null)
             {
@@ -257,10 +197,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             }
             else
             {
-                ILogger logger = capi.World.Logger;
-                string str = "For render in block ";
-                AssetLocation code = Block.Code;
-                logger.Warning(str + ((code != null) ? code.ToString() : null) + ", item {0} defined texture {1}, not no such texture found.", nowTesselatingObj.Code, texturePath);
+                Api.World.Logger.Warning("Texture not found at path: {0}", texturePath);
             }
         }
         return textureAtlasPosition;
@@ -277,10 +214,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         }
         else
         {
-            ICoreClientAPI coreClientAPI = Api as ICoreClientAPI;
             if (stack.Class == EnumItemClass.Block)
             {
-                meshData = coreClientAPI.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
+                meshData = capi.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
             }
             else
             {
@@ -288,12 +224,19 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
                 nowTesselatingShape = null;
                 if (stack.Item.Shape != null)
                 {
-                    nowTesselatingShape = coreClientAPI.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
-
+                    nowTesselatingShape = capi.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
                 }
-                coreClientAPI.Tesselator.TesselateItem(stack.Item, out meshData, this);
-                meshData.RenderPassesAndExtraBits.Fill((short)2);
-                coreClientAPI.TesselatorManager.ThreadDispose(); //обязательно?
+                try
+                {
+                    capi.Tesselator.TesselateItem(stack.Item, out meshData, this);
+                    meshData.RenderPassesAndExtraBits.Fill((short)2);
+                }
+                catch (Exception e)
+                {
+                    Api.World.Logger.Error("Failed to tessellate item {0}: {1}", stack.Item.Code, e.Message);
+                    meshData = null;
+                }
+                capi.TesselatorManager.ThreadDispose();
             }
         }
         return meshData;
@@ -303,10 +246,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     {
         for (int i = 0; i < meshes.Length; i++)
         {
-            if (meshes[i] != null)
-            {
-                mesher.AddMeshData(meshes[i]);
-            }
+            if (meshes[i] != null) mesher.AddMeshData(meshes[i]);
         }
         return false;
     }
@@ -320,241 +260,129 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         MarkDirty(true);
     }
 
-
-
     private void OnSlotModifid(int slotid)
     {
         Block = Api.World.BlockAccessor.GetBlock(Pos);
-
-        MarkDirty(Api.Side == EnumAppSide.Server); // Save useless triple-remesh by only letting the server decide when to redraw
-
-        if (Api is ICoreClientAPI && clientDialog != null)
-        {
-            SetDialogValues(clientDialog.Attributes);
-        }
-
+        MarkDirty(Api.Side == EnumAppSide.Server);
+        if (Api is ICoreClientAPI && clientDialog != null) SetDialogValues(clientDialog.Attributes);
         Api.World.BlockAccessor.GetChunkAtBlockPos(Pos).MarkModified();
     }
 
-
-
     public bool IsBurning;
 
-
-    public int getInventoryStackLimit()
-    {
-        return 64;
-    }
-
+    public int getInventoryStackLimit() => 64;
 
     private void OnBurnTick(float dt)
     {
-        // Only tick on the server and merely sync to client
-        if (Api is ICoreClientAPI)
-        {
-            //renderer.contentStackRenderer.OnUpdate(InputStackTemp);
-            return;
-        }
-
-        // Furnace is burning: Heat furnace
+        if (Api is ICoreClientAPI) return;
         if (IsBurning)
         {
-            //stoveTemperature = changeTemperature(stoveTemperature, GetBehavior<BEBehaviorEStove>().powerSetting * 13.25F, dt);
-            stoveTemperature = changeTemperature(stoveTemperature, GetBehavior<BEBehaviorEStove>().powerSetting*1.0F/maxConsumption * maxTemperature, dt); //так лучше
+            stoveTemperature = changeTemperature(stoveTemperature, GetBehavior<BEBehaviorEStove>().powerSetting * 1.0F / maxConsumption * maxTemperature, dt);
         }
-
-        // Ore follows furnace temperature
         if (canHeatInput())
-        {
             heatInput(dt);
-        }
         else
-        {
             inputStackCookingTime = 0;
-        }
-
         if (canHeatOutput())
-        {
             heatOutput(dt);
-        }
-
-
-        // Finished smelting? Turn to smelted item
         if (canSmeltInput() && inputStackCookingTime > maxCookingTime())
-        {
             smeltItems();
-        }
-
 
         if (GetBehavior<BEBehaviorEStove>()?.powerSetting > 0)
         {
-
             if (!IsBurning)
             {
                 IsBurning = true;
-
                 Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
                 MarkDirty(true);
             }
         }
-        else
+        else if (IsBurning)
         {
-            if (IsBurning)                     //готовка закончилась
-            {
-                IsBurning = false;
-
-                Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
-                MarkDirty(true);
-                Api.World.PlaySoundAt(new AssetLocation("electricalprogressiveqol:sounds/din_din_din"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F);
-            }
+            IsBurning = false;
+            Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
+            MarkDirty(true);
+            Api.World.PlaySoundAt(new AssetLocation("electricalprogressiveqol:sounds/din_din_din"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F);
         }
-
-
-        // Furnace is not burning: Cool down furnace and ore also turn of fire
-        if (!IsBurning)
-        {
-            stoveTemperature = changeTemperature(stoveTemperature, enviromentTemperature(), dt);
-        }
-
+        if (!IsBurning) stoveTemperature = changeTemperature(stoveTemperature, enviromentTemperature(), dt);
     }
 
-
-    // Sync to client every 500ms
     private void On500msTick(float dt)
     {
-        if (Api is ICoreServerAPI && (IsBurning || prevStoveTemperature != stoveTemperature))
-        {
-            MarkDirty();
-        }
-
+        if (Api is ICoreServerAPI && (IsBurning || prevStoveTemperature != stoveTemperature)) MarkDirty();
         prevStoveTemperature = stoveTemperature;
     }
-
 
     public float changeTemperature(float fromTemp, float toTemp, float dt)
     {
         float diff = Math.Abs(fromTemp - toTemp);
-
         dt = dt + dt * (diff / 28);
-
-
-        if (diff < dt)
-        {
-            return toTemp;
-        }
-
-        if (fromTemp > toTemp)
-        {
-            dt = -dt;
-        }
-
-        if (Math.Abs(fromTemp - toTemp) < 1)
-        {
-            return toTemp;
-        }
-
+        if (diff < dt) return toTemp;
+        if (fromTemp > toTemp) dt = -dt;
+        if (Math.Abs(fromTemp - toTemp) < 1) return toTemp;
         return fromTemp + dt;
     }
 
     public void heatInput(float dt)
     {
-        float oldTemp = InputStackTemp;
-        float nowTemp = oldTemp;
+        float oldTemp = InputStackTemp, nowTemp = oldTemp;
         float meltingPoint = inputSlot.Itemstack.Collectible.GetMeltingPoint(Api.World, inventory, inputSlot);
-
-        // Only Heat ore. Cooling happens already in the itemstack
         if (oldTemp < stoveTemperature)
         {
             float f = (1 + GameMath.Clamp((stoveTemperature - oldTemp) / 30, 0, 1.6f)) * dt;
             if (nowTemp >= meltingPoint) f /= 11;
-
             float newTemp = changeTemperature(oldTemp, stoveTemperature, f);
             int maxTemp = 0;
             if (inputStack.ItemAttributes != null)
             {
-                maxTemp = Math.Max(inputStack.Collectible.CombustibleProps == null ? 0 : inputStack.Collectible.CombustibleProps.MaxTemperature, inputStack.ItemAttributes["maxTemperature"] == null ? 0 : inputStack.ItemAttributes["maxTemperature"].AsInt());
+                maxTemp = Math.Max(inputStack.Collectible.CombustibleProps?.MaxTemperature ?? 0, inputStack.ItemAttributes["maxTemperature"]?.AsInt() ?? 0);
             }
             else
             {
-                maxTemp = inputStack.Collectible.CombustibleProps == null ? 0 : inputStack.Collectible.CombustibleProps.MaxTemperature;
+                maxTemp = inputStack.Collectible.CombustibleProps?.MaxTemperature ?? 0;
             }
-            if (maxTemp > 0)
-            {
-                newTemp = Math.Min(maxTemp, newTemp);
-            }
-
+            if (maxTemp > 0) newTemp = Math.Min(maxTemp, newTemp);
             if (oldTemp != newTemp)
             {
                 InputStackTemp = newTemp;
                 nowTemp = newTemp;
             }
         }
-
-        // Begin smelting when hot enough
         if (nowTemp >= meltingPoint)
         {
             float diff = nowTemp / meltingPoint;
             inputStackCookingTime += GameMath.Clamp((int)(diff), 1, 30) * dt;
         }
-        else
-        {
-            if (inputStackCookingTime > 0) inputStackCookingTime--;
-        }
+        else if (inputStackCookingTime > 0) inputStackCookingTime--;
     }
 
     public void heatOutput(float dt)
     {
-        //dt *= 20;
-
         float oldTemp = OutputStackTemp;
-
-        // Only Heat ore. Cooling happens already in the itemstack
         if (oldTemp < stoveTemperature)
         {
             float newTemp = changeTemperature(oldTemp, stoveTemperature, 2 * dt);
-            int maxTemp = Math.Max(outputStack.Collectible.CombustibleProps == null ? 0 : outputStack.Collectible.CombustibleProps.MaxTemperature, outputStack.ItemAttributes["maxTemperature"] == null ? 0 : outputStack.ItemAttributes["maxTemperature"].AsInt());
-            if (maxTemp > 0)
-            {
-                newTemp = Math.Min(maxTemp, newTemp);
-            }
-
-            if (oldTemp != newTemp)
-            {
-                OutputStackTemp = newTemp;
-            }
+            int maxTemp = Math.Max(outputStack.Collectible.CombustibleProps?.MaxTemperature ?? 0, outputStack.ItemAttributes["maxTemperature"]?.AsInt() ?? 0);
+            if (maxTemp > 0) newTemp = Math.Min(maxTemp, newTemp);
+            if (oldTemp != newTemp) OutputStackTemp = newTemp;
         }
     }
 
-
     public float InputStackTemp
     {
-        get
-        {
-            return GetTemp(inputStack);
-        }
-        set
-        {
-            SetTemp(inputStack, value);
-        }
+        get => GetTemp(inputStack);
+        set => SetTemp(inputStack, value);
     }
 
     public float OutputStackTemp
     {
-        get
-        {
-            return GetTemp(outputStack);
-        }
-        set
-        {
-            SetTemp(outputStack, value);
-        }
+        get => GetTemp(outputStack);
+        set => SetTemp(outputStack, value);
     }
-
 
     float GetTemp(ItemStack stack)
     {
         if (stack == null) return enviromentTemperature();
-
         if (inventory.CookingSlots.Length > 0)
         {
             bool haveStack = false;
@@ -568,13 +396,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
                     lowestTemp = haveStack ? Math.Min(lowestTemp, stackTemp) : stackTemp;
                     haveStack = true;
                 }
-
             }
-
             return lowestTemp;
-
         }
-
         return stack.Collectible.GetTemperature(Api.World, stack);
     }
 
@@ -585,22 +409,13 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         {
             for (int i = 0; i < inventory.CookingSlots.Length; i++)
             {
-                if (inventory.CookingSlots[i].Itemstack != null) inventory.CookingSlots[i].Itemstack.Collectible.SetTemperature(Api.World, inventory.CookingSlots[i].Itemstack, value);
+                if (inventory.CookingSlots[i].Itemstack != null)
+                    inventory.CookingSlots[i].Itemstack.Collectible.SetTemperature(Api.World, inventory.CookingSlots[i].Itemstack, value);
             }
         }
-        else
-        {
-            stack.Collectible.SetTemperature(Api.World, stack, value);
-        }
+        else stack.Collectible.SetTemperature(Api.World, stack, value);
     }
 
-    /// <summary>
-    /// Отвечает за тепло отдаваемое в окружающую среду
-    /// </summary>
-    /// <param name="world"></param>
-    /// <param name="heatSourcePos"></param>
-    /// <param name="heatReceiverPos"></param>
-    /// <returns></returns>
     public float GetHeatStrength(IWorldAccessor world, BlockPos heatSourcePos, BlockPos heatReceiverPos)
     {
         return IsBurning ? MyMiniLib.GetAttributeFloat(this.Block, "maxHeat", 0.0F) : 0;
@@ -608,25 +423,19 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
     public bool canHeatInput()
     {
-        return
-            canSmeltInput() || inputStack != null && inputStack.ItemAttributes != null && (inputStack.ItemAttributes["allowHeating"] != null && inputStack.ItemAttributes["allowHeating"].AsBool())
-        ;
+        return canSmeltInput() || (inputStack != null && inputStack.ItemAttributes?["allowHeating"]?.AsBool() == true);
     }
 
     public bool canHeatOutput()
     {
-        return outputStack?.ItemAttributes?["allowHeating"] != null && outputStack.ItemAttributes["allowHeating"].AsBool();
+        return outputStack?.ItemAttributes?["allowHeating"]?.AsBool() == true;
     }
 
     public bool canSmeltInput()
     {
-        return
-            inputStack != null
-            && inputStack.Collectible.CanSmelt(Api.World, inventory, inputSlot.Itemstack, outputSlot.Itemstack)
-            && (inputStack.Collectible.CombustibleProps == null || !inputStack.Collectible.CombustibleProps.RequiresContainer)
-        ;
+        return inputStack != null && inputStack.Collectible.CanSmelt(Api.World, inventory, inputSlot.Itemstack, outputSlot.Itemstack) &&
+               (inputStack.Collectible.CombustibleProps == null || !inputStack.Collectible.CombustibleProps.RequiresContainer);
     }
-
 
     public void smeltItems()
     {
@@ -637,95 +446,55 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         inputSlot.MarkDirty();
     }
 
-
-    #region Events
-
     public void OnBlockInteract(IPlayer byPlayer, bool isOwner, BlockSelection blockSel)
     {
-        if (Api.Side == EnumAppSide.Client)
+        if (Api.Side == EnumAppSide.Client) return;
+        byte[] data;
+        using (MemoryStream ms = new MemoryStream())
         {
-
+            BinaryWriter writer = new BinaryWriter(ms);
+            writer.Write("BlockEntityStove");
+            writer.Write(DialogTitle);
+            TreeAttribute tree = new TreeAttribute();
+            inventory.ToTreeAttributes(tree);
+            tree.ToBytes(writer);
+            data = ms.ToArray();
         }
-        else
-        {
-            byte[] data;
-
-            using (MemoryStream ms = new MemoryStream())
-            {
-                BinaryWriter writer = new BinaryWriter(ms);
-                writer.Write("BlockEntityStove");
-                writer.Write(DialogTitle);
-                TreeAttribute tree = new TreeAttribute();
-                inventory.ToTreeAttributes(tree);
-                tree.ToBytes(writer);
-                data = ms.ToArray();
-            }
-
-            ((ICoreServerAPI)Api).Network.SendBlockEntityPacket(
-                (IServerPlayer)byPlayer,
-                blockSel.Position,
-                (int)EnumBlockStovePacket.OpenGUI,
-                data
-            );
-
-            byPlayer.InventoryManager.OpenInventory(inventory);
-        }
+        ((ICoreServerAPI)Api).Network.SendBlockEntityPacket((IServerPlayer)byPlayer, blockSel.Position, (int)EnumBlockStovePacket.OpenGUI, data);
+        byPlayer.InventoryManager.OpenInventory(inventory);
     }
-
 
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
     {
         base.FromTreeAttributes(tree, worldForResolving);
         Inventory.FromTreeAttributes(tree.GetTreeAttribute("inventory"));
-
-        if (Api != null)
-        {
-            Inventory.AfterBlocksLoaded(Api.World);
-        }
-
-
+        if (Api != null) Inventory.AfterBlocksLoaded(Api.World);
         stoveTemperature = tree.GetFloat("stoveTemperature");
         inputStackCookingTime = tree.GetFloat("oreCookingTime");
-
         if (Api != null)
         {
-            if (Api.Side == EnumAppSide.Client)
-            {
-                if (clientDialog != null) SetDialogValues(clientDialog.Attributes);
-            }
-
-
+            if (Api.Side == EnumAppSide.Client && clientDialog != null) SetDialogValues(clientDialog.Attributes);
             if (Api.Side == EnumAppSide.Client && clientSidePrevBurning != IsBurning)
             {
                 clientSidePrevBurning = IsBurning;
                 MarkDirty(true);
             }
             inventory.AfterBlocksLoaded(Api.World);
-            if (Api.Side == EnumAppSide.Client)
-            {
-                UpdateMeshes();
-            }
+            if (Api.Side == EnumAppSide.Client) UpdateMeshes();
         }
-
     }
 
     void SetDialogValues(ITreeAttribute dialogTree)
     {
         dialogTree.SetFloat("stoveTemperature", stoveTemperature);
         dialogTree.SetFloat("oreCookingTime", inputStackCookingTime);
-
         if (inputSlot.Itemstack != null)
         {
             float meltingDuration = inputSlot.Itemstack.Collectible.GetMeltingDuration(Api.World, inventory, inputSlot);
-
             dialogTree.SetFloat("oreTemperature", InputStackTemp);
             dialogTree.SetFloat("maxOreCookingTime", meltingDuration);
         }
-        else
-        {
-            dialogTree.RemoveAttribute("oreTemperature");
-        }
-
+        else dialogTree.RemoveAttribute("oreTemperature");
         dialogTree.SetString("outputText", inventory.GetOutputText());
         dialogTree.SetInt("haveCookingContainer", inventory.HaveCookingContainer ? 1 : 0);
         dialogTree.SetInt("quantityCookingSlots", inventory.CookingSlots.Length);
@@ -737,7 +506,6 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         ITreeAttribute invtree = new TreeAttribute();
         Inventory.ToTreeAttributes(invtree);
         tree["inventory"] = invtree;
-
         tree.SetFloat("stoveTemperature", stoveTemperature);
         tree.SetFloat("oreCookingTime", inputStackCookingTime);
     }
@@ -745,50 +513,35 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     public override void OnBlockPlaced(ItemStack? byItemStack = null)
     {
         base.OnBlockPlaced(byItemStack);
-
         var electricity = ElectricalProgressive;
-
         if (electricity == null || byItemStack == null)
             return;
+        electricity.Connection = Facing.DownAll;
+        var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
+        var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
+        var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
+        var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
 
-        if (electricity != null)
-        {
-            electricity.Connection = Facing.DownAll;
-
-            //задаем параметры блока/проводника
-            var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
-            var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
-            var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
-
-            this.ElectricalProgressive!.Eparams = (
-                new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated),
-                FacingHelper.Faces(Facing.DownAll).First().Index);
-        }
+        this.ElectricalProgressive!.Eparams =
+            (new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
+            FacingHelper.Faces(Facing.DownAll).First().Index);
     }
 
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
-
         if (clientDialog != null)
         {
             clientDialog.TryClose();
-            if (clientDialog != null)
-            {
-                clientDialog.Dispose();
-                clientDialog = null;
-            }
+            clientDialog?.Dispose();
+            clientDialog = null;
         }
     }
 
     public override void OnBlockBroken(IPlayer? byPlayer = null)
     {
         base.OnBlockBroken(byPlayer);
-
-        if (inputStack != null)
-        {
-            Api.World.SpawnItemEntity(inputStack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
-        }
+        if (inputStack != null) Api.World.SpawnItemEntity(inputStack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
     }
 
     public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
@@ -796,19 +549,12 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         if (packetid < 1000)
         {
             Inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
-
-            // Tell server to save this chunk to disk again
             Api.World.BlockAccessor.GetChunkAtBlockPos(Pos.X, Pos.Y, Pos.Z).MarkModified();
-
             return;
         }
-
         if (packetid == (int)EnumBlockStovePacket.CloseGUI)
         {
-            if (player.InventoryManager != null)
-            {
-                player.InventoryManager.CloseInventory(Inventory);
-            }
+            if (player.InventoryManager != null) player.InventoryManager.CloseInventory(Inventory);
         }
     }
 
@@ -819,20 +565,15 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             using (MemoryStream ms = new MemoryStream(data))
             {
                 BinaryReader reader = new BinaryReader(ms);
-
                 string dialogClassName = reader.ReadString();
                 string dialogTitle = reader.ReadString();
-
                 TreeAttribute tree = new TreeAttribute();
                 tree.FromBytes(reader);
                 Inventory.FromTreeAttributes(tree);
                 Inventory.ResolveBlocksOrItems();
-
                 IClientWorldAccessor clientWorld = (IClientWorldAccessor)Api.World;
-
                 SyncedTreeAttribute dtree = new SyncedTreeAttribute();
                 SetDialogValues(dtree);
-
                 if (clientDialog != null)
                 {
                     clientDialog.TryClose();
@@ -843,97 +584,54 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
                     clientDialog = new GuiDialogBlockEntityEStove(dialogTitle, Inventory, Pos, dtree, Api as ICoreClientAPI);
                     clientDialog.OnClosed += () => { clientDialog.Dispose(); clientDialog = null; };
                     clientDialog.TryOpen();
-
                 }
             }
         }
-
         if (packetid == (int)EnumBlockEntityPacketId.Close)
         {
-            IClientWorldAccessor clientWorld = (IClientWorldAccessor)Api.World;
-            clientWorld.Player.InventoryManager.CloseInventory(Inventory);
+            ((IClientWorldAccessor)Api.World).Player.InventoryManager.CloseInventory(Inventory);
         }
     }
 
-    #endregion
-
-    #region Helper getters
-
-
-    public ItemSlot inputSlot
-    {
-        get { return inventory[1]; }
-    }
-
-    public ItemSlot outputSlot
-    {
-        get { return inventory[2]; }
-    }
-
-    public ItemSlot[] otherCookingSlots
-    {
-        get { return inventory.CookingSlots; }
-    }
-
+    public ItemSlot inputSlot => inventory[1];
+    public ItemSlot outputSlot => inventory[2];
+    public ItemSlot[] otherCookingSlots => inventory.CookingSlots;
     public ItemStack inputStack
     {
-        get { return inventory[1].Itemstack; }
+        get => inventory[1].Itemstack;
         set { inventory[1].Itemstack = value; inventory[1].MarkDirty(); }
     }
-
     public ItemStack outputStack
     {
-        get { return inventory[2].Itemstack; }
+        get => inventory[2].Itemstack;
         set { inventory[2].Itemstack = value; inventory[2].MarkDirty(); }
     }
 
-
-    public CombustibleProperties fuelCombustibleOpts
-    {
-        get { return getCombustibleOpts(0); }
-    }
-
+    public CombustibleProperties fuelCombustibleOpts => getCombustibleOpts(0);
     public CombustibleProperties getCombustibleOpts(int slotid)
     {
         ItemSlot slot = inventory[slotid];
-        if (slot.Itemstack == null) return null;
-        return slot.Itemstack.Collectible.CombustibleProps;
+        return slot.Itemstack?.Collectible.CombustibleProps;
     }
-
-    #endregion
-
 
     public override void OnStoreCollectibleMappings(Dictionary<int, AssetLocation> blockIdMapping, Dictionary<int, AssetLocation> itemIdMapping)
     {
         foreach (var slot in Inventory)
         {
             if (slot.Itemstack == null) continue;
-
             if (slot.Itemstack.Class == EnumItemClass.Item)
-            {
                 itemIdMapping[slot.Itemstack.Item.Id] = slot.Itemstack.Item.Code;
-            }
             else
-            {
                 blockIdMapping[slot.Itemstack.Block.BlockId] = slot.Itemstack.Block.Code;
-            }
-
             slot.Itemstack.Collectible.OnStoreCollectibleMappings(Api.World, slot, blockIdMapping, itemIdMapping);
         }
-
         foreach (ItemSlot slot in inventory.CookingSlots)
         {
             if (slot.Itemstack == null) continue;
-
             if (slot.Itemstack.Class == EnumItemClass.Item)
-            {
                 itemIdMapping[slot.Itemstack.Item.Id] = slot.Itemstack.Item.Code;
-            }
             else
-            {
                 blockIdMapping[slot.Itemstack.Block.BlockId] = slot.Itemstack.Block.Code;
-            }
-
             slot.Itemstack.Collectible.OnStoreCollectibleMappings(Api.World, slot, blockIdMapping, itemIdMapping);
         }
     }
@@ -944,26 +642,17 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         {
             if (slot.Itemstack == null) continue;
             if (!slot.Itemstack.FixMapping(oldBlockIdMapping, oldItemIdMapping, worldForResolve))
-            {
                 slot.Itemstack = null;
-            }
             else
-            {
                 slot.Itemstack.Collectible.OnLoadCollectibleMappings(worldForResolve, slot, oldBlockIdMapping, oldItemIdMapping);
-            }
         }
-
         foreach (ItemSlot slot in inventory.CookingSlots)
         {
             if (slot.Itemstack == null) continue;
             if (!slot.Itemstack.FixMapping(oldBlockIdMapping, oldItemIdMapping, Api.World))
-            {
                 slot.Itemstack = null;
-            }
             else
-            {
                 slot.Itemstack.Collectible.OnLoadCollectibleMappings(worldForResolve, slot, oldBlockIdMapping, oldItemIdMapping);
-            }
         }
     }
 
@@ -972,19 +661,12 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         base.GetBlockInfo(forPlayer, stringBuilder);
         if (inputStack != null)
         {
-            var temp = (int)inputStack.Collectible.GetTemperature(Api.World, inputStack);  //беда с отобраением температуры, иногда забывает
+            var temp = (int)inputStack.Collectible.GetTemperature(Api.World, inputStack);
             stringBuilder.AppendLine();
             if (temp <= 25)
-            {
-                stringBuilder.AppendLine(Lang.Get("Contents") + " " + inputStack.StackSize + "×" +
-                                         inputStack.GetName() +
-                                         "\n└ " + Lang.Get("Temperature") + " " + Lang.Get("Cold"));
-            }
+                stringBuilder.AppendLine(Lang.Get("Contents") + " " + inputStack.StackSize + "×" + inputStack.GetName() + "\n└ " + Lang.Get("Temperature") + " " + Lang.Get("Cold"));
             else
-                stringBuilder.AppendLine(Lang.Get("Contents") + inputStack.StackSize + "×" +
-                                         inputStack.GetName() +
-                                         "\n└ " + Lang.Get("Temperature") + " " + temp + " °C");
-
+                stringBuilder.AppendLine(Lang.Get("Contents") + inputStack.StackSize + "×" + inputStack.GetName() + "\n└ " + Lang.Get("Temperature") + " " + temp + " °C");
         }
     }
 }

@@ -1,4 +1,4 @@
-{
+﻿{
   "code": "elamp_small",
   "class": "BlockESmallLamp",
   "entityClass": "BlockEntityELamp",
@@ -14,7 +14,8 @@
     "maxConsumption": 4, //максимальное потребление
     "voltage": 32,
     "maxCurrent": 20.0,
-    "isolated": false,
+    "isolated": true,
+    "isolatedEnvironment": false,
     "handbook": {
       "groupBy": [ "elamp_small-*" ],
       "extraSections": [
