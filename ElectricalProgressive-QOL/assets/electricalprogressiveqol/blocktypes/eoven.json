@@ -100,9 +100,33 @@
   "sideopaque": {
     "all": false
   },
-  "sidesolid": {
-    "all": false
+  "sidesolidByType": {
+    "*-north": {
+      "all": false,
+      "east": true,
+      "west": true,
+      "north": true
+    },
+    "*-east": {
+      "all": false,
+      "east": true,
+      "south": true,
+      "north": true
+    },
+    "*-south": {
+      "all": false,
+      "east": true,
+      "west": true,
+      "south": true
+    },
+    "*-west": {
+      "all": false,
+      "south": true,
+      "west": true,
+      "north": true
+    }
   },
+
   "heldTpIdleAnimation": "holdbothhandslarge",
   "heldRightReadyAnimation": "heldblockready",
   "heldTpUseAnimation": "twohandplaceblock",

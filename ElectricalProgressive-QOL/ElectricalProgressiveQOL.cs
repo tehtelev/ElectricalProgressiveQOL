@@ -15,14 +15,14 @@ using Vintagestory.API.Common.Entities;
 
 
 [assembly: ModDependency("game", "1.20.0")]
-[assembly: ModDependency("electricalprogressivecore", "1.0.0")]
-[assembly: ModDependency("electricalprogressivebasics", "1.0.0")]
+[assembly: ModDependency("electricalprogressivecore", "1.0.1")]
+[assembly: ModDependency("electricalprogressivebasics", "1.0.1")]
 [assembly: ModInfo(
     "Electrical Progressive: QoL",
     "electricalprogressiveqol",
     Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
     Description = "Brings electricity into the game!",
-    Version = "1.0.0",
+    Version = "1.0.1",
     Authors = new[] {
         "Tehtelev",
         "Kotl"
