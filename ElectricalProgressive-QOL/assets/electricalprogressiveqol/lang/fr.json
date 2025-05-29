@@ -67,7 +67,8 @@
   "block-elamp_small-9000-burned": "Petite lampe électrique (brûlée)",
 
   "item-edrill": "Foreuse électrique",
-  "item-echisel": "Ciseau électrique",
+  "item-echisel": "Perceuse-Poinçonneuse Électrique",
+
   "item-edrilltip": "Embout de foreuse",
   "item-eaxe": "Hache électrique",
 
@@ -109,7 +110,7 @@
   "item-handbooktext-edrill": "L'extraction minière passe à un niveau supérieur. Fonctionne en deux modes : 1x1 et 1x3.<br>Cesse de fonctionner une fois déchargée. N'oubliez pas de la recharger !",
 
   "item-handbooktitle-echisel": "Utilisation",
-  "item-handbooktext-echisel": "Un ciseau sur batterie ! Non utilisé dans les recettes.<br>Cesse de fonctionner une fois déchargé. N'oubliez pas de le recharger !",
+  "item-handbooktext-echisel": "Fonctionne comme un burin sur batterie ! Pas besoin de marteau dans la main gauche. Non utilisé dans les recettes.<br>S'arrête lorsque la batterie est vide. N'oubliez pas de le recharger !",
 
   "item-handbooktitle-edrilltip": "Utilisation",
   "item-handbooktext-edrilltip": "Composant principal pour la foreuse électrique.",

@@ -17,6 +17,7 @@ namespace ElectricalProgressive.Content.Block.ECharger;
 public class BlockEntityECharger : BlockEntity, ITexPositionSource
 {
     public InventoryGeneric inventory;
+    private int consume;
     MeshData[] toolMeshes = new MeshData[1];
 
     public Size2i AtlasSize => ((ICoreClientAPI)Api).BlockTextureAtlas.Size;
@@ -73,7 +74,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
                 return ((ICoreClientAPI)Api).BlockTextureAtlas.Positions[tt.TextureSubIdsByCode.First().Value];
             }
 
-            return null;
+            return null!;
         }
     }
 
@@ -82,6 +83,8 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     public BlockEntityECharger()
     {
         inventory = new InventoryGeneric(1, "charger", null, null, null);
+
+        consume = MyMiniLib.GetAttributeInt(this.Block, "consume", 20);
     }
 
     public override void Initialize(ICoreAPI api)
@@ -103,24 +106,26 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     //проверка, нужно ли заряжать
     private void OnTick(float dt)
     {
-        if (inventory[0]?.Itemstack?.Item is IEnergyStorageItem)
+        var stack = inventory[0]?.Itemstack;
+
+        if (stack?.Item is IEnergyStorageItem)
         {
-            int storageEnergyItem = inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
-            int maxStorageItem = MyMiniLib.GetAttributeInt(inventory[0].Itemstack.Item, "maxcapacity");
-            if (storageEnergyItem < maxStorageItem && GetBehavior<BEBehaviorECharger>().powerSetting > 0)
+            int energy = stack.Attributes.GetInt("durability") * consume; //текущая энергия
+            int maxEnergy = stack.Collectible.GetMaxDurability(stack) * consume;       //максимальная энергия
+
+            if (energy < maxEnergy && GetBehavior<BEBehaviorECharger>().powerSetting > 0)
             {
-                if (!this.Block.Code.ToString().Contains("enabled"))     //чтобы лишний раз не обновлять модель
+                if (this.Block.Variant["state"] != "enabled")     //чтобы лишний раз не обновлять модель
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
                     MarkDirty(true);
                 }
 
-
-                ((IEnergyStorageItem)inventory[0].Itemstack.Item).receiveEnergy(inventory[0].Itemstack, GetBehavior<BEBehaviorECharger>().powerSetting);
+                ((IEnergyStorageItem)stack.Item).receiveEnergy(stack, GetBehavior<BEBehaviorECharger>().powerSetting);
             }
             else
             {
-                if (!this.Block.Code.ToString().Contains("disabled"))    //чтобы лишний раз не обновлять модель
+                if (this.Block.Variant["state"] != "disabled")   //чтобы лишний раз не обновлять модель
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
                     Api.World.PlaySoundAt(new AssetLocation("electricalprogressiveqol:sounds/din_din_din"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F); //звоним если зарядилось таки
@@ -128,23 +133,24 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
                 }
             }
         }
-        else if (inventory[0]?.Itemstack?.Block is IEnergyStorageItem)
+        else if (stack?.Block is IEnergyStorageItem)
         {
-            int storageEnergyBlock = inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
-            int maxStorageBlock = MyMiniLib.GetAttributeInt(inventory[0].Itemstack.Block, "maxcapacity");
-            if (storageEnergyBlock < maxStorageBlock && GetBehavior<BEBehaviorECharger>().powerSetting > 0)
+            int energy = stack.Attributes.GetInt("durability") * consume; //текущая энергия
+            int maxEnergy = stack.Collectible.GetMaxDurability(stack) * consume;       //максимальная энергия
+
+            if (energy < maxEnergy && GetBehavior<BEBehaviorECharger>().powerSetting > 0)
             {
-                if (!this.Block.Code.ToString().Contains("enabled"))    //чтобы лишний раз не обновлять модель
+                if (this.Block.Variant["state"] != "enabled")     //чтобы лишний раз не обновлять модель
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
                     MarkDirty(true);
                 }
 
-                ((IEnergyStorageItem)inventory[0].Itemstack.Block).receiveEnergy(inventory[0].Itemstack, (int)GetBehavior<BEBehaviorECharger>().powerSetting);
+                ((IEnergyStorageItem)stack.Item).receiveEnergy(stack, GetBehavior<BEBehaviorECharger>().powerSetting);
             }
             else
             {
-                if (!this.Block.Code.ToString().Contains("disabled"))   //чтобы лишний раз не обновлять модель
+                if (this.Block.Variant["state"] != "disabled")   //чтобы лишний раз не обновлять модель
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
                     Api.World.PlaySoundAt(new AssetLocation("electricalprogressiveqol:sounds/din_din_din"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F); //звоним если зарядилось таки
@@ -152,44 +158,52 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
                 }
             }
         }
+
         MarkDirty();
     }
 
+
+    /// <summary>
+    /// Загружает меши инструментов 
+    /// </summary>
     void loadToolMeshes()
     {
-        Vec3f origin = new Vec3f(0.5f, 0.5f, 0.5f);
+        toolMeshes[0] = null; //должна быть сброшена сразу же 
 
-        ICoreClientAPI clientApi = (ICoreClientAPI)Api;
-
-        toolMeshes[0] = null;
         IItemStack stack = inventory[0].Itemstack;
-        if (stack == null) return;
+        if (stack == null) //пустой стак нам не интересен
+            return;
 
         tmpItem = stack.Collectible;
 
-        float scaleX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleX", 0.5F);
-        float scaleY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleY", 0.5F);
-        float scaleZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleZ", 0.5F);
-        float translateX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateX", 0F);
-        float translateY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateY", 0.4F);
-        float translateZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateZ", 0F);
-        float rotateX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateX", 0F);
-        float rotateY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateY", 0F);
-        float rotateZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateZ", 0F);
+        Vec3f origin = new Vec3f(0.5f, 0.5f, 0.5f);
+        ICoreClientAPI clientApi = (ICoreClientAPI)Api;
+
+        
+
+
 
         if (stack.Class == EnumItemClass.Item)
-        {
             clientApi.Tesselator.TesselateItem(stack.Item, out toolMeshes[0], this);
-        }
         else
-        {
             clientApi.Tesselator.TesselateBlock(stack.Block, out toolMeshes[0]);
-        }
+
         clientApi.TesselatorManager.ThreadDispose(); //обязательно
 
 
         if (stack.Class == EnumItemClass.Item)
         {
+            float scaleX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleX", 0.5F);
+            float scaleY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleY", 0.5F);
+            float scaleZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleZ", 0.5F);
+            float translateX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateX", 0F);
+            float translateY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateY", 0.4F);
+            float translateZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateZ", 0F);
+            float rotateX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateX", 0F);
+            float rotateY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateY", 0F);
+            float rotateZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateZ", 0F);
+
+
             origin.Y = 1f / 30f;
             toolMeshes[0].Scale(origin, scaleX, scaleY, scaleZ);
             toolMeshes[0].Translate(translateX, translateY, translateZ);
@@ -197,7 +211,6 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         }
         else
         {
-
             toolMeshes[0].Scale(origin, 0.3f, 0.3f, 0.3f);
         }
     }
@@ -239,7 +252,9 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     void didInteract(IPlayer player)
     {
         Api.World.PlaySoundAt(new AssetLocation("sounds/player/buildhigh"), Pos.X, Pos.Y, Pos.Z, player, false);
-        if (Api is ICoreClientAPI) loadToolMeshes();
+        if (Api is ICoreClientAPI)
+            loadToolMeshes();
+
         MarkDirty(true);
     }
 
@@ -278,7 +293,8 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     {
         base.OnBlockBroken(byPlayer);
         ItemStack stack = inventory[0].Itemstack;
-        if (stack != null) Api.World.SpawnItemEntity(stack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
+        if (stack != null)
+            Api.World.SpawnItemEntity(stack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
     }
 
     public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tesselator)
@@ -286,7 +302,8 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         ICoreClientAPI clientApi = (ICoreClientAPI)Api;
         Vintagestory.API.Common.Block block = Api.World.BlockAccessor.GetBlock(Pos);
         MeshData mesh = clientApi.TesselatorManager.GetDefaultBlockMesh(block);
-        if (mesh == null) return true;
+        if (mesh == null)
+            return true;
 
         mesher.AddMeshData(mesh);
 
@@ -326,7 +343,8 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     {
         foreach (var slot in inventory)
         {
-            if (slot.Itemstack == null) continue;
+            if (slot.Itemstack == null)
+                continue;
 
             if (slot.Itemstack.Class == EnumItemClass.Item)
             {
@@ -343,7 +361,8 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     {
         foreach (var slot in inventory)
         {
-            if (slot.Itemstack == null) continue;
+            if (slot.Itemstack == null)
+                continue;
             if (!slot.Itemstack.FixMapping(oldBlockIdMapping, oldItemIdMapping, worldForResolve))
             {
                 slot.Itemstack = null;
@@ -351,26 +370,36 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         }
     }
 
+
+    /// <summary>
+    /// Информация о блоке
+    /// </summary>
+    /// <param name="forPlayer"></param>
+    /// <param name="stringBuilder"></param>
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
         base.GetBlockInfo(forPlayer, stringBuilder);
-        if (inventory[0]?.Itemstack?.Item is IEnergyStorageItem) //предмет
+
+        var stack = inventory[0]?.Itemstack;
+        if (stack?.Item is IEnergyStorageItem) //предмет
         {
-            var storageEnergyItem = inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
-            var maxStorageItem = MyMiniLib.GetAttributeInt(inventory[0].Itemstack.Item, "maxcapacity");
+            int energy = stack.Attributes.GetInt("durability") * consume;
+            int maxEnergy = stack.Collectible.GetMaxDurability(stack) * consume;
+
             stringBuilder.AppendLine();
-            stringBuilder.AppendLine(inventory[0].Itemstack.GetName());
-            stringBuilder.AppendLine(StringHelper.Progressbar(storageEnergyItem * 100.0f / maxStorageItem));
-            stringBuilder.AppendLine("└ " + Lang.Get("Storage") + ": " + storageEnergyItem + "/" + maxStorageItem + " " + Lang.Get("J"));
+            stringBuilder.AppendLine(stack.GetName());
+            stringBuilder.AppendLine(StringHelper.Progressbar(energy * 100.0F / maxEnergy));
+            stringBuilder.AppendLine("└ " + Lang.Get("Storage") + ": " + energy + "/" + maxEnergy + " " + Lang.Get("J"));
         }
-        else if (inventory[0]?.Itemstack?.Block is IEnergyStorageItem) //блок
+        else if (stack?.Block is IEnergyStorageItem) //блок
         {
-            var storageEnergyBlock = inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
-            var maxStorageBlock = MyMiniLib.GetAttributeInt(inventory[0].Itemstack.Block, "maxcapacity");
+            int energy = stack.Attributes.GetInt("durability") * consume;
+            int maxEnergy = stack.Collectible.GetMaxDurability(stack) * consume;
+
             stringBuilder.AppendLine();
-            stringBuilder.AppendLine(inventory[0].Itemstack.GetName());
-            stringBuilder.AppendLine(StringHelper.Progressbar(storageEnergyBlock * 100.0f / maxStorageBlock));
-            stringBuilder.AppendLine("└ " + Lang.Get("Storage") + ": " + storageEnergyBlock + "/" + maxStorageBlock + " " + Lang.Get("J"));
+            stringBuilder.AppendLine(stack.GetName());
+            stringBuilder.AppendLine(StringHelper.Progressbar(energy * 100.0F / maxEnergy));
+            stringBuilder.AppendLine("└ " + Lang.Get("Storage") + ": " + energy + "/" + maxEnergy + " " + Lang.Get("J"));
         }
     }
 

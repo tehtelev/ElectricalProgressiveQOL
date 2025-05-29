@@ -15,6 +15,7 @@
 
   "attributes": {
     "maxConsumption": 200,
+    "consume": 20,
     "voltage": 128,
     "maxCurrent": 20.0,
     "isolatedEnvironment": false,

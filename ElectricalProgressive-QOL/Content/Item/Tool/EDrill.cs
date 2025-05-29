@@ -16,7 +16,6 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
 {
     public SkillItem[] toolModes;
     int consume;
-    int maxcapacity;
 
 
 
@@ -25,7 +24,6 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
         base.OnLoaded(api);
 
         consume = MyMiniLib.GetAttributeInt(this, "consume", 20);
-        maxcapacity = MyMiniLib.GetAttributeInt(this, "maxcapacity", 20000);
 
 
         //режимы дрели
@@ -97,17 +95,18 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
     /// <param name="amount"></param>
     public override void DamageItem(IWorldAccessor world, Entity byEntity, ItemSlot itemslot, int amount)
     {
-        int energy = itemslot.Itemstack.Attributes.GetInt("electricalprogressive:energy");
-        if (energy >= consume * amount)
+        int durability = itemslot.Itemstack.Attributes.GetInt("durability");
+        if (durability > amount)
         {
-            energy -= consume * amount;
-            itemslot.Itemstack.Item.SetDurability(itemslot.Itemstack, Math.Max(1, energy / consume));
-            itemslot.Itemstack.Attributes.SetInt("electricalprogressive:energy", energy);
+            durability -= amount;
+            itemslot.Itemstack.Attributes.SetInt("durability", durability);
         }
         else
         {
-            itemslot.Itemstack.Item.SetDurability(itemslot.Itemstack, 1);
+            durability = 1;
+            itemslot.Itemstack.Attributes.SetInt("durability", durability);
         }
+
         itemslot.MarkDirty();
     }
     
@@ -121,8 +120,13 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
     public override void GetHeldItemInfo(ItemSlot inSlot, StringBuilder dsc, IWorldAccessor world, bool withDebugInfo)
     {
         base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
-        dsc.AppendLine(inSlot.Itemstack.Attributes.GetInt("electricalprogressive:energy") + "/" + maxcapacity + " " + Lang.Get("J"));
+
+        int energy = inSlot.Itemstack.Attributes.GetInt("durability") * consume; //текущая энергия
+        int maxEnergy = inSlot.Itemstack.Collectible.GetMaxDurability(inSlot.Itemstack) * consume;       //максимальная энергия
+        dsc.AppendLine(energy + "/" + maxEnergy + " " + Lang.Get("J"));
     }
+
+
 
     /// <summary>
     /// Зарядка
@@ -132,9 +136,14 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
     /// <returns></returns>
     public int receiveEnergy(ItemStack itemstack, int maxReceive)
     {
-        int received = Math.Min(maxcapacity - itemstack.Attributes.GetInt("electricalprogressive:energy"), maxReceive);
-        itemstack.Attributes.SetInt("electricalprogressive:energy", itemstack.Attributes.GetInt("electricalprogressive:energy") + received);
-        int durab = Math.Max(1, itemstack.Attributes.GetInt("electricalprogressive:energy") / consume);
+        int energy = itemstack.Attributes.GetInt("durability") * consume; //текущая энергия
+        int maxEnergy = itemstack.Collectible.GetMaxDurability(itemstack) * consume;       //максимальная энергия
+
+        int received = Math.Min(maxEnergy - energy, maxReceive);
+
+        energy += received;
+
+        int durab = Math.Max(1, energy / consume);
         itemstack.Attributes.SetInt("durability", durab);
         return received;
     }
@@ -170,8 +179,8 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
     /// <returns></returns>
     public override bool OnBlockBrokenWith(IWorldAccessor world, Entity byEntity, ItemSlot slot, BlockSelection blockSel, float dropQuantityMultiplier = 1)
     {
-        int energy = slot.Itemstack.Attributes.GetInt("electricalprogressive:energy");
-        if (energy >= consume)
+        int durability = slot.Itemstack.Attributes.GetInt("durability");
+        if (durability > 1)
         {
             DamageItem(world,byEntity,slot,1);
             if (base.OnBlockBrokenWith(world, byEntity, slot, blockSel, dropQuantityMultiplier))
@@ -182,7 +191,7 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
                     {
                         var selection = new Selection(blockSel);
 
-                        if (GetToolMode(slot,player,blockSel) == 1) //второй режим
+                        if (GetToolMode(slot,player,blockSel) == 1) //второй режим 1х3
                         {
                             switch (blockSel.Face.Axis)
                             {
@@ -266,13 +275,15 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
     //credit to stitch37 for this code
     public void destroyBlocks(IWorldAccessor world, BlockPos min, BlockPos max, IPlayer player,BlockSelection block, ItemSlot slot)
     {
-        int energy = slot.Itemstack.Attributes.GetInt("electricalprogressive:energy");
-        var centerBlock = world.BlockAccessor.GetBlock(block.Position);
+        int durability = slot.Itemstack.Attributes.GetInt("durability"); 
+        var wBA = world.BlockAccessor;  //тяжелая штука, нужно разочек обьявить
+        var centerBlock = wBA.GetBlock(block.Position);
         var itemStack = new ItemStack(this);
         Vintagestory.API.Common.Block tempBlock;
         var miningTimeMainBlock = GetMiningSpeed(itemStack, block,centerBlock, player);
         float miningTime;
         var tempPos = new BlockPos();
+
         for (int x = min.X; x <= max.X; x++)
         {
             for (int y = min.Y; y <= max.Y; y++)
@@ -280,12 +291,12 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
                 for (int z = min.Z; z <= max.Z; z++)
                 {
                     tempPos.Set(x, y, z);
-                    tempBlock = world.BlockAccessor.GetBlock(tempPos);
+                    tempBlock = wBA.GetBlock(tempPos);
                     if (player.WorldData.CurrentGameMode == EnumGameMode.Creative)
-                        world.BlockAccessor.SetBlock(0, tempPos);
+                        wBA.SetBlock(0, tempPos);
                     else
                     {
-                        if (energy >= consume)
+                        if (durability > 1)
                         {
                             miningTime = tempBlock.GetMiningSpeed(itemStack, block,tempBlock, player);
                             if (ToolTier >= tempBlock.RequiredMiningTier
@@ -293,7 +304,7 @@ class EDrill : Vintagestory.API.Common.Item,IEnergyStorageItem
                                 && MiningSpeed.ContainsKey(tempBlock.BlockMaterial))
 
                             {
-                                world.BlockAccessor.BreakBlock(tempPos, player);
+                                wBA.BreakBlock(tempPos, player);
                             }
                         }
                     }

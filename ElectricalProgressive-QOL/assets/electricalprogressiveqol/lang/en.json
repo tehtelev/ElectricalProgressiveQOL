@@ -67,7 +67,8 @@
   "block-elamp_small-9000-burned": "Small Electric Lamp (Burned)",
 
   "item-edrill": "Electric Drill",
-  "item-echisel": "Electric Chisel",
+  "item-echisel": "Electric Punch Machine",
+
   "item-edrilltip": "Drill Tip",
   "item-eaxe": "Electric Axe",
 
@@ -112,7 +113,7 @@
   "item-handbooktext-edrill": "Mining reaches a new level. Operates in two modes: 1x1 and 1x3.<br>Stops working when discharged. Remember to recharge!",
 
   "item-handbooktitle-echisel": "Usage",
-  "item-handbooktext-echisel": "A chisel with a battery! Not used in recipes.<br>Stops working when discharged. Remember to recharge!",
+  "item-handbooktext-echisel": "Acts like a battery-powered chisel! No need for a hammer in your left hand. Not used in recipes.<br>Will stop working when the battery is depleted. Remember to recharge!",
 
   "item-handbooktitle-edrilltip": "Usage",
   "item-handbooktext-edrilltip": "Core component for the electric drill.",

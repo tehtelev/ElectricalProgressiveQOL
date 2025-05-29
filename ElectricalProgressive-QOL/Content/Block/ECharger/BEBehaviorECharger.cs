@@ -29,39 +29,29 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
         get
         {
             bool w= false;
-            BlockEntityECharger? entity = null;
+            int durability;         //текущая прочность
+            int maxDurability;      //максимальная прочность
+
             if (Blockentity is BlockEntityECharger temp)
             {
-                entity = temp;
-                if (entity.inventory[0]?.Itemstack?.StackSize > 0)
+                ItemStack entityStack = temp.inventory[0]?.Itemstack!;
+                if (entityStack?.StackSize > 0)
                 {
-                    if (entity.inventory[0]?.Itemstack?.Item is IEnergyStorageItem)
+                    if (entityStack.Item is IEnergyStorageItem) //предмет?
                     {
-                        var storageEnergyItem = entity.inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
-                        var maxStorageItem = MyMiniLib.GetAttributeInt(entity.inventory[0].Itemstack.Item, "maxcapacity");
-                        if (storageEnergyItem < maxStorageItem)
-                        {
-                            w = true;
-                        }
-                        else
-                            w = false;
+                        durability= entityStack.Attributes.GetInt("durability");
+                        maxDurability = entityStack.Collectible.GetMaxDurability(entityStack);
+                        w = (durability < maxDurability) ? true : false;
                     }
-                    else if (entity.inventory[0]?.Itemstack?.Block is IEnergyStorageItem)
+                    else if (entityStack.Block is IEnergyStorageItem) //блок?
                     {
-                        var storageEnergyBlock = entity.inventory[0].Itemstack.Attributes.GetInt("electricalprogressive:energy");
-                        var maxStorageBlock = MyMiniLib.GetAttributeInt(entity.inventory[0].Itemstack.Block, "maxcapacity");
-                        if (storageEnergyBlock < maxStorageBlock)
-                        {
-                            w = true;
-                        }
-                        else
-                            w = false;
+                        durability = entityStack.Attributes.GetInt("durability");
+                        maxDurability = entityStack.Collectible.GetMaxDurability(entityStack);
+                        w = (durability < maxDurability) ? true : false;
                     }
                 }
                 else
                     w = false;
-
-
             }
 
             return w;

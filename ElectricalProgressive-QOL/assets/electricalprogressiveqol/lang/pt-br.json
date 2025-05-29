@@ -65,7 +65,8 @@
   "block-elamp_small-9000-burned": "Lâmpada Elétrica Pequena (Queimada)",
 
   "item-edrill": "Furadeira Elétrica",
-  "item-echisel": "Cinzel Elétrico",
+  "item-echisel": "Máquina de Punch Elétrica",
+
   "item-edrilltip": "Ponta de Broca",
   "item-eaxe": "Machado Elétrico",
 
@@ -106,7 +107,7 @@
   "item-handbooktext-edrill": "A mineração alcança um novo nível. Opera em dois modos: 1x1 e 1x3.<br>Para de funcionar quando descarregada. Lembre-se de recarregar!",
 
   "item-handbooktitle-echisel": "Uso",
-  "item-handbooktext-echisel": "Um cinzel com bateria! Não é usado em receitas.<br>Para de funcionar quando descarregado. Lembre-se de recarregar!",
+  "item-handbooktext-echisel": "Funciona como um cinzel a bateria! Não precisa de martelo na mão esquerda. Não usado em receitas.<br>Para de funcionar quando a bateria descarrega. Lembre-se de recarregar!",
 
   "item-handbooktitle-edrilltip": "Uso",
   "item-handbooktext-edrilltip": "Componente principal para a furadeira elétrica.",

@@ -65,7 +65,8 @@
   "block-elamp_small-9000-burned": "Kleine elektrische Lampe (verbrannt)",
 
   "item-edrill": "Elektrischer Bohrer",
-  "item-echisel": "Elektrischer Meißel",
+  "item-echisel": "Elektrische Lochenmaschine",
+
   "item-edrilltip": "Bohrerspitze",
   "item-eaxe": "Elektrische Axt",
 
@@ -106,7 +107,7 @@
   "item-handbooktext-edrill": "Der elektrische Bohrer hebt den Bergbau auf ein neues Level. Zwei Modi: 1×1 und 1×3.<br>Wenn der Akku leer ist, hört er auf zu funktionieren. Nicht vergessen aufzuladen!",
 
   "item-handbooktitle-echisel": "Verwendung",
-  "item-handbooktext-echisel": "Elektrischer Meißel. Wird nicht in Rezepten verwendet.<br>Wenn der Akku leer ist, hört er auf zu funktionieren. Nicht vergessen aufzuladen!",
+  "item-handbooktext-echisel": "Funktioniert wie ein akkubetriebener Meißel! Kein Hammer in der linken Hand nötig. Wird nicht in Rezepten verwendet.<br>Stoppt die Arbeit bei leerem Akku. Immer aufladen!",
 
   "item-handbooktitle-edrilltip": "Verwendung",
   "item-handbooktext-edrilltip": "Grundlage für den elektrischen Bohrer.",
