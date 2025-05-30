@@ -4,7 +4,6 @@
   "damagedby": [ "blockbreaking", "attacking" ],
   "attributes": {
     "rechargeable": true,
-    "maxcapacity": 20000,
     "consume": 20,
     "handbook": {
       "groupBy": [ "eaxe-*" ],

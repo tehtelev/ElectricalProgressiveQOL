@@ -110,10 +110,10 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
 
         if (stack?.Item is IEnergyStorageItem)
         {
-            int energy = stack.Attributes.GetInt("durability") * consume; //текущая энергия
-            int maxEnergy = stack.Collectible.GetMaxDurability(stack) * consume;       //максимальная энергия
+            int durability = stack.Attributes.GetInt("durability");             //текущая прочность
+            int maxDurability = stack.Collectible.GetMaxDurability(stack);       //максимальная прочность
 
-            if (energy < maxEnergy && GetBehavior<BEBehaviorECharger>().powerSetting > 0)
+            if (durability < maxDurability && GetBehavior<BEBehaviorECharger>().powerSetting > 0)
             {
                 if (this.Block.Variant["state"] != "enabled")     //чтобы лишний раз не обновлять модель
                 {
@@ -135,10 +135,10 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         }
         else if (stack?.Block is IEnergyStorageItem)
         {
-            int energy = stack.Attributes.GetInt("durability") * consume; //текущая энергия
-            int maxEnergy = stack.Collectible.GetMaxDurability(stack) * consume;       //максимальная энергия
+            int durability = stack.Attributes.GetInt("durability");             //текущая прочность
+            int maxDurability = stack.Collectible.GetMaxDurability(stack);       //максимальная прочность
 
-            if (energy < maxEnergy && GetBehavior<BEBehaviorECharger>().powerSetting > 0)
+            if (durability < maxDurability && GetBehavior<BEBehaviorECharger>().powerSetting > 0)
             {
                 if (this.Block.Variant["state"] != "enabled")     //чтобы лишний раз не обновлять модель
                 {
@@ -179,9 +179,6 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         Vec3f origin = new Vec3f(0.5f, 0.5f, 0.5f);
         ICoreClientAPI clientApi = (ICoreClientAPI)Api;
 
-        
-
-
 
         if (stack.Class == EnumItemClass.Item)
             clientApi.Tesselator.TesselateItem(stack.Item, out toolMeshes[0], this);
@@ -193,15 +190,15 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
 
         if (stack.Class == EnumItemClass.Item)
         {
-            float scaleX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleX", 0.5F);
-            float scaleY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleY", 0.5F);
-            float scaleZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "scaleZ", 0.5F);
-            float translateX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateX", 0F);
-            float translateY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateY", 0.4F);
-            float translateZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "translateZ", 0F);
-            float rotateX = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateX", 0F);
-            float rotateY = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateY", 0F);
-            float rotateZ = MyMiniLib.GetAttributeFloat(inventory[0].Itemstack.Item, "rotateZ", 0F);
+            float scaleX = MyMiniLib.GetAttributeFloat(stack.Item, "scaleX", 0.5F);
+            float scaleY = MyMiniLib.GetAttributeFloat(stack.Item, "scaleY", 0.5F);
+            float scaleZ = MyMiniLib.GetAttributeFloat(stack.Item, "scaleZ", 0.5F);
+            float translateX = MyMiniLib.GetAttributeFloat(stack.Item, "translateX", 0F);
+            float translateY = MyMiniLib.GetAttributeFloat(stack.Item, "translateY", 0.4F);
+            float translateZ = MyMiniLib.GetAttributeFloat(stack.Item, "translateZ", 0F);
+            float rotateX = MyMiniLib.GetAttributeFloat(stack.Item, "rotateX", 0F);
+            float rotateY = MyMiniLib.GetAttributeFloat(stack.Item, "rotateY", 0F);
+            float rotateZ = MyMiniLib.GetAttributeFloat(stack.Item, "rotateZ", 0F);
 
 
             origin.Y = 1f / 30f;
@@ -230,6 +227,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         IItemStack stack = player.InventoryManager.ActiveHotbarSlot.Itemstack;
         if (stack == null || !(stack.Class == EnumItemClass.Block ? stack.Block is IEnergyStorageItem : stack.Item is IEnergyStorageItem))
             return false;
+
         player.InventoryManager.ActiveHotbarSlot.TryPutInto(Api.World, inventory[slot]);
 
         didInteract(player);
@@ -267,20 +265,19 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         if (electricity == null || byItemStack == null)
             return;
 
-        if (electricity != null)
-        {
-            electricity.Connection = Facing.DownAll;
 
-            //задаем параметры блока/проводника
-            var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
-            var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
-            var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
-            var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
+        electricity.Connection = Facing.DownAll;
 
-            electricity.Eparams = (
-                new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
-                FacingHelper.Faces(Facing.DownAll).First().Index);
-        }
+        //задаем параметры блока/проводника
+        var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
+        var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
+        var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
+        var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
+
+        electricity.Eparams = (
+            new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
+            FacingHelper.Faces(Facing.DownAll).First().Index);
+
     }
 
     public override void OnBlockRemoved()
@@ -363,6 +360,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         {
             if (slot.Itemstack == null)
                 continue;
+
             if (!slot.Itemstack.FixMapping(oldBlockIdMapping, oldItemIdMapping, worldForResolve))
             {
                 slot.Itemstack = null;
