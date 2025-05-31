@@ -2,7 +2,7 @@
   "code": "edrill",
   "class": "EDrill",
   "attributes": {
-    "rechargeable": true,
+    "chargable": true,
     "consume": 20,
     "handbook": {
       "groupBy": [ "edrill-*" ],

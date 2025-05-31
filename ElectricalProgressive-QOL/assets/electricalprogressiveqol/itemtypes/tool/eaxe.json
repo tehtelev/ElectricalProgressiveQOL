@@ -3,7 +3,7 @@
   "class": "EAxe",
   "damagedby": [ "blockbreaking", "attacking" ],
   "attributes": {
-    "rechargeable": true,
+    "chargable": true,
     "consume": 20,
     "handbook": {
       "groupBy": [ "eaxe-*" ],

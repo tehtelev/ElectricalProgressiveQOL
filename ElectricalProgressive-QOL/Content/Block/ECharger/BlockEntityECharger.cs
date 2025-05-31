@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Cairo;
@@ -17,7 +18,7 @@ namespace ElectricalProgressive.Content.Block.ECharger;
 public class BlockEntityECharger : BlockEntity, ITexPositionSource
 {
     public InventoryGeneric inventory;
-    private int consume;
+    
     MeshData[] toolMeshes = new MeshData[1];
 
     public Size2i AtlasSize => ((ICoreClientAPI)Api).BlockTextureAtlas.Size;
@@ -84,7 +85,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     {
         inventory = new InventoryGeneric(1, "charger", null, null, null);
 
-        consume = MyMiniLib.GetAttributeInt(this.Block, "consume", 20);
+        
     }
 
     public override void Initialize(ICoreAPI api)
@@ -146,7 +147,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
                     MarkDirty(true);
                 }
 
-                ((IEnergyStorageItem)stack.Item).receiveEnergy(stack, GetBehavior<BEBehaviorECharger>().powerSetting);
+                ((IEnergyStorageItem)stack.Block).receiveEnergy(stack, GetBehavior<BEBehaviorECharger>().powerSetting);
             }
             else
             {
@@ -378,9 +379,11 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     {
         base.GetBlockInfo(forPlayer, stringBuilder);
 
-        var stack = inventory[0]?.Itemstack;
+        var stack = inventory[0]?.Itemstack; //стак инвентаря
+ 
         if (stack?.Item is IEnergyStorageItem) //предмет
         {
+            int consume = MyMiniLib.GetAttributeInt(stack.Item, "consume", 20); //количество энергии, которое потребляет блок порцией
             int energy = stack.Attributes.GetInt("durability") * consume;
             int maxEnergy = stack.Collectible.GetMaxDurability(stack) * consume;
 
@@ -391,6 +394,8 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
         }
         else if (stack?.Block is IEnergyStorageItem) //блок
         {
+
+            int consume = MyMiniLib.GetAttributeInt(stack.Block, "consume", 20); //количество энергии, которое потребляет блок порцией
             int energy = stack.Attributes.GetInt("durability") * consume;
             int maxEnergy = stack.Collectible.GetMaxDurability(stack) * consume;
 

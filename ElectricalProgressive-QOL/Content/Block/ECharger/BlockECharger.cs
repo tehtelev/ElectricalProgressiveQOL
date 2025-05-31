@@ -48,10 +48,12 @@ public class BlockECharger : Vintagestory.API.Common.Block
 
             foreach (CollectibleObject obj in api.World.Collectibles)
             {
-                if (obj.Attributes?["rechargeable"].AsBool() != true) continue;
+                if (obj.Attributes?["chargable"].AsBool() != true)
+                    continue;
 
                 List<ItemStack> stacks = obj.GetHandBookStacks(capi);
-                if (stacks != null) rackableStacklist.AddRange(stacks);
+                if (stacks != null)
+                    rackableStacklist.AddRange(stacks);
             }
 
             return new[] {
@@ -134,7 +136,8 @@ public class BlockECharger : Vintagestory.API.Common.Block
         for (int i = 0; i < api.World.Items.Count; i++)
         {
             Vintagestory.API.Common.Item item = api.World.Items[i];
-            if (item.Attributes?["rechargeable"].AsBool() != true) continue;
+            if (item.Attributes?["chargable"].AsBool() != true)
+                continue;
 
             ToolTextures tt = new ToolTextures();
 
