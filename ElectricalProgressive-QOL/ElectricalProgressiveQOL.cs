@@ -7,7 +7,6 @@ using ElectricalProgressive.Content.Block.EOven;
 using Vintagestory.API.Common;
 using Vintagestory.API.Client;
 using ElectricalProgressive.Content.Block.EHeater;
-using ElectricalProgressive.Content.Item.Tool;
 using ElectricalProgressive.Content.Block.EFonar;
 using ElectricalProgressive.Content.Block.ESFonar;
 using Vintagestory.GameContent;
@@ -15,14 +14,14 @@ using Vintagestory.API.Common.Entities;
 
 
 [assembly: ModDependency("game", "1.20.0")]
-[assembly: ModDependency("electricalprogressivecore", "1.0.3")]
-[assembly: ModDependency("electricalprogressivebasics", "1.0.3")]
+[assembly: ModDependency("electricalprogressivecore", "1.0.4")]
+[assembly: ModDependency("electricalprogressivebasics", "1.0.4")]
 [assembly: ModInfo(
     "Electrical Progressive: QoL",
     "electricalprogressiveqol",
     Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
     Description = "Brings electricity into the game!",
-    Version = "1.0.3",
+    Version = "1.0.4",
     Authors = new[] {
         "Tehtelev",
         "Kotl"
@@ -84,9 +83,7 @@ public class ElectricalProgressiveQOL : ModSystem
         api.RegisterBlockEntityClass("BlockEntityEOven", typeof(BlockEntityEOven));
         api.RegisterBlockEntityBehaviorClass("BEBehaviorEOven", typeof(BEBehaviorEOven));
 
-        api.RegisterItemClass("EChisel", typeof(EChisel));
-        api.RegisterItemClass("EAxe", typeof(EAxe));
-        api.RegisterItemClass("EDrill", typeof(EDrill));
+
 
     }
 

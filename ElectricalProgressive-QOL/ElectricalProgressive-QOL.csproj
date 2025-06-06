@@ -65,7 +65,6 @@
       </EmbeddedResource>
     </ItemGroup>
     <ItemGroup>
-      <Folder Include="assets\electricalprogressiveqol\shapes\entity\" />
       <Folder Include="assets\electricalprogressiveqol\textures\" />
     </ItemGroup>
     <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

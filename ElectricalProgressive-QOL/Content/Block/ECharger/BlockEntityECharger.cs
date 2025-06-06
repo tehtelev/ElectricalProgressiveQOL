@@ -109,7 +109,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     {
         var stack = inventory[0]?.Itemstack;
 
-        if (stack?.Item is IEnergyStorageItem)
+        if (stack?.Item!=null && stack.Collectible.Attributes["chargable"].AsBool(false))
         {
             int durability = stack.Attributes.GetInt("durability");             //текущая прочность
             int maxDurability = stack.Collectible.GetMaxDurability(stack);       //максимальная прочность
@@ -122,7 +122,14 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
                     MarkDirty(true);
                 }
 
-                ((IEnergyStorageItem)stack.Item).receiveEnergy(stack, GetBehavior<BEBehaviorECharger>().powerSetting);
+
+                int maxReceive = GetBehavior<BEBehaviorECharger>().powerSetting;        // мощность в заряднике
+                int consume = MyMiniLib.GetAttributeInt(stack.Item, "consume", 20);     //размер минимальной порции          
+                int received = Math.Min(maxDurability - durability, maxReceive/consume); // приращение прочности
+                durability += received;                                                 // новая прочность
+                stack.Attributes.SetInt("durability", durability);                      // обновляем прочность в атрибутах
+
+
             }
             else
             {
@@ -226,7 +233,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
     bool PutInSlot(IPlayer player, int slot)
     {
         IItemStack stack = player.InventoryManager.ActiveHotbarSlot.Itemstack;
-        if (stack == null || !(stack.Class == EnumItemClass.Block ? stack.Block is IEnergyStorageItem : stack.Item is IEnergyStorageItem))
+        if (stack == null || !(stack.Class == EnumItemClass.Block ? stack.Block is IEnergyStorageItem : (stack?.Item != null && stack.Collectible.Attributes["chargable"].AsBool(false))))
             return false;
 
         player.InventoryManager.ActiveHotbarSlot.TryPutInto(Api.World, inventory[slot]);
@@ -381,7 +388,7 @@ public class BlockEntityECharger : BlockEntity, ITexPositionSource
 
         var stack = inventory[0]?.Itemstack; //стак инвентаря
  
-        if (stack?.Item is IEnergyStorageItem) //предмет
+        if (stack?.Item != null && stack.Collectible.Attributes["chargable"].AsBool(false)) //предмет
         {
             int consume = MyMiniLib.GetAttributeInt(stack.Item, "consume", 20); //количество энергии, которое потребляет блок порцией
             int energy = stack.Attributes.GetInt("durability") * consume;

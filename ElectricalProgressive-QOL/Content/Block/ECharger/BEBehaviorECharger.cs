@@ -37,7 +37,7 @@ public class BEBehaviorECharger : BlockEntityBehavior, IElectricConsumer
                 ItemStack entityStack = temp.inventory[0]?.Itemstack!;
                 if (entityStack?.StackSize > 0)
                 {
-                    if (entityStack.Item is IEnergyStorageItem) //предмет?
+                    if (entityStack?.Item != null && entityStack.Collectible.Attributes["chargable"].AsBool(false)) //предмет?
                     {
                         durability= entityStack.Attributes.GetInt("durability");
                         maxDurability = entityStack.Collectible.GetMaxDurability(entityStack);

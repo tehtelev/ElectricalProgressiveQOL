@@ -1,4 +1,4 @@
-{
+﻿{
 	"editor": {
 		"allAngles": false,
 		"entityTextureMode": false
@@ -8,11 +8,11 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"copper": "electricalprogressivebasics:block/copper",
-		"iron": "electricalprogressivebasics:block/iron",
-		"stainlesssteel": "electricalprogressivebasics:block/stainlesssteel",
-		"steel": "electricalprogressivebasics:block/steel",
-		"zinc": "electricalprogressivebasics:block/zinc"
+		"copper": "game:block/metal/plate/copper",
+		"iron": "game:block/metal/plate/iron",
+		"stainlesssteel": "game:block/metal/plate/stainlesssteel",
+		"steel": "game:block/metal/plate/steel",
+		"zinc": "game:block/metal/plate/zinc"
 	},
 	"elements": [
 		{

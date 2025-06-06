@@ -8,17 +8,17 @@
 	"textureSizes": {
 	},
 	"textures": {
-		"bismuthbronze": "electricalprogressivebasics:block/bismuthbronze",
-		"brass": "electricalprogressivebasics:block/brass",
-		"copper": "electricalprogressivebasics:block/copper",
+		"bismuthbronze": "game:block/metal/plate/bismuthbronze",
+		"brass": "game:block/metal/plate/brass",
+		"copper": "game:block/metal/plate/copper",
 		"copper-hot": "electricalprogressivebasics:block/copper-hot",
-		"gold": "electricalprogressivebasics:block/gold",
-		"green": "electricalprogressivebasics:block/green",
-		"iron": "electricalprogressivebasics:block/iron",
-		"molybdochalkos": "electricalprogressivebasics:block/molybdochalkos",
-		"steel": "electricalprogressivebasics:block/steel",
-		"uranium": "electricalprogressivebasics:block/uranium",
-		"zinc": "electricalprogressivebasics:block/zinc"
+		"gold": "game:block/metal/plate/gold",
+		"green": "game:block/glass/green",
+		"iron": "game:block/metal/plate/iron",
+		"molybdochalkos": "game:block/metal/plate/molybdochalkos",
+		"steel": "game:block/metal/plate/steel",
+		"uranium": "game:block/metal/plate/uranium",
+		"zinc": "game:block/metal/plate/zinc"
 	},
 	"elements": [
 		{
