@@ -62,7 +62,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
                 return;
 
             // получаем блокэнтити этого блока
-            var blockentity = (BlockEntityEFonar)world.BlockAccessor.GetBlockEntity(pos);
+            var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityEFonar;
 
             // если блокэнтити не найден, выходим
             if (blockentity == null)

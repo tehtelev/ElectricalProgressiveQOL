@@ -56,7 +56,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
                 return;
 
             // получаем блокэнтити этого блока
-            var blockentity = (BlockEntityESFonar)world.BlockAccessor.GetBlockEntity(pos);
+            var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityESFonar;
 
             // если блокэнтити не найден, выходим
             if (blockentity == null)

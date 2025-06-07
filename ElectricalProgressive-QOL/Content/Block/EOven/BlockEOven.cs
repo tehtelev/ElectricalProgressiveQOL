@@ -82,7 +82,7 @@ public class BlockEOven : Vintagestory.API.Common.Block
             return;
 
         // получаем блокэнтити этого блока
-        var blockentity = (BlockEntityEOven)world.BlockAccessor.GetBlockEntity(pos);
+        var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityEOven;
 
         // если блокэнтити не найден, выходим
         if (blockentity == null)

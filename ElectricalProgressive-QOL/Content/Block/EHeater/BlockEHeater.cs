@@ -56,7 +56,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
                 return;
 
             // получаем блокэнтити этого блока
-            var blockentity = (BlockEntityEHeater)world.BlockAccessor.GetBlockEntity(pos);
+            var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityEHeater;
 
             // если блокэнтити не найден, выходим
             if (blockentity == null)

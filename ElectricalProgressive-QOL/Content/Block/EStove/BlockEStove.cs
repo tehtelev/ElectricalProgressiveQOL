@@ -82,7 +82,7 @@ public class BlockEStove : Vintagestory.API.Common.Block
             return;
 
         // получаем блокэнтити этого блока
-        var blockentity = (BlockEntityEStove)world.BlockAccessor.GetBlockEntity(pos);
+        var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityEStove;
 
         // если блокэнтити не найден, выходим
         if (blockentity == null)

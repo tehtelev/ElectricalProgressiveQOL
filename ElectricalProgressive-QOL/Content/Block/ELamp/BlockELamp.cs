@@ -72,7 +72,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                 return;
 
             // получаем блокэнтити этого блока
-            var blockentity = (BlockEntityELamp)world.BlockAccessor.GetBlockEntity(pos);
+            var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityELamp;
 
             // если блокэнтити не найден, выходим
             if (blockentity == null)

@@ -102,7 +102,7 @@ public class BlockECharger : Vintagestory.API.Common.Block
             return;
 
         // получаем блокэнтити этого блока
-        var blockentity = (BlockEntityECharger)world.BlockAccessor.GetBlockEntity(pos);
+        var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityECharger;
 
         // если блокэнтити не найден, выходим
         if (blockentity == null)
@@ -119,7 +119,7 @@ public class BlockECharger : Vintagestory.API.Common.Block
         BlockEntity be = world.BlockAccessor.GetBlockEntity(blockSel.Position);
         if (be is BlockEntityECharger)
         {
-            BlockEntityECharger rack = (BlockEntityECharger)be;
+            BlockEntityECharger rack = be as BlockEntityECharger;
             return rack.OnPlayerInteract(byPlayer, blockSel.HitPosition);
         }
 

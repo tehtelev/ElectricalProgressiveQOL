@@ -120,7 +120,7 @@ public class BlockEHorn : Vintagestory.API.Common.Block
             return;
 
         // получаем блокэнтити этого блока
-        var blockentity = (BlockEntityEHorn)world.BlockAccessor.GetBlockEntity(pos);
+        var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityEHorn;
 
         // если блокэнтити не найден, выходим
         if (blockentity == null)
