@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ElectricalProgressive.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using ElectricalProgressive.Utils;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -277,7 +277,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         if (Api is ICoreClientAPI) return;
         if (IsBurning)
         {
-            stoveTemperature = changeTemperature(stoveTemperature, GetBehavior<BEBehaviorEStove>().powerSetting * 1.0F / maxConsumption * maxTemperature, dt);
+            stoveTemperature = changeTemperature(stoveTemperature, GetBehavior<BEBehaviorEStove>().PowerSetting * 1.0F / maxConsumption * maxTemperature, dt);
         }
         if (canHeatInput())
             heatInput(dt);
@@ -288,7 +288,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         if (canSmeltInput() && inputStackCookingTime > maxCookingTime())
             smeltItems();
 
-        if (GetBehavior<BEBehaviorEStove>()?.powerSetting > 0)
+        if (GetBehavior<BEBehaviorEStove>()?.PowerSetting > 0)
         {
             if (!IsBurning)
             {
@@ -541,7 +541,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     public override void OnBlockBroken(IPlayer? byPlayer = null)
     {
         base.OnBlockBroken(byPlayer);
-        if (inputStack != null) Api.World.SpawnItemEntity(inputStack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
+        if (inputStack != null)
+            Api.World.SpawnItemEntity(inputStack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
     }
 
     public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
