@@ -1,35 +1,35 @@
-﻿using System.Linq;
-using System.Text;
-using ElectricalProgressive.Content.Block.ECharger;
-using ElectricalProgressive.Interface;
+﻿using ElectricalProgressive.Interface;
 using ElectricalProgressive.Utils;
+using System.Linq;
+using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 
 namespace ElectricalProgressive.Content.Block.EFreezer;
 
-public class BEBehaviorEFreezer : BlockEntityBehavior, IElectricConsumer
+public class BEBehaviorEFreezer : BEBehaviorBase, IElectricConsumer
 {
-    public int powerSetting;
-    public int maxConsumption;
+    public int PowerSetting { get; set; }
+
+    /// <summary>
+    /// Максимальное потребление
+    /// </summary>
+    private readonly int _maxConsumption;
+
     public BEBehaviorEFreezer(BlockEntity blockEntity) : base(blockEntity)
     {
-        maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
+        _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
     }
-
-    public bool isBurned => this.Block.Variant["status"] == "burned";
 
     public void Consume_receive(float amount)
     {
-        if (powerSetting != amount)
-        {
-            powerSetting = (int)amount;
-        }
+        if (PowerSetting != amount)
+            PowerSetting = (int)amount;
     }
 
     public float Consume_request()
     {
-        return maxConsumption;
+        return _maxConsumption;
     }
 
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
@@ -39,14 +39,14 @@ public class BEBehaviorEFreezer : BlockEntityBehavior, IElectricConsumer
         //проверяем не сгорел ли прибор
         if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityEFreezer entity)
         {
-            if (isBurned)
+            if (IsBurned)
             {
                 stringBuilder.AppendLine(Lang.Get("Burned"));
             }
             else
             {
-                stringBuilder.AppendLine(StringHelper.Progressbar(powerSetting * 100.0f / maxConsumption));
-                stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + powerSetting + "/" + maxConsumption + " " + Lang.Get("W"));
+                stringBuilder.AppendLine(StringHelper.Progressbar(PowerSetting * 100.0f / _maxConsumption));
+                stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + PowerSetting + "/" + _maxConsumption + " " + Lang.Get("W"));
             }
         }
         stringBuilder.AppendLine();
@@ -54,34 +54,29 @@ public class BEBehaviorEFreezer : BlockEntityBehavior, IElectricConsumer
 
     public float getPowerReceive()
     {
-        return this.powerSetting;
+        return this.PowerSetting;
     }
 
     public float getPowerRequest()
     {
-        return maxConsumption;
+        return _maxConsumption;
     }
 
     public void Update()
     {
         //смотрим надо ли обновить модельку когда сгорает прибор
-        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityEFreezer entity && entity.AllEparams != null)
-        {
-            bool hasBurnout = entity.AllEparams.Any(e => e.burnout);
+        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is not BlockEntityEFreezer entity || entity.AllEparams == null)
+            return;
 
-            if (hasBurnout)
-            {
-                ParticleManager.SpawnBlackSmoke(this.Api.World, Pos.ToVec3d().Add(0.5, 1.95, 0.5));
-            }
+        var hasBurnout = entity.AllEparams.Any(e => e.burnout);
+        if (hasBurnout)
+            ParticleManager.SpawnBlackSmoke(this.Api.World, Pos.ToVec3d().Add(0.5, 1.95, 0.5));
 
-            if (hasBurnout && entity.Block.Variant["status"] != "burned")
-            {
-                string type = "status";
-                string variant = "burned";  
+        if (!hasBurnout || entity.Block.Variant["status"] == "burned")
+            return;
 
-                this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant(type, variant)).BlockId, Pos);
-            }
-        }
-
+        var type = "status";
+        var variant = "burned";
+        this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant(type, variant)).BlockId, Pos);
     }
 }

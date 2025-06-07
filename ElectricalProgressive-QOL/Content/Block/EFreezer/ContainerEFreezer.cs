@@ -11,7 +11,7 @@ using Vintagestory.GameContent;
 
 namespace ElectricalProgressive.Content.Block.EFreezer;
 
-public abstract class ContainerEFreezer : BlockEntity, IBlockEntityContainer
+public abstract class ContainerEFreezer : BlockEntityEBase, IBlockEntityContainer
 {
     public abstract InventoryBase Inventory { get; }
     public abstract string InventoryClassName { get; }
@@ -52,7 +52,7 @@ public abstract class ContainerEFreezer : BlockEntity, IBlockEntityContainer
         Inventory.ResolveBlocksOrItems();
         Inventory.OnAcquireTransitionSpeed += Inventory_OnAcquireTransitionSpeed;
 
-  
+
 
         RegisterGameTickListener(OnTick, 10000);
 
@@ -179,22 +179,15 @@ public abstract class ContainerEFreezer : BlockEntity, IBlockEntityContainer
 
     public override void OnBlockPlaced(ItemStack byItemStack = null)
     {
-        BlockContainer container = byItemStack?.Block as BlockContainer;
-        if (container != null)
-        {
-            ItemStack[] stacks = container.GetContents(Api.World, byItemStack);
+        if (byItemStack?.Block is not BlockContainer container)
+            return;
 
-            if (stacks != null && stacks.Length > Inventory.Count)
-            {
-                throw new InvalidOperationException(string.Format("OnBlockPlaced stack copy failed. Trying to set {0} stacks on an inventory with {1} slots", stacks.Length, Inventory.Count));
-            }
+        var stacks = container.GetContents(Api.World, byItemStack);
+        if (stacks != null && stacks.Length > Inventory.Count)
+            throw new InvalidOperationException(string.Format("OnBlockPlaced stack copy failed. Trying to set {0} stacks on an inventory with {1} slots", stacks.Length, Inventory.Count));
 
-            for (int i = 0; stacks != null && i < stacks.Length; i++)
-            {
-                Inventory[i].Itemstack = stacks[i]?.Clone();
-            }
-
-        }
+        for (var i = 0; stacks != null && i < stacks.Length; i++)
+            Inventory[i].Itemstack = stacks[i]?.Clone();
     }
 
     public override void OnBlockBroken(IPlayer byPlayer = null)
