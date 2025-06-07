@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using ElectricalProgressive.Utils;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using ElectricalProgressive.Content.Block.EMotor;
-using ElectricalProgressive.Utils;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
 
 namespace ElectricalProgressive.Content.Block.ESFonar
 {
-    internal class BlockESFonar : Vintagestory.API.Common.Block
+    internal class BlockESFonar : BlockEBase
     {
         private readonly static Dictionary<CacheDataKey, MeshData> MeshDataCache = new();
 
@@ -28,54 +26,6 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             BlockESFonar.MeshDataCache.Clear();
         }
 
-
-        /// <summary>
-        /// Кто-то или что-то коснулось блока и теперь получит урон
-        /// </summary>
-        /// <param name="world"></param>
-        /// <param name="entity"></param>
-        /// <param name="pos"></param>
-        /// <param name="facing"></param>
-        /// <param name="collideSpeed"></param>
-        /// <param name="isImpact"></param>
-        public override void OnEntityCollide(
-            IWorldAccessor world,
-            Entity entity,
-            BlockPos pos,
-            BlockFacing facing,
-            Vec3d collideSpeed,
-            bool isImpact
-        )
-        {
-            // если это клиент, то не надо 
-            if (world.Side == EnumAppSide.Client)
-                return;
-
-            // энтити не живой и не создание? выходим
-            if (!entity.Alive || !entity.IsCreature)
-                return;
-
-            // получаем блокэнтити этого блока
-            var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityESFonar;
-
-            // если блокэнтити не найден, выходим
-            if (blockentity == null)
-                return;
-
-            // передаем работу в наш обработчик урона
-            ElectricalProgressive.damageManager.DamageEntity(world, entity, pos, facing, blockentity.AllEparams, this);
-
-        }
-
-
-
-        public override void OnBlockBroken(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
-        {
-            base.OnBlockBroken(world, pos, byPlayer, dropQuantityMultiplier);
-
-        }
-
-
         public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemstack,
             BlockSelection blockSel, ref string failureCode)
         {
@@ -85,7 +35,6 @@ namespace ElectricalProgressive.Content.Block.ESFonar
                        .SideSolid[BlockFacing.indexUP]
                        && base.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
         }
-
 
         /// <summary>
         /// Проверка на возможность установки блока
@@ -98,9 +47,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
         public override bool DoPlaceBlock(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ItemStack byItemStack)
         {
             if (byItemStack.Block.Variant["status"] == "burned")
-            {
                 return false;
-            }
 
             var selection = new Selection(blockSel);
             var facing = FacingHelper.From(BlockFacing.DOWN, selection.Direction);
@@ -111,9 +58,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
                 world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityESFonar entity
             )
             {
-
                 entity.Facing = facing;
-
 
                 //задаем параметры блока/проводника
                 var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
@@ -122,10 +67,8 @@ namespace ElectricalProgressive.Content.Block.ESFonar
                 var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
 
                 entity.Eparams = (
-                    new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
+                    new(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
                     FacingHelper.Faces(Facing.DownAll).First().Index);
-
-
 
                 return true;
             }
@@ -133,30 +76,29 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             return false;
         }
 
-
-
-
-
         public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
         {
-            AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
-        {
-            { "height", this.Variant["height"] },
-            { "format", this.Variant["format"] },
-            { "state", (this.Variant["state"]=="enabled")? "disabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
-        });
+            var newState = this.Variant["state"] switch
+            {
+                "enabled" => "disabled",
+                "disabled" => "disabled",
+                _ => "burned"
+            };
+            var blockCode = CodeWithVariants(new()
+            {
+                { "height", this.Variant["height"] },
+                { "format", this.Variant["format"] },
+                { "state", newState }
+            });
 
-            Vintagestory.API.Common.Block block = world.BlockAccessor.GetBlock(blockCode);
-
-            return new ItemStack(block);
+            var block = world.BlockAccessor.GetBlock(blockCode);
+            return new(block);
         }
 
-        public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer,
-            float dropQuantityMultiplier = 1)
+        public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
         {
             return new[] { OnPickBlock(world, pos) };
         }
-
 
         public override void OnNeighbourBlockChange(IWorldAccessor world, BlockPos pos, BlockPos neibpos)
         {
@@ -172,161 +114,151 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             }
         }
 
-
-
-
-
-
-
-
-
         public override void OnJsonTesselation(ref MeshData sourceMesh, ref int[] lightRgbsByCorner, BlockPos pos, Vintagestory.API.Common.Block[] chunkExtBlocks, int extIndex3d)
         {
-            if (
-                this.api is ICoreClientAPI clientApi &&
-                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityESFonar entity &&
-                entity.Facing != Facing.None
-            )
+            if (this.api is not ICoreClientAPI clientApi ||
+                this.api.World.BlockAccessor.GetBlockEntity(pos) is not BlockEntityESFonar entity ||
+                entity.Facing == Facing.None)
             {
-                var key = CacheDataKey.FromEntity(entity);
+                return;
+            }
 
-                if (!BlockESFonar.MeshDataCache.TryGetValue(key, out var meshData))
+            var key = CacheDataKey.FromEntity(entity);
+
+            if (!BlockESFonar.MeshDataCache.TryGetValue(key, out var meshData))
+            {
+                var origin = new Vec3f(0.5f, 0.5f, 0.5f);
+
+
+                clientApi.Tesselator.TesselateBlock(this, out meshData);
+
+                clientApi.TesselatorManager.ThreadDispose(); //обязательно?
+
+                if ((key.Facing & Facing.NorthEast) != 0)
                 {
-                    var origin = new Vec3f(0.5f, 0.5f, 0.5f);
-
-
-                    clientApi.Tesselator.TesselateBlock(this, out meshData);
-
-                    clientApi.TesselatorManager.ThreadDispose(); //обязательно?
-
-                    if ((key.Facing & Facing.NorthEast) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 270.0f * GameMath.DEG2RAD, 0.0f);
-                    }
-
-                    if ((key.Facing & Facing.NorthWest) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 90.0f * GameMath.DEG2RAD, 0.0f);
-                    }
-
-                    if ((key.Facing & Facing.NorthUp) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 0.0f * GameMath.DEG2RAD, 0.0f);
-                    }
-
-                    if ((key.Facing & Facing.NorthDown) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD, 0.0f);
-                    }
-
-                    if ((key.Facing & Facing.EastNorth) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f * GameMath.DEG2RAD, 0.0f, 90.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.EastSouth) != 0)
-                    {
-                        meshData.Rotate(origin, 180.0f * GameMath.DEG2RAD, 0.0f, 90.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.EastUp) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 0.0f, 90.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.EastDown) != 0)
-                    {
-                        meshData.Rotate(origin, 270.0f * GameMath.DEG2RAD, 0.0f, 90.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.SouthEast) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 270.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.SouthWest) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 90.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.SouthUp) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 0.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.SouthDown) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.WestNorth) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f * GameMath.DEG2RAD, 0.0f, 270.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.WestSouth) != 0)
-                    {
-                        meshData.Rotate(origin, 180.0f * GameMath.DEG2RAD, 0.0f, 270.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.WestUp) != 0)
-                    {
-                        meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 0.0f, 270.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.WestDown) != 0)
-                    {
-                        meshData.Rotate(origin, 270.0f * GameMath.DEG2RAD, 0.0f, 270.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.UpNorth) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f, 0.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.UpEast) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f, 270.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.UpSouth) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f, 180.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.UpWest) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f, 90.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
-                    }
-
-                    if ((key.Facing & Facing.DownNorth) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f, 0.0f * GameMath.DEG2RAD, 0.0f);
-                    }
-
-                    if ((key.Facing & Facing.DownEast) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f, 270.0f * GameMath.DEG2RAD, 0.0f);
-                    }
-
-                    if ((key.Facing & Facing.DownSouth) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f, 180.0f * GameMath.DEG2RAD, 0.0f);
-                    }
-
-                    if ((key.Facing & Facing.DownWest) != 0)
-                    {
-                        meshData.Rotate(origin, 0.0f, 90.0f * GameMath.DEG2RAD, 0.0f);
-                    }
-
-                    BlockESFonar.MeshDataCache.Add(key, meshData);
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 270.0f * GameMath.DEG2RAD, 0.0f);
                 }
 
-                sourceMesh = meshData;
+                if ((key.Facing & Facing.NorthWest) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 90.0f * GameMath.DEG2RAD, 0.0f);
+                }
+
+                if ((key.Facing & Facing.NorthUp) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 0.0f * GameMath.DEG2RAD, 0.0f);
+                }
+
+                if ((key.Facing & Facing.NorthDown) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD, 0.0f);
+                }
+
+                if ((key.Facing & Facing.EastNorth) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f * GameMath.DEG2RAD, 0.0f, 90.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.EastSouth) != 0)
+                {
+                    meshData.Rotate(origin, 180.0f * GameMath.DEG2RAD, 0.0f, 90.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.EastUp) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 0.0f, 90.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.EastDown) != 0)
+                {
+                    meshData.Rotate(origin, 270.0f * GameMath.DEG2RAD, 0.0f, 90.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.SouthEast) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 270.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.SouthWest) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 90.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.SouthUp) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 0.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.SouthDown) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.WestNorth) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f * GameMath.DEG2RAD, 0.0f, 270.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.WestSouth) != 0)
+                {
+                    meshData.Rotate(origin, 180.0f * GameMath.DEG2RAD, 0.0f, 270.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.WestUp) != 0)
+                {
+                    meshData.Rotate(origin, 90.0f * GameMath.DEG2RAD, 0.0f, 270.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.WestDown) != 0)
+                {
+                    meshData.Rotate(origin, 270.0f * GameMath.DEG2RAD, 0.0f, 270.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.UpNorth) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f, 0.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.UpEast) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f, 270.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.UpSouth) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f, 180.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.UpWest) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f, 90.0f * GameMath.DEG2RAD, 180.0f * GameMath.DEG2RAD);
+                }
+
+                if ((key.Facing & Facing.DownNorth) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f, 0.0f * GameMath.DEG2RAD, 0.0f);
+                }
+
+                if ((key.Facing & Facing.DownEast) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f, 270.0f * GameMath.DEG2RAD, 0.0f);
+                }
+
+                if ((key.Facing & Facing.DownSouth) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f, 180.0f * GameMath.DEG2RAD, 0.0f);
+                }
+
+                if ((key.Facing & Facing.DownWest) != 0)
+                {
+                    meshData.Rotate(origin, 0.0f, 90.0f * GameMath.DEG2RAD, 0.0f);
+                }
+
+                BlockESFonar.MeshDataCache.Add(key, meshData);
             }
+
+            sourceMesh = meshData;
         }
-
-
 
         /// <summary>
         /// Получение информации о предмете в инвентаре
@@ -344,9 +276,6 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             dsc.AppendLine(Lang.Get("height") + ": " + this.Variant["height"]);
             dsc.AppendLine(Lang.Get("WResistance") + ": " + ((MyMiniLib.GetAttributeBool(inSlot.Itemstack.Block, "isolatedEnvironment", false)) ? Lang.Get("Yes") : Lang.Get("No")));
         }
-
-
-
 
         /// <summary>
         /// Структура ключа для кеширования данных блока.
