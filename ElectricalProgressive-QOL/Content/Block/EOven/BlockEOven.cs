@@ -13,24 +13,25 @@ using Vintagestory.GameContent;
 
 namespace ElectricalProgressive.Content.Block.EOven;
 
-public class BlockEOven : Vintagestory.API.Common.Block
+public class BlockEOven : BlockEBase
 {
-    private WorldInteraction[] interactions;
-
+    private WorldInteraction[] _interactions;
 
     public override void OnLoaded(ICoreAPI api)
     {
         base.OnLoaded(api);
         if (api.Side != EnumAppSide.Client)
             return;
-        ICoreClientAPI capi = api as ICoreClientAPI;
-        interactions = ObjectCacheUtil.GetOrCreate(api, "EOvenBlockInteractions", () =>
-        {
-            List<ItemStack> rackableStacklist = new List<ItemStack>();
 
-            foreach (CollectibleObject obj in api.World.Collectibles)
+        var capi = api as ICoreClientAPI;
+        _interactions = ObjectCacheUtil.GetOrCreate(api, "EOvenBlockInteractions", () =>
+        {
+            var rackableStacklist = new List<ItemStack>();
+
+            foreach (var obj in api.World.Collectibles)
             {
-                if (obj.Attributes?["bakingProperties"]?.AsObject<BakingProperties>() == null) continue;
+                if (obj.Attributes?["bakingProperties"]?.AsObject<BakingProperties>() == null)
+                    continue;
                 List<ItemStack> stacks = obj.GetHandBookStacks(capi);
                 if (stacks != null) rackableStacklist.AddRange(stacks);
             }
@@ -54,46 +55,6 @@ public class BlockEOven : Vintagestory.API.Common.Block
         });
     }
 
-
-    /// <summary>
-    /// Кто-то или что-то коснулось блока и теперь получит урон
-    /// </summary>
-    /// <param name="world"></param>
-    /// <param name="entity"></param>
-    /// <param name="pos"></param>
-    /// <param name="facing"></param>
-    /// <param name="collideSpeed"></param>
-    /// <param name="isImpact"></param>
-    public override void OnEntityCollide(
-        IWorldAccessor world,
-        Entity entity,
-        BlockPos pos,
-        BlockFacing facing,
-        Vec3d collideSpeed,
-        bool isImpact
-    )
-    {
-        // если это клиент, то не надо 
-        if (world.Side == EnumAppSide.Client)
-            return;
-
-        // энтити не живой и не создание? выходим
-        if (!entity.Alive || !entity.IsCreature)
-            return;
-
-        // получаем блокэнтити этого блока
-        var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityEOven;
-
-        // если блокэнтити не найден, выходим
-        if (blockentity == null)
-            return;
-
-        // передаем работу в наш обработчик урона
-        ElectricalProgressive.damageManager.DamageEntity(world, entity, pos, facing, blockentity.AllEparams, this);
-
-    }
-
-
     public override bool DoParticalSelection(IWorldAccessor world, BlockPos pos) => true;
 
     public override bool OnBlockInteractStart(
@@ -111,12 +72,9 @@ public class BlockEOven : Vintagestory.API.Common.Block
         BlockSelection selection,
         IPlayer forPlayer)
     {
-        return this.interactions.Append<WorldInteraction>(
+        return this._interactions.Append<WorldInteraction>(
             base.GetPlacedBlockInteractionHelp(world, selection, forPlayer));
     }
-
-
-
 
     public override void OnNeighbourBlockChange(IWorldAccessor world, BlockPos pos, BlockPos neibpos)
     {
@@ -134,41 +92,26 @@ public class BlockEOven : Vintagestory.API.Common.Block
 
     public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
     {
-        AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
+        var newState = this.Variant["state"] switch
         {
-            { "state", (this.Variant["state"]=="enabled")? "disabled":(this.Variant["state"]=="disabled")? "disabled":"burned" },
+            "enabled" => "disabled",
+            "disabled" => "disabled",
+            _ => "burned"
+        };
+        var blockCode = CodeWithVariants(new()
+        {
+            { "state", newState },
             { "side", "north" }
         });
 
-        Vintagestory.API.Common.Block block = world.BlockAccessor.GetBlock(blockCode);
-
-        return new ItemStack(block);
+        var block = world.BlockAccessor.GetBlock(blockCode);
+        return new(block);
     }
 
-    public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer,
-        float dropQuantityMultiplier = 1)
+    public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
     {
         return new[] { OnPickBlock(world, pos) };
     }
-
-
-    /// <summary>
-    /// Проверка на возможность установки блока
-    /// </summary>
-    /// <param name="world"></param>
-    /// <param name="byPlayer"></param>
-    /// <param name="blockSelection"></param>
-    /// <param name="byItemStack"></param>
-    /// <returns></returns>
-    public override bool DoPlaceBlock(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSelection, ItemStack byItemStack)
-    {
-        if (byItemStack.Block.Variant["state"] == "burned")
-        {
-            return false;
-        }
-        return base.DoPlaceBlock(world, byPlayer, blockSelection, byItemStack);
-    }
-
 
     /// <summary>
     /// Получение информации о предмете в инвентаре

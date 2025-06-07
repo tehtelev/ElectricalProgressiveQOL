@@ -1,79 +1,79 @@
-﻿using System.Linq;
-using System.Text;
-using ElectricalProgressive.Content.Block.ECharger;
-using ElectricalProgressive.Interface;
+﻿using ElectricalProgressive.Interface;
 using ElectricalProgressive.Utils;
+using System.Linq;
+using System.Text;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 
 namespace ElectricalProgressive.Content.Block.EOven;
 
-public class BEBehaviorEOven : BlockEntityBehavior, IElectricConsumer
+public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
 {
-    public int powerSetting;
-    
-    private float OvenTemperature;
-    public int maxConsumption;
+    public int PowerSetting { get; set; }
+
+    /// <summary>
+    /// Температура печи
+    /// </summary>
+    private float _ovenTemperature;
+
+    /// <summary>
+    /// Максимальное потребление
+    /// </summary>
+    private readonly int _maxConsumption;
+
     public BEBehaviorEOven(BlockEntity blockEntity) : base(blockEntity)
     {
-        maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
+        _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
     }
 
-
-    public bool isBurned => this.Block.Variant["state"] == "burned";
-
-
-    public bool working
+    public bool Working
     {
         get
         {
-            bool w=false;
-            BlockEntityEOven? entity = null;
-            if (Blockentity is BlockEntityEOven temp)
+            var working = false;
+            if (Blockentity is not BlockEntityEOven entity)
+                return working;
+
+            _ovenTemperature = (int)entity.ovenTemperature;
+
+            //проверяем количество занятых слотов и готовой еды
+            var stack_count = 0;
+            var stack_count_perfect = 0;
+
+            for (var index = 0; index < entity.bakeableCapacity; ++index)
             {
-                entity = temp;
-                OvenTemperature = (int)entity.ovenTemperature;
+                var itemstack = entity.ovenInv[index].Itemstack;
+                if (itemstack == null)
+                    continue;
 
-                //проверяем количество занятых слотов и готовой еды
-                int stack_count = 0;
-                int stack_count_perfect = 0;
-                for (int index = 0; index < entity.bakeableCapacity; ++index)
+                if (itemstack.Class == EnumItemClass.Block)
                 {
-                    ItemStack itemstack = entity.ovenInv[index].Itemstack;
-                    if (itemstack != null)
-                    {
-                        if (itemstack.Class == EnumItemClass.Block)
-                        {
-                            if (itemstack.Block.Code.ToString().Contains("perfect") || itemstack.Block.Code.ToString().Contains("charred"))
-                                stack_count_perfect++;
-                        }
-                        else
-                        {
-                            if (itemstack.Item.Code.ToString().Contains("perfect") || itemstack.Item.Code.ToString().Contains("rot") || itemstack.Item.Code.ToString().Contains("charred"))
-                                stack_count_perfect++;
-                        }
-
-                        stack_count++;
-                    }
+                    var blockCode = itemstack.Block.Code.ToString();
+                    if (blockCode.Contains("perfect") || blockCode.Contains("charred"))
+                        stack_count_perfect++;
+                }
+                else
+                {
+                    var itemCode = itemstack.Item.Code.ToString();
+                    if (itemCode.Contains("perfect") || itemCode.Contains("rot") || itemCode.Contains("charred"))
+                        stack_count_perfect++;
                 }
 
-                if (stack_count > 0)   //если еда есть - греем печку
-                {
-                    w = true;
-                    if (stack_count_perfect == stack_count) //если еда вся готова - не греем
-                    {
-                        w = false;
-                    }
-                }
-                else                      //если еды нет - не греем
-                    w = false;
+                stack_count++;
             }
 
-            return w;
+            if (stack_count > 0)   // если еда есть - греем печку
+            {
+                // если еда вся готова - не греем
+                working = stack_count_perfect != stack_count;
+            }
+            else                      // если еды нет - не греем
+                working = false;
+
+            return working;
         }
     }
-        
+
 
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
@@ -82,90 +82,76 @@ public class BEBehaviorEOven : BlockEntityBehavior, IElectricConsumer
         //проверяем не сгорел ли прибор
         if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityEOven entity)
         {
-            if (isBurned)
+            if (IsBurned)
             {
                 stringBuilder.AppendLine(Lang.Get("Burned"));
             }
             else
             {
-                stringBuilder.AppendLine(StringHelper.Progressbar(powerSetting * 100.0f / maxConsumption));
-                stringBuilder.AppendLine("├ " + Lang.Get("Consumption")+": " + powerSetting + "/" + maxConsumption + " " + Lang.Get("W"));
-                stringBuilder.AppendLine("└ " + Lang.Get("Temperature")+": " + OvenTemperature + "°");
+                stringBuilder.AppendLine(StringHelper.Progressbar(PowerSetting * 100.0f / _maxConsumption));
+                stringBuilder.AppendLine("├ " + Lang.Get("Consumption") + ": " + PowerSetting + "/" + _maxConsumption + " " + Lang.Get("W"));
+                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + _ovenTemperature + "°");
             }
         }
 
         stringBuilder.AppendLine();
     }
 
-
+    #region IElectricConsumer
 
     public float Consume_request()
     {
-        if (working)
-            return maxConsumption;
-        else
-        {
-            powerSetting = 0;
-            return 0;            
-        }
+        if (Working)
+            return _maxConsumption;
+
+        return PowerSetting = 0;
     }
-
-
 
     public void Consume_receive(float amount)
     {
-
-        if (!working)
-        {
+        if (!Working)
             amount = 0;
-        }
 
-        if (powerSetting != amount)
-        {
-            powerSetting = (int)amount;
-        }
+        if (PowerSetting != amount)
+            PowerSetting = (int)amount;
     }
-
-
 
     public void Update()
     {
         //смотрим надо ли обновить модельку когда сгорает прибор
-        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityEOven entity && entity.AllEparams != null)
+        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is not BlockEntityEOven entity ||
+            entity.AllEparams == null)
         {
-            bool hasBurnout = entity.AllEparams.Any(e => e.burnout);
-
-            if (hasBurnout)
-            {
-                ParticleManager.SpawnBlackSmoke(this.Api.World, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
-            }
-
-            if (hasBurnout && entity.Block.Variant["state"] != "burned")
-            {
-                string side = entity.Block.Variant["side"];
-
-                string[] types = new string[2] { "state", "side" };   //типы горна
-                string[] variants = new string[2] { "burned", side };  //нужный вариант 
-
-                this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariants(types, variants)).BlockId, Pos);
-            }
+            return;
         }
+
+        var hasBurnout = entity.AllEparams.Any(e => e.burnout);
+        if (hasBurnout)
+            ParticleManager.SpawnBlackSmoke(this.Api.World, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
+
+        if (!hasBurnout || entity.Block.Variant["state"] == "burned")
+            return;
+
+        var side = entity.Block.Variant["side"];
+
+        var types = new string[2] { "state", "side" };   //типы горна
+        var variants = new string[2] { "burned", side };  //нужный вариант 
+
+        this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariants(types, variants)).BlockId, Pos);
     }
 
     public float getPowerReceive()
     {
-        return this.powerSetting;
+        return this.PowerSetting;
     }
-
 
     public float getPowerRequest()
     {
-        if (working)
-            return maxConsumption;
-        else
-        {
-            powerSetting = 0;
-            return 0;
-        }
+        if (Working)
+            return _maxConsumption;
+
+        return PowerSetting = 0;
     }
+
+    #endregion
 }
