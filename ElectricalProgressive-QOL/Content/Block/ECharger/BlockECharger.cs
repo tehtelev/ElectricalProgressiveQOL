@@ -37,7 +37,8 @@ public class BlockECharger : Vintagestory.API.Common.Block
 
     public override void OnLoaded(ICoreAPI api)
     {
-        if (api.Side != EnumAppSide.Client) return;
+        if (api.Side != EnumAppSide.Client)
+            return;
         ICoreClientAPI capi = api as ICoreClientAPI;
 
         output = MyMiniLib.GetAttributeInt(this, "output", output);

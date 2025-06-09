@@ -1,23 +1,15 @@
-{
-  "ingredientPattern": "T,G,B",
+﻿{
+  "ingredientPattern": "M",
   "ingredients": {
-    "T": {
+    "M": {
       "type": "item",
-      "code": "game:chisel-iron"
-    },
-    "B": {
-      "type": "block",
-      "code": "game:metal-parts"
-    },
-    "G": {
-      "type": "item",
-      "code": "game:gear-temporal"
+      "code": "electricalprogressiveqol:echisel"
     }
   },
   "width": 1,
-  "height": 3,
+  "height": 1,
   "output": {
     "type": "item",
-    "code": "electricalprogressiveqol:echisel"
+    "code": "electricalprogressiveequipment:echisel"
   }
 }

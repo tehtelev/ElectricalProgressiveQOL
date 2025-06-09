@@ -271,7 +271,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         boxes = this.CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) 
+                    if (boxes != null)
                         BlockESmallLamp.CollisionBoxesCache.TryAdd(key, boxes);
                 }
 
@@ -394,7 +394,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         boxes = this.SelectionBoxes.Select(selectionBox => selectionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) 
+                    if (boxes != null)
                         BlockESmallLamp.SelectionBoxesCache.TryAdd(key, boxes);
                 }
 

@@ -209,7 +209,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
                         boxes = this.CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) 
+                    if (boxes != null)
                         BlockEHeater.CollisionBoxesCache.TryAdd(key, boxes);
                 }
 
@@ -281,7 +281,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
                         boxes = this.SelectionBoxes.Select(selectionBox => selectionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) 
+                    if (boxes != null)
                         BlockEHeater.SelectionBoxesCache.TryAdd(key, boxes);
                 }
 

@@ -278,7 +278,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
                         boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) 
+                    if (boxes != null)
                         BlockEFonar.CollisionBoxesCache.TryAdd(key, boxes);
                 }
 
@@ -401,7 +401,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
                         boxes = SelectionBoxes.Select(selectionBox => selectionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) 
+                    if (boxes != null)
                         BlockEFonar.SelectionBoxesCache.TryAdd(key, boxes);
                 }
 
