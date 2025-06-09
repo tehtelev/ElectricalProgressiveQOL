@@ -27,7 +27,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
 
     internal InventoryEOven ovenInv;
 
-
+    private int _maxConsumption;
 
     //передает значения из Block в BEBehaviorElectricalProgressive
     public (EParams, int) Eparams
@@ -61,7 +61,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     public virtual float maxTemperature => 300f;
 
     public virtual int bakeableCapacity => 4;
-    
+
     private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
 
 
@@ -107,6 +107,8 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         this.RegisterGameTickListener(new Action<float>(this.OnBurnTick), 100);
         this.prng = new Random(this.Pos.GetHashCode());
         this.SetRotation();
+
+        _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
     }
 
     private void SetRotation()
@@ -140,7 +142,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         }
         CollectibleObject collectible = activeHotbarSlot.Itemstack.Collectible;
 
-       
+
         if (activeHotbarSlot.Itemstack.Equals(this.Api.World, this.lastRemoved, GlobalConstants.IgnoredStackAttributes) && !this.ovenInv[0].Empty)
         {
             if (this.TryTake(byPlayer))
@@ -182,15 +184,15 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
                         api.TriggerIngameError((object)this, "notbakeable", Lang.Get("This item is not bakeable."));
                         return true;
                     }
-                                       
+
 
                     if (activeHotbarSlot.Itemstack?.StackSize < 4 & !bakingProperties1.LargeItem)   //если айтемы в стаке меньше 4 
                     {
                         api.TriggerIngameError((object)this, "notbakeable", Lang.Get("Put-into-4-items"));
                         return true;
-                    }                                  
+                    }
 
-                    
+
                 }
 
             }
@@ -226,7 +228,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
                 BakingProperties bakingProperties2 = BakingProperties.ReadFrom(this.ovenInv[0].Itemstack);
                 if (bakingProperties2 != null && bakingProperties2.LargeItem)            //если уже лежит пирог - выход
                 {
-                    break;                    
+                    break;
                 }
             }
         }
@@ -279,8 +281,9 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         if (this.Api is ICoreClientAPI)
             return;
 
+        var ovenBehavior = GetBehavior<BEBehaviorEOven>();
 
-        if (!GetBehavior<BEBehaviorEOven>().isBurned && GetBehavior<BEBehaviorEOven>()?.powerSetting > 0)
+        if (!ovenBehavior.IsBurned && ovenBehavior.PowerSetting > 0)
         {
 
             if (!IsBurning)
@@ -293,7 +296,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         }
         else
         {
-            if (GetBehavior<BEBehaviorEOven>().isBurned)
+            if (ovenBehavior.IsBurned)
             {
                 IsBurning = false;
             }
@@ -308,7 +311,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
                     Api.World.PlaySoundAt(new AssetLocation("electricalprogressiveqol:sounds/din_din_din"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F);
             }
         }
-        
+
 
 
 
@@ -320,8 +323,8 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
             if (this.IsBurning)
             {
                 //чем больше энергии тем выше будет максимальная достижимая температура
-                int power = GetBehavior<BEBehaviorEOven>().powerSetting;
-                float toTemp = Math.Max(EnvTemp, power * maxBakingTemperatureAccepted / GetBehavior<BEBehaviorEOven>().maxConsumption);
+                int power = ovenBehavior.PowerSetting;
+                float toTemp = Math.Max(EnvTemp, power * maxBakingTemperatureAccepted / _maxConsumption);
                 this.ovenTemperature = this.ChangeTemperature(this.ovenTemperature, toTemp, dt * 1.5F);
 
             }
@@ -368,7 +371,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     {
         float temp = this.bakingData[i].temp;
         float val2_1 = temp;
-        float targetTemp=Up                   //при нагревании тянемся к печи, при остывании к окржающей среде
+        float targetTemp = Up                   //при нагревании тянемся к печи, при остывании к окржающей среде
             ? this.ovenTemperature
             : this.EnvironmentTemperature();
 

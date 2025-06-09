@@ -14,19 +14,17 @@ using ElectricalProgressive.Content.Block.EMotor;
 
 namespace ElectricalProgressive.Content.Block.ELamp
 {
-    internal class BlockESmallLamp : Vintagestory.API.Common.Block
+    internal class BlockESmallLamp : BlockEBase
     {
         private readonly static Dictionary<CacheDataKey, MeshData> MeshDataCache = new();
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> SelectionBoxesCache = new();
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> CollisionBoxesCache = new();
 
-        private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
+        /// <summary>
+        /// Заглушка нулевого света
+        /// </summary>
+        private int[] null_HSV = { 0, 0, 0 };
 
-        public override void OnLoaded(ICoreAPI coreApi)
-        {
-            base.OnLoaded(coreApi);
-            
-        }
         public override void OnUnloaded(ICoreAPI api)
         {
             base.OnUnloaded(api);
@@ -53,52 +51,11 @@ namespace ElectricalProgressive.Content.Block.ELamp
             return base.TryPlaceBlock(world, byPlayer, itemstack, blockSel, ref failureCode);
         }
 
-
-        /// <summary>
-        /// Кто-то или что-то коснулось блока и теперь получит урон
-        /// </summary>
-        /// <param name="world"></param>
-        /// <param name="entity"></param>
-        /// <param name="pos"></param>
-        /// <param name="facing"></param>
-        /// <param name="collideSpeed"></param>
-        /// <param name="isImpact"></param>
-        public override void OnEntityCollide(
-            IWorldAccessor world,
-            Entity entity,
-            BlockPos pos,
-            BlockFacing facing,
-            Vec3d collideSpeed,
-            bool isImpact
-        )
-        {
-            // если это клиент, то не надо 
-            if (world.Side == EnumAppSide.Client)
-                return;
-
-            // энтити не живой и не создание? выходим
-            if (!entity.Alive || !entity.IsCreature)
-                return;
-
-            // получаем блокэнтити этого блока
-            var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityELamp;
-
-            // если блокэнтити не найден, выходим
-            if (blockentity == null)
-                return;
-
-            // передаем работу в наш обработчик урона
-            ElectricalProgressive.damageManager.DamageEntity(world, entity, pos, facing, blockentity.AllEparams, this);
-
-        }
-
         public override bool DoPlaceBlock(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ItemStack byItemStack)
         {
             // если блок сгорел, то не ставим
             if (byItemStack.Block.Variant["state"] == "burned")
-            {
                 return false;
-            }
 
             var selection = new Selection(blockSel);
             var facing = FacingHelper.From(selection.Face, selection.Direction);
@@ -117,7 +74,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                 var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
 
                 entity.Eparams = (
-                    new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
+                    new(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
                     FacingHelper.Faces(facing).First().Index);
 
                 return true;
@@ -128,15 +85,20 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
         public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
         {
-            AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
-        {
-            { "tempK", this.Variant["tempK"] },
-            { "state", (this.Variant["state"]=="enabled")? "disabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
-        });
+            var newState = this.Variant["state"] switch
+            {
+                "enabled" => "disabled",
+                "disabled" => "disabled",
+                _ => "burned"
+            };
+            var blockCode = CodeWithVariants(new()
+            {
+                { "tempK", this.Variant["tempK"] },
+                { "state", newState }
+            });
 
-            Vintagestory.API.Common.Block block = world.BlockAccessor.GetBlock(blockCode);
-
-            return new ItemStack(block);
+            var block = world.BlockAccessor.GetBlock(blockCode);
+            return new(block);
         }
 
         public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer,
@@ -165,11 +127,13 @@ namespace ElectricalProgressive.Content.Block.ELamp
         {
             var origin = new Vec3d(0.5, 0.5, 0.5);
 
-            if (
-                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityELamp entity &&
-                entity.Facing != Facing.None
-            )
+            if (this.api.World.BlockAccessor.GetBlockEntity(pos) is not BlockEntityELamp entity ||
+                entity.Facing == Facing.None)
             {
+                return Array.Empty<Cuboidf>();
+            }
+
+
                 var key = CacheDataKey.FromEntity(entity);
 
                 if (!BlockESmallLamp.CollisionBoxesCache.TryGetValue(key, out var boxes))
@@ -279,7 +243,6 @@ namespace ElectricalProgressive.Content.Block.ELamp
                 {
                     return boxes;
                 }
-            }
 
             return Array.Empty<Cuboidf>();
         }
@@ -288,11 +251,13 @@ namespace ElectricalProgressive.Content.Block.ELamp
         {
             var origin = new Vec3d(0.5, 0.5, 0.5);
 
-            if (
-                this.api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityELamp entity &&
-                entity.Facing != Facing.None
-            )
+            if (this.api.World.BlockAccessor.GetBlockEntity(pos) is not BlockEntityELamp entity ||
+                entity.Facing == Facing.None)
             {
+                return Array.Empty<Cuboidf>();
+            }
+
+
                 var key = CacheDataKey.FromEntity(entity);
 
                 if (!BlockESmallLamp.SelectionBoxesCache.TryGetValue(key, out var boxes))
@@ -398,18 +363,11 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         BlockESmallLamp.SelectionBoxesCache.TryAdd(key, boxes);
                 }
 
-                if (boxes != null)
-                {
-                    return boxes;
-                }
-            }
+                if (boxes != null)                
+                    return boxes;              
 
             return Array.Empty<Cuboidf>();
         }
-
-
-
-
 
 
         public override void OnJsonTesselation(ref MeshData sourceMesh, ref int[] lightRgbsByCorner, BlockPos pos, Vintagestory.API.Common.Block[] chunkExtBlocks, int extIndex3d)
@@ -555,6 +513,8 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
                 sourceMesh = meshData;
             }
+
+            sourceMesh = meshData;
         }
 
 

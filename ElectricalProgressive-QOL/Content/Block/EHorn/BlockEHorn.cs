@@ -1,134 +1,92 @@
-﻿
-
-using ElectricalProgressive.Content.Block.EMotor;
-using ElectricalProgressive.Utils;
+﻿using ElectricalProgressive.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
-using Vintagestory.API.Common.Entities;
 using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 
 namespace ElectricalProgressive.Content.Block.EHorn;
 
-public class BlockEHorn : Vintagestory.API.Common.Block
+public class BlockEHorn : BlockEBase
 {
-    private WorldInteraction[]? interactions;
+    private WorldInteraction[]? _interactions;
 
     public override void OnLoaded(ICoreAPI api)
     {
         base.OnLoaded(api);
 
-        if (api is ICoreClientAPI clientApi)
-        {
-            this.interactions = ObjectCacheUtil.GetOrCreate(
-                api,
-                "forgeBlockInteractions",
-                () =>
+        if (api is not ICoreClientAPI clientApi)
+            return;
+
+        this._interactions = ObjectCacheUtil.GetOrCreate(
+            api,
+            "forgeBlockInteractions",
+            () =>
+            {
+                var heatableStacklist = new List<ItemStack>();
+
+                foreach (
+                    var stacks in
+                    from obj in api.World.Collectibles
+                    let firstCodePart = obj.FirstCodePart()
+                    where firstCodePart == "ingot" || firstCodePart == "metalplate" || firstCodePart == "workitem"
+                    select obj.GetHandBookStacks(clientApi)
+                    into stacks
+                    where stacks != null
+                    select stacks
+                )
                 {
-                    var heatableStacklist = new List<ItemStack>();
-
-                    foreach (
-                        var stacks in
-                        from obj in api.World.Collectibles
-                        let firstCodePart = obj.FirstCodePart()
-                        where firstCodePart == "ingot" || firstCodePart == "metalplate" || firstCodePart == "workitem"
-                        select obj.GetHandBookStacks(clientApi)
-                        into stacks
-                        where stacks != null
-                        select stacks
-                    )
-                    {
-                        heatableStacklist.AddRange(stacks);
-                    }
-
-                    return new[]
-                    {
-                        new WorldInteraction
-                        {
-                            ActionLangCode = "blockhelp-forge-addworkitem",
-                            HotKeyCode = "shift",
-                            MouseButton = EnumMouseButton.Right,
-                            Itemstacks = heatableStacklist.ToArray(),
-                            GetMatchingStacks = (worldInteraction, blockSelection, _) =>
-                            {
-                                if (api.World.BlockAccessor.GetBlockEntity(blockSelection.Position) is
-                                    BlockEntityEHorn { Contents: not null } bef)
-                                {
-                                    return worldInteraction.Itemstacks.Where(stack =>
-                                            stack.Equals(api.World, bef.Contents,
-                                                GlobalConstants.IgnoredStackAttributes))
-                                        .ToArray();
-                                }
-
-                                return worldInteraction.Itemstacks;
-                            }
-                        },
-                        new WorldInteraction
-                        {
-                            ActionLangCode = "blockhelp-forge-takeworkitem",
-                            HotKeyCode = null,
-                            MouseButton = EnumMouseButton.Right,
-                            Itemstacks = heatableStacklist.ToArray(),
-                            GetMatchingStacks = (_, blockSelection, _) =>
-                            {
-                                if (api.World.BlockAccessor.GetBlockEntity(blockSelection.Position) is
-                                    BlockEntityEHorn { Contents: not null } bef)
-                                {
-                                    return new[]
-                                    {
-                                        bef.Contents
-                                    };
-                                }
-
-                                return null;
-                            }
-                        }
-                    };
+                    heatableStacklist.AddRange(stacks);
                 }
-            );
-        }
-    }
 
-    /// <summary>
-    /// Кто-то или что-то коснулось блока и теперь получит урон
-    /// </summary>
-    /// <param name="world"></param>
-    /// <param name="entity"></param>
-    /// <param name="pos"></param>
-    /// <param name="facing"></param>
-    /// <param name="collideSpeed"></param>
-    /// <param name="isImpact"></param>
-    public override void OnEntityCollide(
-        IWorldAccessor world,
-        Entity entity,
-        BlockPos pos,
-        BlockFacing facing,
-        Vec3d collideSpeed,
-        bool isImpact
-    )
-    {
-        // если это клиент, то не надо 
-        if (world.Side == EnumAppSide.Client)
-            return;
+                return new[]
+                {
+                    new WorldInteraction
+                    {
+                        ActionLangCode = "blockhelp-forge-addworkitem",
+                        HotKeyCode = "shift",
+                        MouseButton = EnumMouseButton.Right,
+                        Itemstacks = heatableStacklist.ToArray(),
+                        GetMatchingStacks = (worldInteraction, blockSelection, _) =>
+                        {
+                            if (api.World.BlockAccessor.GetBlockEntity(blockSelection.Position) is
+                                BlockEntityEHorn { Contents: not null } bef)
+                            {
+                                return worldInteraction.Itemstacks.Where(stack =>
+                                        stack.Equals(api.World, bef.Contents,
+                                            GlobalConstants.IgnoredStackAttributes))
+                                    .ToArray();
+                            }
 
-        // энтити не живой и не создание? выходим
-        if (!entity.Alive || !entity.IsCreature)
-            return;
+                            return worldInteraction.Itemstacks;
+                        }
+                    },
+                    new WorldInteraction
+                    {
+                        ActionLangCode = "blockhelp-forge-takeworkitem",
+                        HotKeyCode = null,
+                        MouseButton = EnumMouseButton.Right,
+                        Itemstacks = heatableStacklist.ToArray(),
+                        GetMatchingStacks = (_, blockSelection, _) =>
+                        {
+                            if (api.World.BlockAccessor.GetBlockEntity(blockSelection.Position) is
+                                BlockEntityEHorn { Contents: not null } bef)
+                            {
+                                return new[]
+                                {
+                                    bef.Contents
+                                };
+                            }
 
-        // получаем блокэнтити этого блока
-        var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityEHorn;
-
-        // если блокэнтити не найден, выходим
-        if (blockentity == null)
-            return;
-
-        // передаем работу в наш обработчик урона
-        ElectricalProgressive.damageManager.DamageEntity(world, entity, pos, facing, blockentity.AllEparams, this);
-
+                            return null;
+                        }
+                    }
+                };
+            }
+        );
     }
 
     public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemstack,
@@ -166,48 +124,31 @@ public class BlockEHorn : Vintagestory.API.Common.Block
 
     public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
     {
-        AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
+        var newState = this.Variant["state"] switch
         {
-            { "state", (this.Variant["state"]=="enabled")? "disabled":(this.Variant["state"]=="disabled")? "disabled":"burned" },
+            "enabled" => "disabled",
+            "disabled" => "disabled",
+            _ => "burned"
+        };
+        var blockCode = CodeWithVariants(new()
+        {
+            { "state", newState },
             { "side", "south" }
         });
 
-        Vintagestory.API.Common.Block block = world.BlockAccessor.GetBlock(blockCode);
-
-        return new ItemStack(block);
+        var block = world.BlockAccessor.GetBlock(blockCode);
+        return new(block);
     }
 
-    public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer,
-        float dropQuantityMultiplier = 1)
+    public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer, float dropQuantityMultiplier = 1)
     {
         return new[] { OnPickBlock(world, pos) };
     }
 
-    public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection,
-        IPlayer forPlayer)
+    public override WorldInteraction[] GetPlacedBlockInteractionHelp(IWorldAccessor world, BlockSelection selection, IPlayer forPlayer)
     {
-        return this.interactions.Append(base.GetPlacedBlockInteractionHelp(world, selection, forPlayer));
+        return this._interactions.Append(base.GetPlacedBlockInteractionHelp(world, selection, forPlayer));
     }
-
-
-    /// <summary>
-    /// Проверка на возможность установки блока
-    /// </summary>
-    /// <param name="world"></param>
-    /// <param name="byPlayer"></param>
-    /// <param name="blockSelection"></param>
-    /// <param name="byItemStack"></param>
-    /// <returns></returns>
-    public override bool DoPlaceBlock(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSelection, ItemStack byItemStack)
-    {
-        if (byItemStack.Block.Variant["state"] == "burned")
-        {
-            return false;
-        }
-        return base.DoPlaceBlock(world, byPlayer, blockSelection, byItemStack);
-    }
-
-
 
     /// <summary>
     /// Получение информации о предмете в инвентаре

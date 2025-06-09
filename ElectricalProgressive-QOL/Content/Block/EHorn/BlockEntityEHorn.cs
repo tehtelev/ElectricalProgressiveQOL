@@ -13,14 +13,14 @@ using Vintagestory.GameContent;
 
 namespace ElectricalProgressive.Content.Block.EHorn;
 
-public class BlockEntityEHorn : BlockEntity, IHeatSource
+public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
 {
     private readonly Vec3d tmpPos = new();
     private ILoadedSound? ambientSound;
     private bool burning;
     private bool clientSidePrevBurning;
     private double lastTickTotalHours;
-    private double lastPlaySoundDin=0;
+    private double lastPlaySoundDin = 0;
     private float maxTargetTemp => MyMiniLib.GetAttributeFloat(this.Block, "maxTargetTemp", 1100.0F);
     private int maxConsumption => MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
 
@@ -49,37 +49,6 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
         }
     }
 
-    private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
-
-
-    //передает значения из Block в BEBehaviorElectricalProgressive
-    public (EParams, int) Eparams
-    {
-        get => this.ElectricalProgressive?.Eparams ?? (new EParams(), 0);
-        set => this.ElectricalProgressive!.Eparams = value;
-    }
-
-    //передает значения из Block в BEBehaviorElectricalProgressive
-    public EParams[] AllEparams
-    {
-        get => this.ElectricalProgressive?.AllEparams ?? new EParams[]
-                    {
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams()
-                    };
-        set
-        {
-            if (this.ElectricalProgressive != null)
-            {
-                this.ElectricalProgressive.AllEparams = value;
-            }
-        }
-    }
-
     /// <summary>
     /// Отвечает за тепло отдаваемое в окружающую среду
     /// </summary>
@@ -102,8 +71,8 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
 
         if (api is ICoreClientAPI clientApi)
         {
-            clientApi.Event.RegisterRenderer(this.renderer = new ForgeContentsRenderer(this.Pos, clientApi),
-                EnumRenderStage.Opaque, "forge");
+            this.renderer = new(this.Pos, clientApi);
+            clientApi.Event.RegisterRenderer(renderer, EnumRenderStage.Opaque, "forge");
             this.renderer.SetContents(this.Contents, 0, this.burning, true);
 
             this.RegisterGameTickListener(this.OnClientTick, 50);
@@ -120,24 +89,21 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
     /// <param name="dt"></param>
     private void OnClientTick(float dt)
     {
-        ICoreAPI api = this.Api;
-        if ((api != null ? (api.Side == EnumAppSide.Client ? 1 : 0) : 0) != 0 && this.clientSidePrevBurning != this.burning)
+        if (Api.Side == EnumAppSide.Client && this.clientSidePrevBurning != this.burning)
         {
             this.ToggleAmbientSounds(this.IsBurning);
             this.clientSidePrevBurning = this.IsBurning;
         }
 
-
-        //рисуем дым, если горн включен
-        if (this.burning && this.Api.World.Rand.NextDouble() < 0.13 && this.Block.Variant["state"]=="enabled")
+        // рисуем дым, если горн включен
+        if (this.burning && this.Api.World.Rand.NextDouble() < 0.13 && this.Block.Variant["state"] == "enabled")
             BlockEntityCoalPile.SpawnBurningCoalParticles(this.Api, this.Pos.ToVec3d().Add(0.25, 0.875, 0.25), 0.5f, 0.5f);
-
 
         if (this.renderer == null)
             return;
+
         this.renderer.SetContents(this.Contents, 0, this.burning, false);
     }
-
 
     /// <summary>
     /// Тики в общем потоке
@@ -147,24 +113,24 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
     {
         if (this.burning)
         {
-            double num1 = this.Api.World.Calendar.TotalHours - this.lastTickTotalHours;
+            var num1 = this.Api.World.Calendar.TotalHours - this.lastTickTotalHours;
             if (this.Contents != null)  //внутри есть что-то?
             {
-                float temperature = this.Contents.Collectible.GetTemperature(this.Api.World, this.Contents);
-                float power = GetBehavior<BEBehaviorEHorn>().getPowerReceive();
+                var temperature = this.Contents.Collectible.GetTemperature(this.Api.World, this.Contents);
+                var power = GetBehavior<BEBehaviorEHorn>().getPowerReceive();
 
                 if (power > 0.0F && this.Block.Variant["state"] == "disabled")
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
                 }
-                else if (power== 0.0F && this.Block.Variant["state"] == "enabled")
+                else if (power == 0.0F && this.Block.Variant["state"] == "enabled")
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
                 }
 
                 if (temperature < power * maxTargetTemp / maxConsumption)
                 {
-                    float num2 = (float)(num1 * 1500.0);
+                    var num2 = (float)(num1 * 1500.0);
 
                     this.Contents.Collectible.SetTemperature(this.Api.World, this.Contents, Math.Min(power * 11F, temperature + num2));
                 }
@@ -184,12 +150,10 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
                 this.IsBurning = false;
 
                 if (this.Block.Variant["state"] == "enabled")
-                {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
-                }
-
             }
         }
+
         this.tmpPos.Set(this.Pos.X + 0.5, this.Pos.Y + 0.5, this.Pos.Z + 0.5);
 
         double rainLevel = 0;
@@ -199,10 +163,12 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
                         && this.Api.World.BlockAccessor.GetRainMapHeightAt(this.Pos.X, this.Pos.Z) <= this.Pos.Y
                         && (rainLevel = this.weatherSystem!.GetPrecipitation(this.tmpPos)) > 0.1;
 
-        if (rainCheck && this.Api.World.Rand.NextDouble() < rainLevel * 5) {
+        if (rainCheck && this.Api.World.Rand.NextDouble() < rainLevel * 5)
+        {
             var playSound = false;
 
-            if (this.burning) {
+            if (this.burning)
+            {
                 playSound = true;
 
                 this.MarkDirty();
@@ -212,54 +178,46 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
                 ? 0
                 : this.Contents.Collectible.GetTemperature(this.Api.World, this.Contents);
 
-            if (temp > 20) {
+            if (temp > 20)
+            {
                 playSound = temp > 100;
                 this.Contents?.Collectible.SetTemperature(this.Api.World, this.Contents, Math.Min(GetBehavior<BEBehaviorEHorn>().getPowerReceive() * 11F, temp - 8), false);
                 this.MarkDirty();
             }
 
-            if (playSound) {
+            if (playSound)
                 this.Api.World.PlaySoundAt(new AssetLocation("sounds/effect/extinguish"), this.Pos.X + 0.5, this.Pos.Y + 0.75, this.Pos.Z + 0.5, null, false, 16);
-            }
         }
+
         this.lastTickTotalHours = this.Api.World.Calendar.TotalHours;
     }
 
     public void ToggleAmbientSounds(bool on)
     {
         if (this.Api.Side != EnumAppSide.Client)
-        {
             return;
-        }
 
-        if (on)
-        {
-            if (!(this.ambientSound is { IsPlaying: true }))
-            {
-                this.ambientSound = ((IClientWorldAccessor)this.Api.World).LoadSound(
-                    new SoundParams
-                    {
-                        Location = new AssetLocation("sounds/effect/embers.ogg"),
-                        ShouldLoop = true,
-                        Position = this.Pos.ToVec3f().Add(0.5f, 0.25f, 0.5f),
-                        DisposeOnFinish = false,
-                        Volume = 1
-                    }
-                );
-
-                this.ambientSound.Start();
-                
-                
-            }
-        }
-        else
+        if (!on)
         {
             this.ambientSound?.Stop();
             this.ambientSound?.Dispose();
             this.ambientSound = null;
-            
-
+            return;
         }
+
+        if (this.ambientSound is { IsPlaying: true })
+            return;
+
+        this.ambientSound = ((IClientWorldAccessor)this.Api.World).LoadSound(new()
+        {
+            Location = new AssetLocation("sounds/effect/embers.ogg"),
+            ShouldLoop = true,
+            Position = this.Pos.ToVec3f().Add(0.5f, 0.25f, 0.5f),
+            DisposeOnFinish = false,
+            Volume = 1
+        });
+
+        this.ambientSound.Start();
     }
 
     internal bool OnPlayerInteract(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
@@ -267,55 +225,44 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
         //проверяем не сгорел ли прибор
         if (this.Api.World.BlockAccessor.GetBlockEntity(this.Pos) is BlockEntityEHorn entity && entity.AllEparams != null)
         {
-            bool hasBurnout = entity.AllEparams.Any(e => e.burnout);
+            var hasBurnout = entity.AllEparams.Any(e => e.burnout);
             if (hasBurnout)
-            {
                 return false;
-            }
         }
-
 
         var slot = byPlayer.InventoryManager.ActiveHotbarSlot;
         if (!byPlayer.Entity.Controls.ShiftKey)
         {
             if (this.Contents == null)
-            {
                 return false;
-            }
 
             var split = this.Contents.Clone();
             split.StackSize = 1;
             this.Contents.StackSize--;
 
             if (this.Contents.StackSize == 0)
-            {
                 this.Contents = null;
-            }
 
             if (!byPlayer.InventoryManager.TryGiveItemstack(split))
-            {
                 world.SpawnItemEntity(split, this.Pos.ToVec3d().Add(0.5, 0.5, 0.5));
-            }
 
             this.renderer?.SetContents(this.Contents, 0, this.burning, true);
             this.MarkDirty();
-            this.Api.World.PlaySoundAt(new AssetLocation("sounds/block/ingot"), this.Pos.X, this.Pos.Y, this.Pos.Z,
-                byPlayer, false);
+            this.Api.World.PlaySoundAt(new("sounds/block/ingot"), this.Pos.X, this.Pos.Y, this.Pos.Z, byPlayer, false);
 
             return true;
         }
 
         if (slot.Itemstack == null)
-        {
             return false;
-        }
 
         var firstCodePart = slot.Itemstack.Collectible.FirstCodePart();
         var forgableGeneric = slot.Itemstack.Collectible.Attributes?.IsTrue("forgable") == true;
+        var heatable = firstCodePart == "ingot" || firstCodePart == "metalplate" ||
+                       firstCodePart == "workitem" || forgableGeneric;
 
         // Add heatable item
-        if (this.Contents == null && (firstCodePart == "ingot" || firstCodePart == "metalplate" ||
-                                      firstCodePart == "workitem" || forgableGeneric))
+        if (this.Contents == null && heatable)
         {
             this.Contents = slot.Itemstack.Clone();
             this.Contents.StackSize = 1;
@@ -350,8 +297,7 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
             slot.MarkDirty();
 
             this.renderer?.SetContents(this.Contents, 0, this.burning, true);
-            this.Api.World.PlaySoundAt(new AssetLocation("sounds/block/ingot"), this.Pos.X, this.Pos.Y, this.Pos.Z,
-                byPlayer, false);
+            this.Api.World.PlaySoundAt(new("sounds/block/ingot"), this.Pos.X, this.Pos.Y, this.Pos.Z, byPlayer, false);
 
             this.MarkDirty();
 
@@ -370,32 +316,26 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
         if (electricity == null || byItemStack == null)
             return;
 
-        if (electricity != null)
-        {
-            electricity.Connection = Facing.DownAll;
+        electricity.Connection = Facing.DownAll;
 
-            //задаем параметры блока/проводника
-            var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
-            var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
-            var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
-            var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
+        //задаем параметры блока/проводника
+        var voltage = MyMiniLib.GetAttributeInt(byItemStack!.Block, "voltage", 32);
+        var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack!.Block, "maxCurrent", 5.0F);
+        var isolated = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolated", false);
+        var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
 
-            this.ElectricalProgressive!.Connection = Facing.DownAll;
-            this.ElectricalProgressive.Eparams = (
-                new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
-                FacingHelper.Faces(Facing.DownAll).First().Index);
-        }
+        this.ElectricalProgressive!.Connection = Facing.DownAll;
+        this.ElectricalProgressive.Eparams = (
+            new(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
+            FacingHelper.Faces(Facing.DownAll).First().Index);
     }
 
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
 
-        if (this.renderer != null)
-        {
-            this.renderer.Dispose();
-            this.renderer = null;
-        }
+        this.renderer?.Dispose();
+        this.renderer = null;
 
         this.ambientSound?.Dispose();
     }
@@ -405,9 +345,7 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
         base.OnBlockBroken(byPlayer);
 
         if (this.Contents != null)
-        {
             this.Api.World.SpawnItemEntity(this.Contents, this.Pos.ToVec3d().Add(0.5, 0.5, 0.5));
-        }
 
         this.ambientSound?.Dispose();
     }
@@ -421,9 +359,7 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
         this.lastTickTotalHours = tree.GetDouble("lastTickTotalHours");
 
         if (this.Api != null)
-        {
             this.Contents?.ResolveBlockOrItem(this.Api.World);
-        }
 
         this.renderer?.SetContents(this.Contents, 0, this.burning, true);
     }
@@ -434,25 +370,24 @@ public class BlockEntityEHorn : BlockEntity, IHeatSource
 
         tree.SetItemstack("contents", this.Contents);
 
-        tree.SetInt("burning",
-            this.burning
-                ? 1
-                : 0);
+        tree.SetInt("burning", this.burning ? 1 : 0);
 
         tree.SetDouble("lastTickTotalHours", this.lastTickTotalHours);
     }
-    
-    
+
+
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
     {
         base.GetBlockInfo(forPlayer, dsc);
+
         if (this.Contents == null)
             return;
-        int temperature = (int) this.Contents.Collectible.GetTemperature(this.Api.World, this.Contents);
+
+        var temperature = (int)this.Contents.Collectible.GetTemperature(this.Api.World, this.Contents);
         if (temperature <= 25)
-            dsc.AppendLine(Lang.Get("forge-contentsandtemp-cold", (object) this.Contents.StackSize, (object) this.Contents.GetName()));
+            dsc.AppendLine(Lang.Get("forge-contentsandtemp-cold", (object)this.Contents.StackSize, (object)this.Contents.GetName()));
         else
-            dsc.AppendLine(Lang.Get("forge-contentsandtemp", (object) this.Contents.StackSize, (object) this.Contents.GetName(), (object) temperature));
+            dsc.AppendLine(Lang.Get("forge-contentsandtemp", (object)this.Contents.StackSize, (object)this.Contents.GetName(), (object)temperature));
     }
 
     public override void OnLoadCollectibleMappings(IWorldAccessor worldForResolve,

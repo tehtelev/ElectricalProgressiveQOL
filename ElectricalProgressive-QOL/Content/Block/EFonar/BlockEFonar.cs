@@ -13,7 +13,7 @@ using Vintagestory.API.Common.Entities;
 
 namespace ElectricalProgressive.Content.Block.EFonar
 {
-    internal class BlockEFonar : Vintagestory.API.Common.Block
+    internal class BlockEFonar : BlockEBase
     {
         private readonly static Dictionary<CacheDataKey, MeshData> MeshDataCache = new();
         private readonly static Dictionary<CacheDataKey, Cuboidf[]> SelectionBoxesCache = new();
@@ -21,11 +21,6 @@ namespace ElectricalProgressive.Content.Block.EFonar
 
         private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
 
-        public override void OnLoaded(ICoreAPI coreApi)
-        {
-            base.OnLoaded(coreApi);
-            
-        }
         public override void OnUnloaded(ICoreAPI api)
         {
             base.OnUnloaded(api);
@@ -33,46 +28,6 @@ namespace ElectricalProgressive.Content.Block.EFonar
             BlockEFonar.SelectionBoxesCache.Clear();
             BlockEFonar.CollisionBoxesCache.Clear();
         }
-
-
-        /// <summary>
-        /// Кто-то или что-то коснулось блока и теперь получит урон
-        /// </summary>
-        /// <param name="world"></param>
-        /// <param name="entity"></param>
-        /// <param name="pos"></param>
-        /// <param name="facing"></param>
-        /// <param name="collideSpeed"></param>
-        /// <param name="isImpact"></param>
-        public override void OnEntityCollide(
-            IWorldAccessor world,
-            Entity entity,
-            BlockPos pos,
-            BlockFacing facing,
-            Vec3d collideSpeed,
-            bool isImpact
-        )
-        {
-            // если это клиент, то не надо 
-            if (world.Side == EnumAppSide.Client)
-                return;
-
-            // энтити не живой и не создание? выходим
-            if (!entity.Alive || !entity.IsCreature)
-                return;
-
-            // получаем блокэнтити этого блока
-            var blockentity = world.BlockAccessor.GetBlockEntity(pos) as BlockEntityEFonar;
-
-            // если блокэнтити не найден, выходим
-            if (blockentity == null)
-                return;
-
-            // передаем работу в наш обработчик урона
-            ElectricalProgressive.damageManager.DamageEntity(world, entity, pos, facing, blockentity.AllEparams, this);
-
-        }
-
 
         public override bool TryPlaceBlock(IWorldAccessor world, IPlayer byPlayer, ItemStack itemstack, BlockSelection blockSel, ref string failureCode)
         {
@@ -100,14 +55,11 @@ namespace ElectricalProgressive.Content.Block.EFonar
         {
             // если блок сгорел, то не ставим
             if (byItemStack.Block.Variant["state"] == "burned")
-            {
                 return false;
-            }
-
 
             var selection = new Selection(blockSel);
             var facing = FacingHelper.From(selection.Face, BlockFacing.DOWN); //только на стену и смотрит вниз
-            
+
 
             if (
                 facing != Facing.None &&
@@ -115,7 +67,6 @@ namespace ElectricalProgressive.Content.Block.EFonar
                 world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityEFonar entity
             )
             {
-
                 entity.Facing = facing;
 
                 //задаем параметры блока/проводника
@@ -136,14 +87,19 @@ namespace ElectricalProgressive.Content.Block.EFonar
 
         public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
         {
-            AssetLocation blockCode = CodeWithVariants(new Dictionary<string, string>
-        {
-            { "state", (this.Variant["state"]=="enabled")? "disabled":(this.Variant["state"]=="disabled")? "disabled":"burned" }
-        });
+            var newState = this.Variant["state"] switch
+            {
+                "enabled" => "disabled",
+                "disabled" => "disabled",
+                _ => "burned"
+            };
+            var blockCode = CodeWithVariants(new()
+            {
+                { "state", newState }
+            });
 
-            Vintagestory.API.Common.Block block = world.BlockAccessor.GetBlock(blockCode);
-
-            return new ItemStack(block);
+            var block = world.BlockAccessor.GetBlock(blockCode);
+            return new(block);
         }
 
         public override ItemStack[] GetDrops(IWorldAccessor world, BlockPos pos, IPlayer byPlayer,
@@ -172,121 +128,119 @@ namespace ElectricalProgressive.Content.Block.EFonar
         {
             var origin = new Vec3d(0.5, 0.5, 0.5);
 
-            if (
-                api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityEFonar entity &&
-                entity.Facing != Facing.None
-            )
+            if (api.World.BlockAccessor.GetBlockEntity(pos) is not BlockEntityEFonar entity ||
+                entity.Facing == Facing.None)
             {
-                var key = CacheDataKey.FromEntity(entity);
+                return Array.Empty<Cuboidf>();
+            }
 
-                if (!BlockEFonar.CollisionBoxesCache.TryGetValue(key, out var boxes))
+            var key = CacheDataKey.FromEntity(entity);
+
+            if (!BlockEFonar.CollisionBoxesCache.TryGetValue(key, out var boxes))
+            {
+                if ((key.Facing & Facing.NorthEast) != 0)
                 {
-                    if ((key.Facing & Facing.NorthEast) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 270.0f, 0.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.NorthWest) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 90.0f, 0.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.NorthUp) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 0.0f, 0.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.NorthDown) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 180.0f, 0.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.EastNorth) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 0.0f, 90.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.EastSouth) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(180.0f, 0.0f, 90.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.EastUp) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 0.0f, 90.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.EastDown) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(270.0f, 0.0f, 90.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.SouthEast) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 270.0f, 180.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.SouthWest) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 90.0f, 180.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.SouthUp) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 0.0f, 180.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.SouthDown) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 180.0f, 180.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.WestNorth) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 0.0f, 270.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.WestSouth) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(180.0f, 0.0f, 270.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.WestUp) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 0.0f, 270.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.WestDown) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(270.0f, 0.0f, 270.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.UpNorth) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 0.0f, 180.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.UpEast) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 270.0f, 180.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.UpSouth) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 180.0f, 180.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.UpWest) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 180.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.DownNorth) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 0.0f, 0.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.DownEast) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 270.0f, 0.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.DownSouth) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 180.0f, 0.0f, origin)).ToArray();
-                    }
-                    else if ((key.Facing & Facing.DownWest) != 0)
-                    {
-                        boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
-                    }
-
-                    if (boxes != null)
-                        BlockEFonar.CollisionBoxesCache.TryAdd(key, boxes);
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 270.0f, 0.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.NorthWest) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 90.0f, 0.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.NorthUp) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 0.0f, 0.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.NorthDown) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 180.0f, 0.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.EastNorth) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 0.0f, 90.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.EastSouth) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(180.0f, 0.0f, 90.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.EastUp) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 0.0f, 90.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.EastDown) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(270.0f, 0.0f, 90.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.SouthEast) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 270.0f, 180.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.SouthWest) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 90.0f, 180.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.SouthUp) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 0.0f, 180.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.SouthDown) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 180.0f, 180.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.WestNorth) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 0.0f, 270.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.WestSouth) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(180.0f, 0.0f, 270.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.WestUp) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(90.0f, 0.0f, 270.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.WestDown) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(270.0f, 0.0f, 270.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.UpNorth) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 0.0f, 180.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.UpEast) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 270.0f, 180.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.UpSouth) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 180.0f, 180.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.UpWest) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 180.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.DownNorth) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 0.0f, 0.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.DownEast) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 270.0f, 0.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.DownSouth) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 180.0f, 0.0f, origin)).ToArray();
+                }
+                else if ((key.Facing & Facing.DownWest) != 0)
+                {
+                    boxes = CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                 }
 
                 if (boxes != null)
-                {
-                    return boxes;
-                }
+                    BlockEFonar.CollisionBoxesCache.TryAdd(key, boxes);
             }
+
+            if (boxes != null)
+                return boxes;
 
             return Array.Empty<Cuboidf>();
         }
@@ -295,11 +249,12 @@ namespace ElectricalProgressive.Content.Block.EFonar
         {
             var origin = new Vec3d(0.5, 0.5, 0.5);
 
-            if (
-                api.World.BlockAccessor.GetBlockEntity(pos) is BlockEntityEFonar entity &&
-                entity.Facing != Facing.None
-            )
+            if (api.World.BlockAccessor.GetBlockEntity(pos) is not BlockEntityEFonar entity ||
+                entity.Facing == Facing.None)
             {
+                return Array.Empty<Cuboidf>();
+            }
+
                 var key = CacheDataKey.FromEntity(entity);
 
                 if (!BlockEFonar.SelectionBoxesCache.TryGetValue(key, out var boxes))
@@ -405,18 +360,12 @@ namespace ElectricalProgressive.Content.Block.EFonar
                         BlockEFonar.SelectionBoxesCache.TryAdd(key, boxes);
                 }
 
-                if (boxes != null)
-                {
-                    return boxes;
-                }
-            }
+
+            if (boxes != null)
+                return boxes;
 
             return Array.Empty<Cuboidf>();
         }
-
-
-
-
 
 
         public override void OnJsonTesselation(ref MeshData sourceMesh, ref int[] lightRgbsByCorner, BlockPos pos, Vintagestory.API.Common.Block[] chunkExtBlocks, int extIndex3d)
@@ -561,7 +510,6 @@ namespace ElectricalProgressive.Content.Block.EFonar
                 }
 
                 sourceMesh = meshData;
-            }
         }
 
 

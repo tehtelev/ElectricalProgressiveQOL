@@ -6,54 +6,9 @@ using Vintagestory.API.Util;
 
 namespace ElectricalProgressive.Content.Block.EFonar
 {
-    internal class BlockEntityEFonar : BlockEntity
+    internal class BlockEntityEFonar : BlockEntityEFacingBase
     {
-        private Facing facing = Facing.None;
-
-        private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
-
         private BEBehaviorEFonar Behavior => GetBehavior<BEBehaviorEFonar>();
-
-        //передает значения из Block в BEBehaviorElectricalProgressive
-        public (EParams, int) Eparams
-        {
-            get => this.ElectricalProgressive?.Eparams ?? (new EParams(), 0);
-            set => this.ElectricalProgressive!.Eparams = value;
-        }
-
-        //передает значения из Block в BEBehaviorElectricalProgressive
-        public EParams[] AllEparams
-        {
-            get => this.ElectricalProgressive?.AllEparams ?? new EParams[]
-                        {
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams(),
-                        new EParams()
-                        };
-            set
-            {
-                if (this.ElectricalProgressive != null)
-                {
-                    this.ElectricalProgressive.AllEparams = value;
-                }
-            }
-        }
-
-        public Facing Facing
-        {
-            get => facing;
-            set
-            {
-                if (value != facing)
-                {                
-                        ElectricalProgressive!.Connection = value;
-                        facing = value;
-                }
-            }
-        }
 
         public bool IsEnabled => Behavior.LightLevel >= 1;
 
@@ -61,7 +16,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
         {
             base.ToTreeAttributes(tree);
 
-            tree.SetBytes("electricalprogressive:facing", SerializerUtil.Serialize(facing));
+            tree.SetBytes(FacingKey, SerializerUtil.Serialize(Facing));
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
@@ -70,7 +25,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
 
             try
             {
-                facing = SerializerUtil.Deserialize<Facing>(tree.GetBytes("electricalprogressive:facing"));
+                Facing = SerializerUtil.Deserialize<Facing>(tree.GetBytes(FacingKey));
             }
             catch (Exception exception)
             {

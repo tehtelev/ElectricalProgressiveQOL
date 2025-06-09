@@ -17,72 +17,45 @@ namespace ElectricalProgressive.Content.Block.EFreezer;
 
 class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 {
-    private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
-    private static readonly Vec3f center = new Vec3f(0.5f, 0.25f, 0.5f);
-    internal InventoryBase inventory;
-    GuiEFreezer freezerDialog;
-    ICoreClientAPI capi;
-    public bool isOpened;
-    public int closedDelay;
-    protected MeshData[] meshes;
-    protected Shape nowTesselatingShape;
-    protected CollectibleObject nowTesselatingObj;
-    public int maxConsumption;
+    public bool IsOpened { get; set; }
+    private int _closedDelay;
 
-    public override InventoryBase Inventory => inventory;
+    private InventoryBase _inventory;
+    private GuiEFreezer? _freezerDialog;
+    private ICoreClientAPI _capi;
 
-    public override string InventoryClassName => "efreezer";
+    private MeshData?[] _meshes;
+    private Shape? _nowTesselatingShape;
+    private CollectibleObject _nowTesselatingObj;
 
-    // Передает значения из Block в BEBehaviorElectricalProgressive
-    public (EParams, int) Eparams
-    {
-        get => this.ElectricalProgressive?.Eparams ?? (new EParams(), 0);
-        set => this.ElectricalProgressive!.Eparams = value;
-    }
-
-    // Передает значения из Block в BEBehaviorElectricalProgressive
-    public EParams[] AllEparams
-    {
-        get => this.ElectricalProgressive?.AllEparams ?? new EParams[]
-        {
-            new EParams(),
-            new EParams(),
-            new EParams(),
-            new EParams(),
-            new EParams(),
-            new EParams()
-        };
-        set
-        {
-            if (this.ElectricalProgressive != null)
-            {
-                this.ElectricalProgressive.AllEparams = value;
-            }
-        }
-    }
+    private readonly int _maxConsumption;
 
     public BlockEntityEFreezer()
     {
-        maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
-        isOpened = false;
-        closedDelay = 0;
+        _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
+        IsOpened = false;
+        _closedDelay = 0;
 
         // Инициализируем инвентарь раньше всего
-        inventory = new InventoryGeneric(6, null, null);
+        _inventory = new InventoryGeneric(6, null, null);
     }
+
+    public override InventoryBase Inventory => _inventory;
+
+    public override string InventoryClassName => "efreezer";
 
     public override void Initialize(ICoreAPI api)
     {
         // Инициализируем инвентарь
-        inventory.Pos = Pos;
-        inventory.LateInitialize(InventoryClassName + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
+        _inventory.Pos = Pos;
+        _inventory.LateInitialize(InventoryClassName + "-" + Pos.X + "/" + Pos.Y + "/" + Pos.Z, api);
 
         base.Initialize(api);
 
         if (api.Side == EnumAppSide.Client)
-            capi = api as ICoreClientAPI;
+            _capi = api as ICoreClientAPI;
 
-        meshes = new MeshData[inventory.Count];
+        _meshes = new MeshData[_inventory.Count];
 
         // Как только инвентарь изменится — подписываемся на событие изменения любого слота и перерисовываем их все
         Inventory.SlotModified += slotId =>
@@ -103,107 +76,82 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         if (Api == null || Api.Side == EnumAppSide.Server)
             return;
 
-        if (slotid >= inventory.Count)
+        if (slotid >= _inventory.Count)
             return;
 
-        if (inventory[slotid].Empty)
+        if (_inventory[slotid].Empty)
         {
-            meshes[slotid] = null;
+            _meshes[slotid] = null;
             return;
         }
 
-        MeshData meshData = GenMesh(inventory[slotid].Itemstack);
+        var meshData = GenMesh(_inventory[slotid].Itemstack);
         if (meshData != null)
         {
             TranslateMesh(meshData, slotid);
-            meshes[slotid] = meshData;
+            _meshes[slotid] = meshData;
         }
         else
         {
-            meshes[slotid] = null;
+            _meshes[slotid] = null;
         }
     }
 
-    public void TranslateMesh(MeshData meshData, int slotId)
+    public void TranslateMesh(MeshData? meshData, int slotId)
     {
         if (meshData == null)
             return;
-        float x = 0;
-        float y = 0;
-        float stdoffset = 0.2f;
-        switch (slotId)
+
+        const float stdoffset = 0.2f;
+
+        var (x, y) = slotId switch
         {
-            case 0:
-                {
-                    x = -stdoffset;
-                    y = 1.435f;
-                    break;
-                }
-            case 1:
-                {
-                    x = +stdoffset;
-                    y = 1.435f;
-                    break;
-                }
-            case 2:
-                {
-                    x = -stdoffset;
-                    y = 0.81f;
-                    break;
-                }
-            case 3:
-                {
-                    x = +stdoffset;
-                    y = 0.81f;
-                    break;
-                }
-            case 4:
-                {
-                    x = -stdoffset;
-                    y = 0.19f;
-                    break;
-                }
-            case 5:
-                {
-                    x = +stdoffset;
-                    y = 0.19f;
-                    break;
-                }
-        }
+            0 => (-stdoffset, 1.435f),
+            1 => (+stdoffset, 1.435f),
+            2 => (-stdoffset, 0.81f),
+            3 => (+stdoffset, 0.81f),
+            4 => (-stdoffset, 0.19f),
+            5 => (+stdoffset, 0.19f),
+            _ => (0, 0)
+        };
 
         if (!Inventory[slotId].Empty)
         {
             if (Inventory[slotId].Itemstack.Class == EnumItemClass.Block)
             {
-                meshData.Scale(new Vec3f(0.5f, 0, 0.5f), 0.53f, 0.53f, 0.53f);
-                meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, 8 * GameMath.DEG2RAD, 0);
+                meshData.Scale(new(0.5f, 0, 0.5f), 0.53f, 0.53f, 0.53f);
+                meshData.Rotate(new(0.5f, 0, 0.5f), 0, 8 * GameMath.DEG2RAD, 0);
             }
             else
             {
-                meshData.Scale(new Vec3f(0.5f, 0, 0.5f), 0.8f, 0.8f, 0.8f);
-                meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, 15 * GameMath.DEG2RAD, 0);
+                meshData.Scale(new(0.5f, 0, 0.5f), 0.8f, 0.8f, 0.8f);
+                meshData.Rotate(new(0.5f, 0, 0.5f), 0, 15 * GameMath.DEG2RAD, 0);
             }
         }
 
         meshData.Translate(x, y, 0.025f);
 
-        int orientationRotate = 0;
-        if (Block.Variant["horizontalorientation"] == "east") orientationRotate = 270;
-        if (Block.Variant["horizontalorientation"] == "south") orientationRotate = 180;
-        if (Block.Variant["horizontalorientation"] == "west") orientationRotate = 90;
+        var orientationRotate = Block.Variant["horizontalorientation"] switch
+        {
+            "east" => 270,
+            "south" => 180,
+            "west" => 90,
+            _ => 0
+        };
+
         meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, orientationRotate * GameMath.DEG2RAD, 0);
     }
 
-    public Size2i AtlasSize => capi.BlockTextureAtlas.Size;
+    public Size2i AtlasSize => _capi.BlockTextureAtlas.Size;
 
     public TextureAtlasPosition this[string textureCode]
     {
         get
         {
-            AssetLocation assetLocation = null;
+            var assetLocation = default(AssetLocation?);
 
             // Пробуем получить текстуру из item.Textures
-            if (nowTesselatingObj is Vintagestory.API.Common.Item item)
+            if (_nowTesselatingObj is Vintagestory.API.Common.Item item)
             {
                 if (item.Textures.TryGetValue(textureCode, out var compositeTexture))
                 {
@@ -214,7 +162,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
                     assetLocation = compositeTexture.Baked.BakedName;
                 }
             }
-            else if (nowTesselatingObj is Vintagestory.API.Common.Block block)
+            else if (_nowTesselatingObj is Vintagestory.API.Common.Block block)
             {
                 if (block.Textures.TryGetValue(textureCode, out var compositeTexture))
                 {
@@ -227,78 +175,75 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
             }
 
             // Если не нашли, пробуем из shape.Textures
-            if (assetLocation == null && nowTesselatingShape != null)
+            if (assetLocation == null && _nowTesselatingShape != null)
             {
-                nowTesselatingShape.Textures.TryGetValue(textureCode, out assetLocation);
+                _nowTesselatingShape.Textures.TryGetValue(textureCode, out assetLocation);
             }
 
             // Если все еще не нашли, используем домен предмета и предполагаемый путь
             if (assetLocation == null)
             {
-                string domain = nowTesselatingObj.Code.Domain;
-                assetLocation = new AssetLocation(domain, "textures/item/" + textureCode);
+                var domain = _nowTesselatingObj.Code.Domain;
+                assetLocation = new(domain, "textures/item/" + textureCode);
                 Api.World.Logger.Warning("Текстура {0} не найдена в текстурах предмета или формы, используется путь: {1}", textureCode, assetLocation);
             }
-            
+
             return getOrCreateTexPos(assetLocation);
         }
     }
 
-    private TextureAtlasPosition getOrCreateTexPos(AssetLocation texturePath)
+    private TextureAtlasPosition? getOrCreateTexPos(AssetLocation texturePath)
     {
-        TextureAtlasPosition textureAtlasPosition = capi.BlockTextureAtlas[texturePath];
-        if (textureAtlasPosition == null)
+        var textureAtlasPosition = _capi.BlockTextureAtlas[texturePath];
+        if (textureAtlasPosition != null)
+            return textureAtlasPosition;
+
+        // берем только base текстуру (первую из кучи наваленных)
+        var pos = texturePath.Path.IndexOf("++");
+        if (pos >= 0)
+            texturePath.Path = texturePath.Path.Substring(0, pos);
+
+        var asset = _capi.Assets.TryGet(texturePath.Clone().WithPathPrefixOnce("textures/").WithPathAppendixOnce(".png"));
+        if (asset != null)
         {
-            // берем только base текстуру (первую из кучи наваленных)
-            int pos = texturePath.Path.IndexOf("++");
-            if (pos >= 0)
-            {
-                texturePath.Path = texturePath.Path.Substring(0, pos);
-            }
-
-
-            IAsset asset = capi.Assets.TryGet(texturePath.Clone().WithPathPrefixOnce("textures/").WithPathAppendixOnce(".png"));
-            if (asset != null)
-            {
-                int num;
-                capi.BlockTextureAtlas.GetOrInsertTexture(texturePath, out num, out textureAtlasPosition, null, 0.005f);
-            }
-            else
-            {
-                Api.World.Logger.Warning("Текстура не найдена по пути: {0}", texturePath);
-            }
+            _capi.BlockTextureAtlas.GetOrInsertTexture(texturePath, out var num, out textureAtlasPosition, null, 0.005f);
         }
+        else
+        {
+            Api.World.Logger.Warning("Текстура не найдена по пути: {0}", texturePath);
+        }
+
         return textureAtlasPosition;
     }
 
     // Рисуем meshы
-    public MeshData GenMesh(ItemStack stack)
+    public MeshData? GenMesh(ItemStack stack)
     {
-        IContainedMeshSource meshsource = stack.Collectible as IContainedMeshSource;
+        var meshSource = stack.Collectible as IContainedMeshSource;
         MeshData meshData;
-        if (meshsource != null)
+
+        if (meshSource != null)
         {
-            meshData = meshsource.GenMesh(stack, capi.BlockTextureAtlas, Pos);
+            meshData = meshSource.GenMesh(stack, _capi.BlockTextureAtlas, Pos);
             meshData.Rotate(new Vec3f(0.5f, 0.5f, 0.5f), 0f, Block.Shape.rotateY * 0.0174532924f, 0f);
         }
         else
         {
             if (stack.Class == EnumItemClass.Block)
             {
-                meshData = capi.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
+                meshData = _capi.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
             }
             else
             {
-                nowTesselatingObj = stack.Collectible;
-                nowTesselatingShape = null;
+                _nowTesselatingObj = stack.Collectible;
+                _nowTesselatingShape = null;
+
                 if (stack.Item.Shape != null)
-                {
-                    nowTesselatingShape = capi.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
-                }
+                    _nowTesselatingShape = _capi.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
 
                 try
                 {
-                    capi.Tesselator.TesselateItem(stack.Item, out meshData, this);
+                    _capi.Tesselator.TesselateItem(stack.Item, out meshData, this);
                     meshData.RenderPassesAndExtraBits.Fill((short)2);
                 }
                 catch (Exception e)
@@ -307,30 +252,29 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
                     meshData = null;
                 }
 
-                capi.TesselatorManager.ThreadDispose(); // Проверьте, нужен ли этот вызов
+                _capi.TesselatorManager.ThreadDispose(); // Проверьте, нужен ли этот вызов
             }
         }
+
         return meshData;
     }
 
     public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
     {
-        for (int i = 0; i < meshes.Length; i++)
+        for (var i = 0; i < _meshes.Length; i++)
         {
-            if (meshes[i] != null)
-            {
-                mesher.AddMeshData(meshes[i]);
-            }
+            if (_meshes[i] != null)
+                mesher.AddMeshData(_meshes[i]);
         }
+
         return false;
     }
 
     public void UpdateMeshes()
     {
-        for (int i = 0; i < inventory.Count; i++)
-        {
+        for (var i = 0; i < _inventory.Count; i++)
             UpdateMesh(i);
-        }
+
         MarkDirty(true);
     }
 
@@ -340,28 +284,29 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     /// <param name="dt"></param>
     private void FreezerTick(float dt)
     {
-        if (Api.Side == EnumAppSide.Server && this.Block.Variant["status"] != "burned")
+        if (Api.Side != EnumAppSide.Server || this.Block.Variant["status"] == "burned")
+            return;
+
+        TryRefuel();
+
+        if (GetBehavior<BEBehaviorEFreezer>().PowerSetting < _maxConsumption * 0.1F && this.Block.Variant["status"] != "melted")
         {
-            TryRefuel();
-            if (GetBehavior<BEBehaviorEFreezer>().powerSetting < maxConsumption * 0.1F && this.Block.Variant["status"] != "melted")
-            {
-                Vintagestory.API.Common.Block originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
-                AssetLocation newBlockAL = originalBlock.CodeWithVariant("status", "melted");
-                Vintagestory.API.Common.Block newBlock = Api.World.GetBlock(newBlockAL);
-                Api.World.BlockAccessor.ExchangeBlock(newBlock.Id, Pos);
-                MarkDirty();
-            }
+            var originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
+            var newBlockAL = originalBlock.CodeWithVariant("status", "melted");
+            var newBlock = Api.World.GetBlock(newBlockAL);
+            Api.World.BlockAccessor.ExchangeBlock(newBlock.Id, Pos);
+            MarkDirty();
         }
     }
 
     private void TryRefuel()
     {
         // Энергии хватает?
-        if (GetBehavior<BEBehaviorEFreezer>().powerSetting >= maxConsumption * 0.1F && this.Block.Variant["status"] != "frozen")
+        if (GetBehavior<BEBehaviorEFreezer>().PowerSetting >= _maxConsumption * 0.1F && this.Block.Variant["status"] != "frozen")
         {
-            Vintagestory.API.Common.Block originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
-            AssetLocation newBlockAL = originalBlock.CodeWithVariant("status", "frozen");
-            Vintagestory.API.Common.Block newBlock = Api.World.GetBlock(newBlockAL);
+            var originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
+            var newBlockAL = originalBlock.CodeWithVariant("status", "frozen");
+            var newBlock = Api.World.GetBlock(newBlockAL);
             Api.World.BlockAccessor.ExchangeBlock(newBlock.Id, Pos);
             MarkDirty();
         }
@@ -369,18 +314,14 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 
     public void OnBlockInteract(IPlayer byPlayer, bool isOwner, BlockSelection blockSel)
     {
-        if (Api.Side == EnumAppSide.Client)
-        {
-            // Логика клиента
-        }
-        else
+        if (Api.Side == EnumAppSide.Server)
         {
             byte[] data;
-            using (MemoryStream ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
-                BinaryWriter writer = new BinaryWriter(ms);
-                TreeAttribute tree = new TreeAttribute();
-                inventory.ToTreeAttributes(tree);
+                var writer = new BinaryWriter(ms);
+                var tree = new TreeAttribute();
+                _inventory.ToTreeAttributes(tree);
                 tree.ToBytes(writer);
                 data = ms.ToArray();
             }
@@ -392,7 +333,11 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
                 data
             );
 
-            byPlayer.InventoryManager.OpenInventory(inventory);
+            byPlayer.InventoryManager.OpenInventory(_inventory);
+        }
+        else
+        {
+            // Логика клиента
         }
     }
 
@@ -400,123 +345,109 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
     {
         base.FromTreeAttributes(tree, worldForResolving);
 
-        closedDelay = tree.GetInt("closedDelay");
-        isOpened = tree.GetBool("isOpened");
+        _closedDelay = tree.GetInt("closedDelay");
+        IsOpened = tree.GetBool("isOpened");
 
-        if (Api != null)
-        {
-            inventory.AfterBlocksLoaded(Api.World);
-            if (Api.Side == EnumAppSide.Client)
-            {
-                UpdateMeshes();
-            }
-        }
+        if (Api == null)
+            return;
+
+        _inventory.AfterBlocksLoaded(Api.World);
+        if (Api.Side == EnumAppSide.Client)
+            UpdateMeshes();
     }
 
     public override void ToTreeAttributes(ITreeAttribute tree)
     {
         base.ToTreeAttributes(tree);
 
-        tree.SetInt("closedDelay", closedDelay);
-        tree.SetBool("isOpened", isOpened);
+        tree.SetInt("closedDelay", _closedDelay);
+        tree.SetBool("isOpened", IsOpened);
     }
 
     public override void OnReceivedClientPacket(IPlayer fromPlayer, int packetid, byte[] data)
     {
-        if (packetid <= 1000)
-        {
-            inventory.InvNetworkUtil.HandleClientPacket(fromPlayer, packetid, data);
-        }
+        if (packetid <= (int)EnumBlockEntityPacketId.Open)
+            _inventory.InvNetworkUtil.HandleClientPacket(fromPlayer, packetid, data);
 
         if (packetid == (int)EnumBlockEntityPacketId.Close)
-        {
-            if (fromPlayer.InventoryManager != null)
-            {
-                fromPlayer.InventoryManager.CloseInventory(Inventory);
-            }
-        }
+            fromPlayer.InventoryManager?.CloseInventory(Inventory);
     }
 
     public override void OnReceivedServerPacket(int packetid, byte[] data)
     {
         base.OnReceivedServerPacket(packetid, data);
 
+        var clientWorld = (IClientWorldAccessor)Api.World;
+
         if (packetid == (int)EnumBlockStovePacket.OpenGUI)
         {
-            using (MemoryStream ms = new MemoryStream(data))
+            using (var ms = new MemoryStream(data))
             {
-                BinaryReader reader = new BinaryReader(ms);
-                TreeAttribute tree = new TreeAttribute();
+                var reader = new BinaryReader(ms);
+                var tree = new TreeAttribute();
                 tree.FromBytes(reader);
                 Inventory.FromTreeAttributes(tree);
                 Inventory.ResolveBlocksOrItems();
 
-                IClientWorldAccessor clientWorld = (IClientWorldAccessor)Api.World;
 
-                if (freezerDialog == null)
+                if (_freezerDialog == null)
                 {
-                    freezerDialog = new GuiEFreezer(Lang.Get("freezer-title-gui"), Inventory, Pos, Api as ICoreClientAPI);
-                    freezerDialog.OnClosed += () => { freezerDialog = null; };
+                    _freezerDialog = new(Lang.Get("freezer-title-gui"), Inventory, Pos, Api as ICoreClientAPI);
+                    _freezerDialog.OnClosed += () =>
+                    {
+                        _freezerDialog = null;
+                    };
                 }
 
-                freezerDialog.TryOpen();
+                _freezerDialog.TryOpen();
             }
         }
 
         if (packetid == (int)EnumBlockEntityPacketId.Close)
         {
-            (Api.World as IClientWorldAccessor).Player.InventoryManager.CloseInventory(Inventory);
-            freezerDialog?.TryClose();
-            freezerDialog?.Dispose();
-            freezerDialog = null;
+            clientWorld.Player.InventoryManager.CloseInventory(Inventory);
+            _freezerDialog?.TryClose();
+            _freezerDialog?.Dispose();
+            _freezerDialog = null;
         }
     }
 
     public override float GetPerishRate()
     {
-        float initial = base.GetPerishRate();
-        EnumAppSide side = Api.Side;
-        if (GetBehavior<BEBehaviorEFreezer>().powerSetting < maxConsumption * 0.1F)
+        var initial = base.GetPerishRate();
+        var side = Api.Side;
+        if (GetBehavior<BEBehaviorEFreezer>().PowerSetting < _maxConsumption * 0.1F)
             return initial;
+
         return 0.05F;
     }
 
     public override void OnBlockPlaced(ItemStack? byItemStack = null)
     {
         base.OnBlockPlaced(byItemStack);
-        var electricity = ElectricalProgressive;
 
-        if (electricity == null || byItemStack == null)
+        if (ElectricalProgressive == null || byItemStack == null)
             return;
 
-        if (electricity != null)
-        {
-            electricity.Connection = Facing.DownAll;
+        ElectricalProgressive.Connection = Facing.DownAll;
 
-            // Задаем параметры блока/проводника
-            var voltage = MyMiniLib.GetAttributeInt(byItemStack.Block, "voltage", 32);
-            var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack.Block, "maxCurrent", 5.0F);
-            var isolated = MyMiniLib.GetAttributeBool(byItemStack.Block, "isolated", false);
-            var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
+        // Задаем параметры блока/проводника
+        var voltage = MyMiniLib.GetAttributeInt(byItemStack.Block, "voltage", 32);
+        var maxCurrent = MyMiniLib.GetAttributeFloat(byItemStack.Block, "maxCurrent", 5.0F);
+        var isolated = MyMiniLib.GetAttributeBool(byItemStack.Block, "isolated", false);
+        var isolatedEnvironment = MyMiniLib.GetAttributeBool(byItemStack!.Block, "isolatedEnvironment", false);
 
-            this.ElectricalProgressive.Eparams = (
-                new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
-                FacingHelper.Faces(Facing.DownAll).First().Index);
-        }
+        this.ElectricalProgressive.Eparams = (
+            new EParams(voltage, maxCurrent, "", 0, 1, 1, false, isolated, isolatedEnvironment),
+            FacingHelper.Faces(Facing.DownAll).First().Index);
     }
 
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
 
-        if (freezerDialog != null)
-        {
-            freezerDialog.TryClose();
-            if (freezerDialog != null)
-            {
-                freezerDialog.Dispose();
-                freezerDialog = null;
-            }
-        }
+        _freezerDialog?.TryClose();
+        _freezerDialog?.Dispose();
+        _freezerDialog = null;
     }
 }
