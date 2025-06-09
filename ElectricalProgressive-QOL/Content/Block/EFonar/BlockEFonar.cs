@@ -510,6 +510,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
                 }
 
                 sourceMesh = meshData;
+            }
         }
 
 

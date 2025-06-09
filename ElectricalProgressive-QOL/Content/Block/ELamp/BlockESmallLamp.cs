@@ -514,7 +514,6 @@ namespace ElectricalProgressive.Content.Block.ELamp
                 sourceMesh = meshData;
             }
 
-            sourceMesh = meshData;
         }
 
 
