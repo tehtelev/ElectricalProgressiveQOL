@@ -1,4 +1,5 @@
-﻿using ElectricalProgressive.Interface;
+﻿using Cairo.Freetype;
+using ElectricalProgressive.Interface;
 using ElectricalProgressive.Utils;
 using System.Linq;
 using System.Text;
@@ -10,10 +11,7 @@ namespace ElectricalProgressive.Content.Block.EHorn;
 
 public class BEBehaviorEHorn : BEBehaviorBase, IElectricConsumer
 {
-    /// <summary>
-    /// Нужно энергии (сохраняется)
-    /// </summary>
-    private float _powerRequest;
+
 
     /// <summary>
     /// Дали энергии  (сохраняется)
@@ -73,26 +71,14 @@ public class BEBehaviorEHorn : BEBehaviorBase, IElectricConsumer
         stringBuilder.AppendLine();
     }
 
-    public override void ToTreeAttributes(ITreeAttribute tree)
-    {
-        base.ToTreeAttributes(tree);
-        tree.SetFloat("electricalprogressive:powerRequest", _powerRequest);
-        tree.SetFloat("electricalprogressive:powerRecieve", _powerReceive);
-    }
 
-    public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
-    {
-        base.FromTreeAttributes(tree, worldAccessForResolve);
-        _powerRequest = tree.GetFloat("electricalprogressive:powerRequest");
-        _powerReceive = tree.GetFloat("electricalprogressive:powerReceive");
-    }
 
     #region IElectricConsumer
 
     public float Consume_request()
     {
         if (HasItems)
-            return this._powerRequest;
+            return _maxConsumption;
 
         return 0;
     }
@@ -140,7 +126,7 @@ public class BEBehaviorEHorn : BEBehaviorBase, IElectricConsumer
     public float getPowerRequest()
     {
         if (HasItems)
-            return this._powerRequest;
+            return _maxConsumption;
 
         return 0;
     }
