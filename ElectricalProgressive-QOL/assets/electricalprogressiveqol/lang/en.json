@@ -66,14 +66,6 @@
   "block-elamp_small-8000-burned": "Small Electric Lamp (Burned)",
   "block-elamp_small-9000-burned": "Small Electric Lamp (Burned)",
 
-  "item-edrill": "Electric Drill",
-  "item-echisel": "Electric Punch Machine",
-
-  "item-edrilltip": "Drill Tip",
-  "item-eaxe": "Electric Axe",
-
-  "game:drill1": "Mines 1X1 block",
-  "game:drill2": "Mines 1X3 blocks",
 
   "block-handbooktitle-eoven": "Usage",
   "block-handbooktext-eoven": "The electric oven fully replaces the furnace. Automatically turns off when baking is complete. No more burnt items!",
@@ -109,17 +101,6 @@
   "block-handbooktitle-efreezer": "Usage",
   "block-handbooktext-efreezer": "The electric freezer extends food preservation.<br><br>Storage slots: 6.<br>Food spoilage rate: 0.05x",
 
-  "item-handbooktitle-edrill": "Usage",
-  "item-handbooktext-edrill": "Mining reaches a new level. Operates in two modes: 1x1 and 1x3.<br>Stops working when discharged. Remember to recharge!",
-
-  "item-handbooktitle-echisel": "Usage",
-  "item-handbooktext-echisel": "Acts like a battery-powered chisel! No need for a hammer in your left hand. Not used in recipes.<br>Will stop working when the battery is depleted. Remember to recharge!",
-
-  "item-handbooktitle-edrilltip": "Usage",
-  "item-handbooktext-edrilltip": "Core component for the electric drill.",
-
-  "item-handbooktitle-eaxe": "Usage",
-  "item-handbooktext-eaxe": "Excellent for chopping. Not used in recipes.<br>Stops working when discharged. Remember to recharge!",
 
   "game:BlockEStove": "Electric Stove",
   "game:freezer-title-gui": "Freezer",
@@ -128,5 +109,29 @@
 
   "game:Put-into-4-items": "At least 4 items required for baking.",
   "game:max-light": "Max light",
-  "game:height": "Height"
+  "game:height": "Height",
+
+
+
+  "item-edrill": "Electric Drill (Deprecated)",
+  "item-echisel": "Electric Chisel (Deprecated)",
+  "item-edrilltip": "Drill Bit (Deprecated)",
+  "item-eaxe": "Electric Axe (Deprecated)",
+
+  "game:drill1": "Digs a 1×1 block",
+  "game:drill2": "Digs a 1×3 block area",
+
+  "item-handbooktitle-edrill": "Usage",
+  "item-handbooktext-edrill": "Place in the crafting grid to convert the item for moving it into the EP: Equipment code.",
+
+  "item-handbooktitle-echisel": "Usage",
+  "item-handbooktext-echisel": "Place in the crafting grid to convert the item for moving it into the EP: Equipment code.",
+
+  "item-handbooktitle-edrilltip": "Usage",
+  "item-handbooktext-edrilltip": "Place in the crafting grid to convert the item for moving it into the EP: Equipment code.",
+
+  "item-handbooktitle-eaxe": "Usage",
+  "item-handbooktext-eaxe": "Place in the crafting grid to convert the item for moving it into the EP: Equipment code."
+
+
 }

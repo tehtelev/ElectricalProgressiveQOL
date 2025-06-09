@@ -66,14 +66,6 @@
   "block-elamp_small-8000-burned": "Petite lampe électrique (brûlée)",
   "block-elamp_small-9000-burned": "Petite lampe électrique (brûlée)",
 
-  "item-edrill": "Foreuse électrique",
-  "item-echisel": "Perceuse-Poinçonneuse Électrique",
-
-  "item-edrilltip": "Embout de foreuse",
-  "item-eaxe": "Hache électrique",
-
-  "game:drill1": "Creuse 1X1 bloc",
-  "game:drill2": "Creuse 1X3 blocs",
 
   "block-handbooktitle-eoven": "Utilisation",
   "block-handbooktext-eoven": "Le four électrique remplace entièrement le four traditionnel. Il s'éteint automatiquement une fois la cuisson terminée. Plus de nourriture brûlée !",
@@ -106,17 +98,6 @@
   "block-handbooktitle-efreezer": "Utilisation",
   "block-handbooktext-efreezer": "Le congélateur électrique prolonge la conservation des aliments.<br><br>Emplacements de stockage : 6.<br>Taux de détérioration : 0,05x",
 
-  "item-handbooktitle-edrill": "Utilisation",
-  "item-handbooktext-edrill": "L'extraction minière passe à un niveau supérieur. Fonctionne en deux modes : 1x1 et 1x3.<br>Cesse de fonctionner une fois déchargée. N'oubliez pas de la recharger !",
-
-  "item-handbooktitle-echisel": "Utilisation",
-  "item-handbooktext-echisel": "Fonctionne comme un burin sur batterie ! Pas besoin de marteau dans la main gauche. Non utilisé dans les recettes.<br>S'arrête lorsque la batterie est vide. N'oubliez pas de le recharger !",
-
-  "item-handbooktitle-edrilltip": "Utilisation",
-  "item-handbooktext-edrilltip": "Composant principal pour la foreuse électrique.",
-
-  "item-handbooktitle-eaxe": "Utilisation",
-  "item-handbooktext-eaxe": "Excellente pour couper du bois. Non utilisée dans les recettes.<br>Cesse de fonctionner une fois déchargée. N'oubliez pas de la recharger !",
 
   "game:BlockEStove": "Plaque électrique",
   "game:freezer-title-gui": "Congélateur",
@@ -125,5 +106,28 @@
 
   "game:Put-into-4-items": "Au moins 4 objets requis pour la cuisson.",
   "game:max-light": "Lumière maximale",
-  "game:height": "Hauteur"
+  "game:height": "Hauteur",
+
+
+  "item-edrill": "Perceuse électrique (obsolète)",
+  "item-echisel": "Ciseau électrique (obsolète)",
+  "item-edrilltip": "Pointe de foret (obsolète)",
+  "item-eaxe": "Hache électrique (obsolète)",
+
+  "game:drill1": "Creuse un bloc 1×1",
+  "game:drill2": "Creuse une zone 1×3 blocs",
+
+  "item-handbooktitle-edrill": "Utilisation",
+  "item-handbooktext-edrill": "Placez dans la grille d'artisanat pour convertir l'objet et le déplacer dans le code EP : Equipment.",
+
+  "item-handbooktitle-echisel": "Utilisation",
+  "item-handbooktext-echisel": "Placez dans la grille d'artisanat pour convertir l'objet et le déplacer dans le code EP : Equipment.",
+
+  "item-handbooktitle-edrilltip": "Utilisation",
+  "item-handbooktext-edrilltip": "Placez dans la grille d'artisanat pour convertir l'objet et le déplacer dans le code EP : Equipment.",
+
+  "item-handbooktitle-eaxe": "Utilisation",
+  "item-handbooktext-eaxe": "Placez dans la grille d'artisanat pour convertir l'objet et le déplacer dans le code EP : Equipment."
+
+
 }

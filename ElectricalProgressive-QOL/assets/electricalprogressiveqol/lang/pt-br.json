@@ -64,14 +64,6 @@
   "block-elamp_small-8000-burned": "Lâmpada Elétrica Pequena (Queimada)",
   "block-elamp_small-9000-burned": "Lâmpada Elétrica Pequena (Queimada)",
 
-  "item-edrill": "Furadeira Elétrica",
-  "item-echisel": "Máquina de Punch Elétrica",
-
-  "item-edrilltip": "Ponta de Broca",
-  "item-eaxe": "Machado Elétrico",
-
-  "game:drill1": "Mina blocos 1X1",
-  "game:drill2": "Mina blocos 1X3",
 
   "block-handbooktitle-eoven": "Uso",
   "block-handbooktext-eoven": "O forno elétrico substitui totalmente o forno tradicional. Desliga-se automaticamente quando o cozimento está completo. Chega de itens queimados!",
@@ -103,17 +95,6 @@
   "block-handbooktitle-efreezer": "Uso",
   "block-handbooktext-efreezer": "O freezer elétrico prolonga a preservação de alimentos.<br><br>Slots de armazenamento: 6.<br>Taxa de deterioração de alimentos: 0.05x",
 
-  "item-handbooktitle-edrill": "Uso",
-  "item-handbooktext-edrill": "A mineração alcança um novo nível. Opera em dois modos: 1x1 e 1x3.<br>Para de funcionar quando descarregada. Lembre-se de recarregar!",
-
-  "item-handbooktitle-echisel": "Uso",
-  "item-handbooktext-echisel": "Funciona como um cinzel a bateria! Não precisa de martelo na mão esquerda. Não usado em receitas.<br>Para de funcionar quando a bateria descarrega. Lembre-se de recarregar!",
-
-  "item-handbooktitle-edrilltip": "Uso",
-  "item-handbooktext-edrilltip": "Componente principal para a furadeira elétrica.",
-
-  "item-handbooktitle-eaxe": "Uso",
-  "item-handbooktext-eaxe": "Excelente para cortar. Não é usado em receitas.<br>Para de funcionar quando descarregado. Lembre-se de recarregar!",
 
   "game:BlockEStove": "Fogão Elétrico",
   "game:freezer-title-gui": "Freezer",
@@ -122,5 +103,30 @@
 
   "game:Put-into-4-items": "Pelo menos 4 itens são necessários para assar.",
   "game:max-light": "Luz máxima",
-  "game:height": "Altura"
+  "game:height": "Altura",
+
+
+
+
+  "item-edrill": "Broca elétrica (obsoleta)",
+  "item-echisel": "Cinzel elétrico (obsoleto)",
+  "item-edrilltip": "Ponta de broca (obsoleta)",
+  "item-eaxe": "Machado elétrico (obsoleto)",
+
+  "game:drill1": "Escava um bloco 1×1",
+  "game:drill2": "Escava uma área de 1×3 blocos",
+
+  "item-handbooktitle-edrill": "Uso",
+  "item-handbooktext-edrill": "Coloque na grade de fabricação para converter o item e movê-lo para o código EP: Equipment.",
+
+  "item-handbooktitle-echisel": "Uso",
+  "item-handbooktext-echisel": "Coloque na grade de fabricação para converter o item e movê-lo para o código EP: Equipment.",
+
+  "item-handbooktitle-edrilltip": "Uso",
+  "item-handbooktext-edrilltip": "Coloque na grade de fabricação para converter o item e movê-lo para o código EP: Equipment.",
+
+  "item-handbooktitle-eaxe": "Uso",
+  "item-handbooktext-eaxe": "Coloque na grade de fabricação para converter o item e movê-lo para o código EP: Equipment."
+
+
 }

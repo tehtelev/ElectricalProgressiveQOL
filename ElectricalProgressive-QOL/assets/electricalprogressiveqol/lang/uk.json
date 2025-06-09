@@ -64,14 +64,6 @@
   "block-elamp_small-8000-burned": "Мала електрична лампа (згоріла)",
   "block-elamp_small-9000-burned": "Мала електрична лампа (згоріла)",
 
-  "item-edrill": "Електричний бур",
-  "item-echisel": "Електричний Пробивний Станок",
-
-  "item-edrilltip": "Насадка для бура",
-  "item-eaxe": "Електрична сокира",
-
-  "game:drill1": "Копає 1×1 блок",
-  "game:drill2": "Копає 1×3 блоки",
 
   "block-handbooktitle-eoven": "Використання",
   "block-handbooktext-eoven": "Електрична духовка повністю замінює піч. Вимикається автоматично після завершення випікання. Жодних пригорів!",
@@ -103,17 +95,6 @@
   "block-handbooktitle-efreezer": "Використання",
   "block-handbooktext-efreezer": "Електричний холодильник для довшого зберігання їжі.<br><br>Слоти: 6.<br>Швидкість псування: 0,05×",
 
-  "item-handbooktitle-edrill": "Використання",
-  "item-handbooktext-edrill": "Добыча корисних копалин на новому рівні. Два режими: 1×1 та 1×3.<br>Після розряду не працює. Не забувайте заряджати!",
-
-  "item-handbooktitle-echisel": "Використання",
-  "item-handbooktext-echisel": "Виконує функції дзюбеля на акумуляторі! Молот у лівій руці не потрібен. Не використовується у рецептах.<br>Зупиниться при розрядженні. Не забувайте заряджати!",
-
-  "item-handbooktitle-edrilltip": "Використання",
-  "item-handbooktext-edrilltip": "Насадка для електричного бура.",
-
-  "item-handbooktitle-eaxe": "Використання",
-  "item-handbooktext-eaxe": "Чудово рубає. Не в рецептах.<br>Після розряду не працює. Не забувайте заряджати!",
 
   "game:BlockEStove": "Електрична плита",
   "game:freezer-title-gui": "Холодильник",
@@ -123,5 +104,29 @@
   "game:Put-into-4-items": "Потрібно мінімум 4 предмети для випікання.",
 
   "game:max-light": "Максимальне світло",
-  "game:height": "Висота"
+  "game:height": "Висота",
+
+
+
+  "item-edrill": "Електричний бур (застарілий)",
+  "item-echisel": "Електричне долото (застарілий)",
+  "item-edrilltip": "Насадка для бура (застарілий)",
+  "item-eaxe": "Електрична сокира (застарілий)",
+
+  "game:drill1": "Копає блок 1×1",
+  "game:drill2": "Копає область 1×3 блоків",
+
+  "item-handbooktitle-edrill": "Використання",
+  "item-handbooktext-edrill": "Розмістіть у сітці крафту, щоб конвертувати предмет для переміщення його в код EP: Equipment.",
+
+  "item-handbooktitle-echisel": "Використання",
+  "item-handbooktext-echisel": "Розмістіть у сітці крафту, щоб конвертувати предмет для переміщення його в код EP: Equipment.",
+
+  "item-handbooktitle-edrilltip": "Використання",
+  "item-handbooktext-edrilltip": "Розмістіть у сітці крафту, щоб конвертувати предмет для переміщення його в код EP: Equipment.",
+
+  "item-handbooktitle-eaxe": "Використання",
+  "item-handbooktext-eaxe": "Розмістіть у сітці крафту, щоб конвертувати предмет для переміщення його в код EP: Equipment."
+
+
 }
