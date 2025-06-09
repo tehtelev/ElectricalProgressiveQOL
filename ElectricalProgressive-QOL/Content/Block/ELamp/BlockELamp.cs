@@ -281,7 +281,8 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         boxes = this.CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) BlockELamp.CollisionBoxesCache.Add(key, boxes);
+                    if (boxes != null) 
+                        BlockELamp.CollisionBoxesCache.TryAdd(key, boxes);
                 }
 
                 if (boxes != null)
@@ -403,7 +404,8 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         boxes = this.SelectionBoxes.Select(selectionBox => selectionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) BlockELamp.SelectionBoxesCache.Add(key, boxes);
+                    if (boxes != null) 
+                        BlockELamp.SelectionBoxesCache.TryAdd(key, boxes);
                 }
 
                 if (boxes != null)
@@ -558,7 +560,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
                         meshData.Rotate(origin, 0.0f, 90.0f * GameMath.DEG2RAD, 0.0f);
                     }
 
-                    BlockELamp.MeshDataCache.Add(key, meshData);
+                    BlockELamp.MeshDataCache.TryAdd(key, meshData);
                 }
 
                 sourceMesh = meshData;
