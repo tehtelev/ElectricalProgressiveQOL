@@ -38,7 +38,8 @@ public class BlockECharger : BlockEBase
         if (api.Side != EnumAppSide.Client)
             return;
 
-        var capi = api as ICoreClientAPI;
+        ICoreClientAPI capi = api as ICoreClientAPI;
+
 
         _output = MyMiniLib.GetAttributeInt(this, "output", 1000);
 
