@@ -209,8 +209,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
                         boxes = this.CollisionBoxes.Select(collisionBox => collisionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) 
-                        BlockEHeater.CollisionBoxesCache.TryAdd(key, boxes);
+                    if (boxes != null) BlockEHeater.CollisionBoxesCache.Add(key, boxes);
                 }
 
                 if (boxes != null) {
@@ -281,8 +280,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
                         boxes = this.SelectionBoxes.Select(selectionBox => selectionBox.RotatedCopy(0.0f, 90.0f, 0.0f, origin)).ToArray();
                     }
 
-                    if (boxes != null) 
-                        BlockEHeater.SelectionBoxesCache.TryAdd(key, boxes);
+                    if (boxes != null) BlockEHeater.SelectionBoxesCache.Add(key, boxes);
                 }
 
                 if (boxes != null) {
@@ -404,7 +402,7 @@ namespace ElectricalProgressive.Content.Block.EHeater {
                         meshData.Rotate(origin, 0.0f, 90.0f * GameMath.DEG2RAD, 0.0f);
                     }
 
-                    BlockEHeater.MeshDataCache.TryAdd(key, meshData);
+                    BlockEHeater.MeshDataCache.Add(key, meshData);
                 }
 
                 sourceMesh = meshData;

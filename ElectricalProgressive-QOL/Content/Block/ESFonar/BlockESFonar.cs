@@ -319,7 +319,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
                         meshData.Rotate(origin, 0.0f, 90.0f * GameMath.DEG2RAD, 0.0f);
                     }
 
-                    BlockESFonar.MeshDataCache.TryAdd(key, meshData);
+                    BlockESFonar.MeshDataCache.Add(key, meshData);
                 }
 
                 sourceMesh = meshData;
