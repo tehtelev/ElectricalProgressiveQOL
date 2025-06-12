@@ -106,28 +106,10 @@
 
   "game:Put-into-4-items": "Au moins 4 objets requis pour la cuisson.",
   "game:max-light": "Lumière maximale",
-  "game:height": "Hauteur",
+  "game:height": "Hauteur"
 
 
-  "item-edrill": "Perceuse électrique (obsolète)",
-  "item-echisel": "Ciseau électrique (obsolète)",
-  "item-edrilltip": "Pointe de foret (obsolète)",
-  "item-eaxe": "Hache électrique (obsolète)",
 
-  "game:drill1": "Creuse un bloc 1×1",
-  "game:drill2": "Creuse une zone 1×3 blocs",
-
-  "item-handbooktitle-edrill": "Utilisation",
-  "item-handbooktext-edrill": "Placez dans la grille d'artisanat pour convertir l'objet et le déplacer dans le code EP : Equipment.",
-
-  "item-handbooktitle-echisel": "Utilisation",
-  "item-handbooktext-echisel": "Placez dans la grille d'artisanat pour convertir l'objet et le déplacer dans le code EP : Equipment.",
-
-  "item-handbooktitle-edrilltip": "Utilisation",
-  "item-handbooktext-edrilltip": "Placez dans la grille d'artisanat pour convertir l'objet et le déplacer dans le code EP : Equipment.",
-
-  "item-handbooktitle-eaxe": "Utilisation",
-  "item-handbooktext-eaxe": "Placez dans la grille d'artisanat pour convertir l'objet et le déplacer dans le code EP : Equipment."
 
 
 }

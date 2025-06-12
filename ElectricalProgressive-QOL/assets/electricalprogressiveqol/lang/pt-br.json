@@ -103,30 +103,12 @@
 
   "game:Put-into-4-items": "Pelo menos 4 itens são necessários para assar.",
   "game:max-light": "Luz máxima",
-  "game:height": "Altura",
+  "game:height": "Altura"
 
 
 
 
-  "item-edrill": "Broca elétrica (obsoleta)",
-  "item-echisel": "Cinzel elétrico (obsoleto)",
-  "item-edrilltip": "Ponta de broca (obsoleta)",
-  "item-eaxe": "Machado elétrico (obsoleto)",
 
-  "game:drill1": "Escava um bloco 1×1",
-  "game:drill2": "Escava uma área de 1×3 blocos",
-
-  "item-handbooktitle-edrill": "Uso",
-  "item-handbooktext-edrill": "Coloque na grade de fabricação para converter o item e movê-lo para o código EP: Equipment.",
-
-  "item-handbooktitle-echisel": "Uso",
-  "item-handbooktext-echisel": "Coloque na grade de fabricação para converter o item e movê-lo para o código EP: Equipment.",
-
-  "item-handbooktitle-edrilltip": "Uso",
-  "item-handbooktext-edrilltip": "Coloque na grade de fabricação para converter o item e movê-lo para o código EP: Equipment.",
-
-  "item-handbooktitle-eaxe": "Uso",
-  "item-handbooktext-eaxe": "Coloque na grade de fabricação para converter o item e movê-lo para o código EP: Equipment."
 
 
 }

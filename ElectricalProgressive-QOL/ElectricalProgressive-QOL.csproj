@@ -65,8 +65,5 @@
         <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="assets\electricalprogressiveqol\textures\" />
-    </ItemGroup>
     <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

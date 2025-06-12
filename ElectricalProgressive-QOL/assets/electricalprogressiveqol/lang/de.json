@@ -105,29 +105,8 @@
   "game:Put-into-4-items": "Mindestens 4 Gegenstände zum Backen erforderlich.",
 
   "game:max-light": "Maximales Licht",
-  "game:height": "Höhe",
+  "game:height": "Höhe"
 
-
-
-  "item-edrill": "Elektrische Bohrmaschine (veraltet)",
-  "item-echisel": "Elektrischer Meißel (veraltet)",
-  "item-edrilltip": "Bohrerspitze (veraltet)",
-  "item-eaxe": "Elektrische Axt (veraltet)",
-
-  "game:drill1": "Gräbt einen 1×1 Block",
-  "game:drill2": "Gräbt einen 1×3 Block-Bereich",
-
-  "item-handbooktitle-edrill": "Verwendung",
-  "item-handbooktext-edrill": "In das Crafting-Gitter legen, um den Gegenstand zu konvertieren und in den EP: Equipment-Code zu verschieben.",
-
-  "item-handbooktitle-echisel": "Verwendung",
-  "item-handbooktext-echisel": "In das Crafting-Gitter legen, um den Gegenstand zu konvertieren und in den EP: Equipment-Code zu verschieben.",
-
-  "item-handbooktitle-edrilltip": "Verwendung",
-  "item-handbooktext-edrilltip": "In das Crafting-Gitter legen, um den Gegenstand zu konvertieren und in den EP: Equipment-Code zu verschieben.",
-
-  "item-handbooktitle-eaxe": "Verwendung",
-  "item-handbooktext-eaxe": "In das Crafting-Gitter legen, um den Gegenstand zu konvertieren und in den EP: Equipment-Code zu verschieben."
 
 
 

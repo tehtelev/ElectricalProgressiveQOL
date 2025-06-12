@@ -104,29 +104,11 @@
   "game:Put-into-4-items": "Потрібно мінімум 4 предмети для випікання.",
 
   "game:max-light": "Максимальне світло",
-  "game:height": "Висота",
+  "game:height": "Висота"
 
 
 
-  "item-edrill": "Електричний бур (застарілий)",
-  "item-echisel": "Електричне долото (застарілий)",
-  "item-edrilltip": "Насадка для бура (застарілий)",
-  "item-eaxe": "Електрична сокира (застарілий)",
 
-  "game:drill1": "Копає блок 1×1",
-  "game:drill2": "Копає область 1×3 блоків",
-
-  "item-handbooktitle-edrill": "Використання",
-  "item-handbooktext-edrill": "Розмістіть у сітці крафту, щоб конвертувати предмет для переміщення його в код EP: Equipment.",
-
-  "item-handbooktitle-echisel": "Використання",
-  "item-handbooktext-echisel": "Розмістіть у сітці крафту, щоб конвертувати предмет для переміщення його в код EP: Equipment.",
-
-  "item-handbooktitle-edrilltip": "Використання",
-  "item-handbooktext-edrilltip": "Розмістіть у сітці крафту, щоб конвертувати предмет для переміщення його в код EP: Equipment.",
-
-  "item-handbooktitle-eaxe": "Використання",
-  "item-handbooktext-eaxe": "Розмістіть у сітці крафту, щоб конвертувати предмет для переміщення його в код EP: Equipment."
 
 
 }

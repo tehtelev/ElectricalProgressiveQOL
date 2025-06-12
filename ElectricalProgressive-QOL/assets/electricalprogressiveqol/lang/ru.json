@@ -122,32 +122,9 @@
   "game:Put-into-4-items": "Нужно минимум 4 предмета для выпечки.",
 
   "game:max-light": "Максимальный свет",
-  "game:height": "Высота",
+  "game:height": "Высота"
 
 
 
-  //потом можно будет убрать
 
-  "item-edrill": "Элекрический бур (устарело)",
-  "item-echisel": "Электрический перфоратор (устарело)",
-  "item-edrilltip": "Наконечник бура (устарело)",
-  "item-eaxe": "Электрический топор (устарело)",
-
-  "game:drill1": "Копает 1X1 блок",
-  "game:drill2": "Копает 1X3 блока",
-
-
-  "item-handbooktitle-edrill": "Используется",
-  "item-handbooktext-edrill": "Поместите в сетку крафта, что сконвертировать предмет для перемещения его в код EP: Equipment",
-
-  "item-handbooktitle-echisel": "Используется",
-  "item-handbooktext-echisel": "Поместите в сетку крафта, что сконвертировать предмет для перемещения его в код EP: Equipment",
-
-
-  "item-handbooktitle-edrilltip": "Используется",
-  "item-handbooktext-edrilltip": "Поместите в сетку крафта, что сконвертировать предмет для перемещения его в код EP: Equipment",
-
-
-  "item-handbooktitle-eaxe": "Используется",
-  "item-handbooktext-eaxe": "Поместите в сетку крафта, что сконвертировать предмет для перемещения его в код EP: Equipment"
 }

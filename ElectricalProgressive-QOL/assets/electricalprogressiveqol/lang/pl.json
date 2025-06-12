@@ -105,29 +105,10 @@
   "game:Put-into-4-items": "Potrzeba co najmniej 4 przedmiotów do pieczenia.",
 
   "game:max-light": "Maksymalne światło",
-  "game:height": "Wysokość",
+  "game:height": "Wysokość"
 
 
 
-  "item-edrill": "Wiertło elektryczne (przestarzałe)",
-  "item-echisel": "Dłuto elektryczne (przestarzałe)",
-  "item-edrilltip": "Końcówka wiertła (przestarzałe)",
-  "item-eaxe": "Elektryczna siekiera (przestarzałe)",
-
-  "game:drill1": "Wydobywa blok 1×1",
-  "game:drill2": "Wydobywa obszar 1×3 bloków",
-
-  "item-handbooktitle-edrill": "Użycie",
-  "item-handbooktext-edrill": "Umieść w siatce rzemieślniczej, aby przekonwertować przedmiot i przenieść go do kodu EP: Equipment.",
-
-  "item-handbooktitle-echisel": "Użycie",
-  "item-handbooktext-echisel": "Umieść w siatce rzemieślniczej, aby przekonwertować przedmiot i przenieść go do kodu EP: Equipment.",
-
-  "item-handbooktitle-edrilltip": "Użycie",
-  "item-handbooktext-edrilltip": "Umieść w siatce rzemieślniczej, aby przekonwertować przedmiot i przenieść go do kodu EP: Equipment.",
-
-  "item-handbooktitle-eaxe": "Użycie",
-  "item-handbooktext-eaxe": "Umieść w siatce rzemieślniczej, aby przekonwertować przedmiot i przenieść go do kodu EP: Equipment."
 
 
 }
