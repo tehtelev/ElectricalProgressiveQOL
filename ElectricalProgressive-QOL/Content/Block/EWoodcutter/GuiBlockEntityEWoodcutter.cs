@@ -1,14 +1,5 @@
-﻿using Cairo;
-using ElectricalProgressive.Content.Block.ETermoGenerator;
-using ElectricalProgressive.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ElectricalProgressive.Utils;
 using Vintagestory.API.Client;
-using Vintagestory.API.Common;
-using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 
 namespace ElectricalProgressive.Content.Block.EWoodcutter;
