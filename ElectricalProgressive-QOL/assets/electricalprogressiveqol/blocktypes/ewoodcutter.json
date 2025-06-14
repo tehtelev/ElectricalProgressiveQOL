@@ -50,7 +50,6 @@
   "sideopaque": {
     "all": false
   },
-  "fertility": 100,
   "resistance": 3.5,
   "lightAbsorption": 0,
   "sounds": {

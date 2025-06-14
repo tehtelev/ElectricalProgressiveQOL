@@ -42,7 +42,7 @@ public class InventoryEWoodcutter : InventoryGeneric, ISlotProvider
             return type switch
             {
                 // Запрещаем секвои, идеале надо смотреть существует ли logsection для такого типа дерева
-                "redwood" => false,
+                //"redwood" => false,
 
                 _ => true,
             };
