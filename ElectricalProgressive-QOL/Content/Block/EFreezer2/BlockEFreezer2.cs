@@ -6,27 +6,26 @@ using Vintagestory.API.Config;
 using Vintagestory.API.MathTools;
 using Vintagestory.API.Util;
 
-namespace ElectricalProgressive.Content.Block.EFreezer;
+namespace ElectricalProgressive.Content.Block.EFreezer2;
 
-class BlockEFreezer : BlockEBase
+class BlockEFreezer2 : BlockEBase
 {
-    private BlockEntityEFreezer _blockEntityEFreezer;
+    private BlockEntityEFreezer2 _blockEntityEFreezer;
 
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
     {
         _blockEntityEFreezer = null;
-        if (blockSel.Position != null && world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityEFreezer blockEntityEFreezer)
+        if (blockSel.Position != null && world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityEFreezer2 blockEntityEFreezer)
             _blockEntityEFreezer = blockEntityEFreezer;
 
         var handled = base.OnBlockInteractStart(world, byPlayer, blockSel);
-        if (!handled && !byPlayer.WorldData.EntityControls.Sneak && blockSel.Position != null)
+        if (!handled && blockSel.Position != null)
         {
             if (_blockEntityEFreezer != null)
             {
-                if (Variant["state"] == "open")
-                    _blockEntityEFreezer.OnBlockInteract(byPlayer, false, blockSel);
-                else
-                    return false;
+                
+               _blockEntityEFreezer.OnBlockInteract(byPlayer, false, blockSel);
+             
             }
 
             return true;
@@ -35,24 +34,6 @@ class BlockEFreezer : BlockEBase
         if (_blockEntityEFreezer is null)
             return true;
 
-        AssetLocation newCode;
-
-        // -18C
-        if (Variant["state"] == "closed")
-        {
-            _blockEntityEFreezer.IsOpened = true;
-            newCode = CodeWithVariant("state", "open");
-            world.PlaySoundAt(new("electricalprogressiveqol:sounds/freezer_open.ogg"), byPlayer, byPlayer, false);
-        }
-        else
-        {
-            _blockEntityEFreezer.IsOpened = false;
-            newCode = CodeWithVariant("state", "closed");
-            world.PlaySoundAt(new("electricalprogressiveqol:sounds/freezer_close.ogg"), byPlayer, byPlayer, false);
-        }
-
-        var newBlock = world.BlockAccessor.GetBlock(newCode);
-        world.BlockAccessor.ExchangeBlock(newBlock.BlockId, blockSel.Position);
 
         return true;
     }
@@ -67,7 +48,6 @@ class BlockEFreezer : BlockEBase
         };
         var blockCode = CodeWithVariants(new()
         {
-            { "state", "closed" },
             { "status", newState },
             { "side", "north" }
         });
@@ -85,12 +65,6 @@ class BlockEFreezer : BlockEBase
     {
         return new[]
         {
-            new WorldInteraction
-            {
-                ActionLangCode = "freezer-over-sneak-help",
-                HotKeyCode = "sneak",
-                MouseButton = EnumMouseButton.Right,
-            },
             new WorldInteraction
             {
                 ActionLangCode = "freezer-over-help",
@@ -128,4 +102,7 @@ class BlockEFreezer : BlockEBase
         dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
         dsc.AppendLine(Lang.Get("WResistance") + ": " + ((MyMiniLib.GetAttributeBool(inSlot.Itemstack.Block, "isolatedEnvironment", false)) ? Lang.Get("Yes") : Lang.Get("No")));
     }
+
+
+
 }

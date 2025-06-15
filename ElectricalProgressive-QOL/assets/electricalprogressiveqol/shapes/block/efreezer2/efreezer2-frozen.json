@@ -1253,7 +1253,7 @@
 				{
 					"frame": 29,
 					"elements": {
-						"DoorInternal": { "rotationX": 0.0, "rotationY": -110.0, "rotationZ": 0.0 }
+						"DoorInternal": { "rotationX": 0.0, "rotationY": -140.0, "rotationZ": 0.0 }
 					}
 				}
 			]

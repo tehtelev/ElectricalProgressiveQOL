@@ -5,9 +5,7 @@
   "block-estove-*": "Fogão Elétrico",
   "block-estove-burned-south": "Fogão Elétrico (Queimado)",
 
-  "block-efreezer-*": "Freezer Elétrico",
-  "block-efreezer-burned-closed-north": "Freezer Elétrico (Queimado)",
-  "block-efreezer-burned-open-north": "Freezer Elétrico (Queimado)",
+
 
   "block-eoven-*": "Forno Elétrico",
   "block-eoven-burned-north": "Forno Elétrico (Queimado)",
@@ -92,8 +90,7 @@
   "block-handbooktitle-estove": "Uso",
   "block-handbooktext-estove": "O fogão elétrico substitui totalmente a fogueira.<br><br>Temperatura máxima de aquecimento: 1325 °C.",
 
-  "block-handbooktitle-efreezer": "Uso",
-  "block-handbooktext-efreezer": "O freezer elétrico prolonga a preservação de alimentos.<br><br>Slots de armazenamento: 6.<br>Taxa de deterioração de alimentos: 0.05x",
+
 
 
   "game:BlockEStove": "Fogão Elétrico",
@@ -103,7 +100,20 @@
 
   "game:Put-into-4-items": "Pelo menos 4 itens são necessários para assar.",
   "game:max-light": "Luz máxima",
-  "game:height": "Altura"
+  "game:height": "Altura",
+
+
+  "block-efreezer2-*": "Geladeira Elétrica",
+  "block-efreezer2-burned-north": "Geladeira Elétrica (queimada)",
+  "block-handbooktitle-efreezer2": "Em uso",
+  "block-handbooktext-efreezer2": "A geladeira elétrica permite conservar os alimentos por mais tempo. <br><br>Slots de armazenamento: 6.<br>Taxa de deterioração dos alimentos: 0,05×",
+
+  // remover em 1.0.6
+  "block-efreezer-*": "Geladeira Elétrica (obsoleta)",
+  "block-efreezer-burned-closed-north": "Geladeira Elétrica (queimada) (obsoleta)",
+  "block-efreezer-burned-open-north": "Geladeira Elétrica (queimada) (obsoleta)",
+  "block-handbooktitle-efreezer": "Em uso",
+  "block-handbooktext-efreezer": "Coloque na grade de criação para atualizá-la."
 
 
 

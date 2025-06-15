@@ -12,6 +12,7 @@ using ElectricalProgressive.Content.Block.ESFonar;
 using ElectricalProgressive.Content.Block.EWoodcutter;
 using Vintagestory.GameContent;
 using Vintagestory.API.Common.Entities;
+using ElectricalProgressive.Content.Block.EFreezer2;
 
 
 [assembly: ModDependency("game", "1.20.0")]
@@ -76,6 +77,12 @@ public class ElectricalProgressiveQOL : ModSystem
         api.RegisterBlockEntityClass("BlockEntityEStove", typeof(BlockEntityEStove));
         api.RegisterBlockEntityBehaviorClass("BEBehaviorEStove", typeof(BEBehaviorEStove));
 
+        //холодильник с анимацией
+        api.RegisterBlockClass("BlockEFreezer2", typeof(BlockEFreezer2));
+        api.RegisterBlockEntityClass("BlockEntityEFreezer2", typeof(BlockEntityEFreezer2));
+        api.RegisterBlockEntityBehaviorClass("BEBehaviorEFreezer2", typeof(BEBehaviorEFreezer2));
+
+        //холодильник без анимации (старый)
         api.RegisterBlockClass("BlockEFreezer", typeof(BlockEFreezer));
         api.RegisterBlockEntityClass("BlockEntityEFreezer", typeof(BlockEntityEFreezer));
         api.RegisterBlockEntityBehaviorClass("BEBehaviorEFreezer", typeof(BEBehaviorEFreezer));

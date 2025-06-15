@@ -2,17 +2,21 @@
 using Vintagestory.API.Common;
 using Vintagestory.API.MathTools;
 
-namespace ElectricalProgressive.Content.Block.EFreezer;
+namespace ElectricalProgressive.Content.Block.EFreezer2;
 
-class GuiEFreezer : GuiDialogBlockEntity
+class GuiEFreezer2 : GuiDialogBlockEntity
 {
-    public GuiEFreezer(string dialogTitle, InventoryBase inventory, BlockPos blockEntityPos, ICoreClientAPI capi) : base(
+    BlockEntityEFreezer2 _freezer;
+    public GuiEFreezer2(string dialogTitle, InventoryBase inventory, BlockPos blockEntityPos, ICoreClientAPI capi, BlockEntityEFreezer2 freezer) : base(
         dialogTitle, inventory, blockEntityPos, capi)
     {
-        if (IsDuplicate) return;
+        if (IsDuplicate)
+            return;
 
         capi.World.Player.InventoryManager.OpenInventory(Inventory);
         Inventory.SlotModified += OnInventorySlotModified;
+
+        _freezer = freezer;
 
         SetupDialog();
     }
@@ -21,6 +25,8 @@ class GuiEFreezer : GuiDialogBlockEntity
     {
         //SetupDialog();
         capi.Event.EnqueueMainThreadTask(SetupDialog, "setupfreezerslotdlg");
+
+
     }
 
     void SetupDialog()
@@ -46,17 +52,21 @@ class GuiEFreezer : GuiDialogBlockEntity
         // 3. Finally Dialog
         ElementBounds dialogBounds = ElementStdBounds.AutosizedMainDialog.WithAlignment(EnumDialogArea.RightMiddle)
             .WithFixedAlignmentOffset(-GuiStyle.DialogToScreenPadding, 0);
-        
+
+
+
         ClearComposers();
+
+
         SingleComposer = capi.Gui
-                .CreateCompo("beeightslots" + BlockEntityPosition, dialogBounds)
-                .AddShadedDialogBG(bgBounds)
-                .AddDialogTitleBar(DialogTitle, OnTitleBarClose)
-                .BeginChildElements(bgBounds)
-                .AddItemSlotGrid(Inventory, SendInvPacket, 2, new[] { 0, 1, 2, 3, 4, 5 }, slotsBounds)
-                .EndChildElements()
-                .Compose()
-            ;
+            .CreateCompo("beeightslots" + BlockEntityPosition, dialogBounds)
+            .AddShadedDialogBG(bgBounds)
+            .AddDialogTitleBar(DialogTitle, OnTitleBarClose)
+            .BeginChildElements(bgBounds)
+            .AddItemSlotGrid(Inventory, SendInvPacket, 2, new[] { 0, 1, 2, 3, 4, 5 }, slotsBounds)
+            .EndChildElements()
+            .Compose();
+
 
         if (hoveredSlot != null)
         {
@@ -79,5 +89,22 @@ class GuiEFreezer : GuiDialogBlockEntity
         base.OnEscapePressed();
         OnTitleBarClose();
         return TryClose();
+    }
+
+
+    public override void OnGuiOpened()
+    {
+        base.OnGuiOpened();
+        base.Inventory.SlotModified += this.OnInventorySlotModified;
+
+        _freezer.OpenLid(); //открываем крышку при открытии диалога
+    }
+
+    public override void OnGuiClosed()
+    {
+        base.Inventory.SlotModified -= this.OnInventorySlotModified;
+        base.OnGuiClosed();
+
+        _freezer.CloseLid(); //закрываем крышку генератора при закрытии диалога
     }
 }

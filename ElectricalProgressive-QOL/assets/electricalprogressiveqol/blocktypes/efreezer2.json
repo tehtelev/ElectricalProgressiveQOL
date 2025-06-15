@@ -1,19 +1,19 @@
 ﻿{
-  "code": "efreezer",
-  "class": "BlockEFreezer",
-  "entityClass": "BlockEntityEFreezer",
+  "code": "efreezer2",
+  "class": "BlockEFreezer2",
+  "entityClass": "BlockEntityEFreezer2",
   "attributes": {
     "maxConsumption": 100,
     "voltage": 32,
     "maxCurrent": 20.0,
     "isolated": true,
-    "isolatedEnvironment": false,
+    "isolatedEnvironment": true,
     "handbook": {
-      "groupBy": [ "efreezer-*" ],
+      "groupBy": [ "efreezer2-*" ],
       "extraSections": [
         {
-          "title": "electricalprogressiveqol:block-handbooktitle-efreezer",
-          "text": "electricalprogressiveqol:block-handbooktext-efreezer"
+          "title": "electricalprogressiveqol:block-handbooktitle-efreezer2",
+          "text": "electricalprogressiveqol:block-handbooktext-efreezer2"
         }
       ]
     }
@@ -22,7 +22,10 @@
 
   "entityBehaviors": [
     {
-      "name": "BEBehaviorEFreezer"
+      "name": "Animatable"
+    },
+    {
+      "name": "BEBehaviorEFreezer2"
     },
     {
       "name": "ElectricalProgressive"
@@ -30,8 +33,8 @@
   ],
 
   "creativeinventory": {
-    "general": [ "*-melted-closed-north", "*-burned-closed-north" ],
-    "electricity": [ "*-melted-closed-north" ]
+    "general": [ "*-melted-north", "*-burned-north" ],
+    "electricity": [ "*-melted-north" ]
   },
 
   "behaviors": [
@@ -60,10 +63,6 @@
       "states": [ "frozen", "melted", "burned" ]
     },
     {
-      "code": "state",
-      "states": [ "closed", "open" ]
-    },
-    {
       "code": "side",
       "loadFromProperties": "abstract/horizontalorientation"
     }
@@ -72,28 +71,21 @@
 
 
 
-
-  "drawtype": "json",
-  "lightHsvByType": {
-    "*-frozen-open-*": [ 0, 0, 11 ],
-    "*": [ 0, 0, 0 ]
-  },
-
   "shapebytype": {
     "*-north": {
-      "base": "block/efreezer/efreezer-{status}-{state}",
+      "base": "block/efreezer2/efreezer2-{status}",
       "rotateY": 0
     },
     "*-east": {
-      "base": "block/efreezer/efreezer-{status}-{state}",
+      "base": "block/efreezer2/efreezer2-{status}",
       "rotateY": 270
     },
     "*-south": {
-      "base": "block/efreezer/efreezer-{status}-{state}",
+      "base": "block/efreezer2/efreezer2-{status}",
       "rotateY": 180
     },
     "*-west": {
-      "base": "block/efreezer/efreezer-{status}-{state}",
+      "base": "block/efreezer2/efreezer2-{status}",
       "rotateY": 90
     }
   },

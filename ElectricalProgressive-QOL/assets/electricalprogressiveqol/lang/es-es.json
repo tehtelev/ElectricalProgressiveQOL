@@ -5,9 +5,7 @@
   "block-estove-*": "Cocina eléctrica",
   "block-estove-burned-south": "Cocina eléctrica (quemada)",
 
-  "block-efreezer-*": "Refrigerador eléctrico",
-  "block-efreezer-burned-closed-north": "Refrigerador eléctrico (quemado)",
-  "block-efreezer-burned-open-north": "Refrigerador eléctrico (quemado)",
+
 
   "block-eoven-*": "Horno eléctrico",
   "block-eoven-burned-north": "Horno eléctrico (quemado)",
@@ -91,8 +89,7 @@
   "block-handbooktitle-estove": "Uso",
   "block-handbooktext-estove": "La cocina eléctrica reemplaza completamente la hoguera.<br><br>Temperatura máxima de la placa: 1325 °C.",
 
-  "block-handbooktitle-efreezer": "Uso",
-  "block-handbooktext-efreezer": "El refrigerador eléctrico conserva alimentos por más tiempo.<br><br>Ranuras de almacenamiento: 6.<br>Tasa de descomposición de comida: 0,05×.",
+
 
   "game:BlockEStove": "Cocina eléctrica",
   "game:freezer-title-gui": "Refrigerador",
@@ -102,7 +99,20 @@
   "game:Put-into-4-items": "Se necesitan al menos 4 objetos para hornear.",
 
   "game:max-light": "Luz máxima",
-  "game:height": "Altura"
+  "game:height": "Altura",
+
+
+  "block-efreezer2-*": "Nevera eléctrica",
+  "block-efreezer2-burned-north": "Nevera eléctrica (quemada)",
+  "block-handbooktitle-efreezer2": "En uso",
+  "block-handbooktext-efreezer2": "La nevera eléctrica permite conservar los alimentos durante más tiempo. <br><br>Ranuras de almacenamiento: 6.<br>Tasa de descomposición de los alimentos: 0,05×",
+
+  // eliminar en 1.0.6
+  "block-efreezer-*": "Nevera eléctrica (obsoleta)",
+  "block-efreezer-burned-closed-north": "Nevera eléctrica (quemada) (obsoleta)",
+  "block-efreezer-burned-open-north": "Nevera eléctrica (quemada) (obsoleta)",
+  "block-handbooktitle-efreezer": "En uso",
+  "block-handbooktext-efreezer": "Coloca en la cuadrícula de fabricación para actualizarla."
 
 
 }

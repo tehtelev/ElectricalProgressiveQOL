@@ -287,7 +287,7 @@
       },
       "I": {
         "type": "block",
-        "code": "electricalprogressiveqol:efreezer-burned-north"
+        "code": "electricalprogressiveqol:efreezer2-burned-north"
       }
     },
     "output": {
@@ -297,6 +297,30 @@
     }
   },
 
+
+
+  {
+    "ingredientPattern": "HI",
+    "width": 1,
+    "height": 2,
+    "ingredients": {
+      "H": {
+        "type": "item",
+        "code": "game:hammer-*",
+        "isTool": true,
+        "toolDurabilityCost": 8
+      },
+      "I": {
+        "type": "block",
+        "code": "electricalprogressiveqol:efreezer-burned-closed-north"
+      }
+    },
+    "output": {
+      "type": "item",
+      "code": "game:metalbit-copper",
+      "quantity": 160
+    }
+  },
 
 
 

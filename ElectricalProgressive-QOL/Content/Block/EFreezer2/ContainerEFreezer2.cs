@@ -9,9 +9,9 @@ using Vintagestory.API.MathTools;
 using Vintagestory.API.Server;
 using Vintagestory.GameContent;
 
-namespace ElectricalProgressive.Content.Block.EFreezer;
+namespace ElectricalProgressive.Content.Block.EFreezer2;
 
-public abstract class ContainerEFreezer : BlockEntityEBase, IBlockEntityContainer
+public abstract class ContainerEFreezer2 : BlockEntityEBase, IBlockEntityContainer
 {
     public abstract InventoryBase Inventory { get; }
     public abstract string InventoryClassName { get; }
@@ -23,10 +23,9 @@ public abstract class ContainerEFreezer : BlockEntityEBase, IBlockEntityContaine
 
 
 
-    // Fix for CS0144: Replace the instantiation of the abstract type InventoryBase with a concrete implementation.
-    // Assuming there is a concrete class that inherits from InventoryBase, such as InventoryGeneric.
 
-    protected ContainerEFreezer()
+
+    protected ContainerEFreezer2()
     {
 
     }

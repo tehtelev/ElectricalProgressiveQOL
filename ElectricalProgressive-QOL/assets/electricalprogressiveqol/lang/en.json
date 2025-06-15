@@ -5,9 +5,7 @@
   "block-estove-*": "Electric Stove",
   "block-estove-burned-south": "Electric Stove (Burned)",
 
-  "block-efreezer-*": "Electric Freezer",
-  "block-efreezer-burned-closed-north": "Electric Freezer (Burned)",
-  "block-efreezer-burned-open-north": "Electric Freezer (Burned)",
+
 
   "block-eoven-*": "Electric Oven",
   "block-eoven-burned-north": "Electric Oven (Burned)",
@@ -98,8 +96,7 @@
   "block-handbooktitle-estove": "Usage",
   "block-handbooktext-estove": "The electric stove fully replaces the campfire.<br><br>Maximum heating temperature: 1325 °C.",
 
-  "block-handbooktitle-efreezer": "Usage",
-  "block-handbooktext-efreezer": "The electric freezer extends food preservation.<br><br>Storage slots: 6.<br>Food spoilage rate: 0.05x",
+
 
 
   "game:BlockEStove": "Electric Stove",
@@ -109,10 +106,20 @@
 
   "game:Put-into-4-items": "At least 4 items required for baking.",
   "game:max-light": "Max light",
-  "game:height": "Height"
+  "game:height": "Height",
 
 
+  "block-efreezer2-*": "Electric Refrigerator",
+  "block-efreezer2-burned-north": "Electric Refrigerator (Burned)",
+  "block-handbooktitle-efreezer2": "In Use",
+  "block-handbooktext-efreezer2": "The electric refrigerator allows you to keep food fresh for longer. <br><br>Storage slots: 6.<br>Food spoilage rate: 0.05×",
 
+  // remove in 1.0.6
+  "block-efreezer-*": "Electric Refrigerator (Deprecated)",
+  "block-efreezer-burned-closed-north": "Electric Refrigerator (Burned) (Deprecated)",
+  "block-efreezer-burned-open-north": "Electric Refrigerator (Burned) (Deprecated)",
+  "block-handbooktitle-efreezer": "In Use",
+  "block-handbooktext-efreezer": "Place in the crafting grid to upgrade it."
 
 
 
