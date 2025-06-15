@@ -5,9 +5,7 @@
   "block-estove-*": "Электрическая плита",
   "block-estove-burned-south": "Электрическая плита (сгоревшая)",
 
-  "block-efreezer-*": "Электрический холодильник",
-  "block-efreezer-burned-closed-north": "Электрический холодильник (сгоревший)",
-  "block-efreezer-burned-open-north": "Электрический холодильник (сгоревший)",
+
 
 
   "block-eoven-*": "Электрическая духовка",
@@ -109,8 +107,7 @@
   "block-handbooktitle-estove": "Используется",
   "block-handbooktext-estove": "Электрическая плита позволяет полностью заменить обычный костер.<br><br>Максимальная температура нагрева плиты: 1325 °C.",
 
-  "block-handbooktitle-efreezer": "Используется",
-  "block-handbooktext-efreezer": "Электрический холодильник позволяет хранить продукты дольше. <br><br>Слотов для хранения: 6.<br>Скорость порчи еды: 0,05х",
+
 
 
 
@@ -123,6 +120,20 @@
 
   "game:max-light": "Максимальный свет",
   "game:height": "Высота",
+
+
+  "block-efreezer2-*": "Электрический холодильник",
+  "block-efreezer2-burned-north": "Электрический холодильник (сгоревший)",
+  "block-handbooktitle-efreezer2": "Используется",
+  "block-handbooktext-efreezer2": "Электрический холодильник позволяет хранить продукты дольше. <br><br>Слотов для хранения: 6.<br>Скорость порчи еды: 0,05х",
+
+  //удалить потом в 1.0.6
+  "block-efreezer-*": "Электрический холодильник (устарело)",
+  "block-efreezer-burned-closed-north": "Электрический холодильник (сгоревший) (устарело)",
+  "block-efreezer-burned-open-north": "Электрический холодильник (сгоревший) (устарело)",
+  "block-handbooktitle-efreezer": "Используется",
+  "block-handbooktext-efreezer": "Поместите в сетку крафта, чтобы обновить его."
+
 
   "game:ewoodcutter-title-gui": "Электрический лесоруб",
   "block-ewoodcutter-normal": "Электрический лесоруб",

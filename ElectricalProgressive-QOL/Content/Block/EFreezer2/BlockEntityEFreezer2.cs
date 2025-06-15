@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using ElectricalProgressive.Content.Block.EFreezer2;
 using ElectricalProgressive.Utils;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
@@ -14,15 +13,15 @@ using Vintagestory.API.Util;
 using Vintagestory.GameContent;
 using static System.Reflection.Metadata.BlobBuilder;
 
-namespace ElectricalProgressive.Content.Block.EFreezer;
+namespace ElectricalProgressive.Content.Block.EFreezer2;
 
-class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
+class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
 {
     public bool IsOpened { get; set; }
     private int _closedDelay;
 
     private InventoryBase _inventory;
-    private GuiEFreezer? _freezerDialog;
+    private GuiEFreezer2? _freezerDialog;
     private ICoreClientAPI _capi;
 
     private MeshData?[] _meshes;
@@ -31,7 +30,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 
     private readonly int _maxConsumption;
 
-    public BlockEntityEFreezer()
+    public BlockEntityEFreezer2()
     {
         _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
         IsOpened = false;
@@ -45,6 +44,81 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 
     public override string InventoryClassName => "efreezer";
 
+
+    /// <summary>
+    /// Аниматор блока, используется для анимации открывания дверцы генератора
+    /// </summary>
+    public BlockEntityAnimationUtil animUtil
+    {
+        get { return GetBehavior<BEBehaviorAnimatable>()?.animUtil; }
+    }
+
+
+    /// <summary>
+    /// Запускает анимацию открытия дверцы
+    /// </summary>
+    public void OpenLid()
+    {
+        //animUtil.Dispose();
+        animUtil.InitializeAnimator(InventoryClassName, null, null, new Vec3f(0, GetRotation(), 0f));
+
+        if (animUtil?.activeAnimationsByAnimCode.ContainsKey("open") == false)
+        {
+            animUtil?.StartAnimation(new AnimationMetaData()
+            {
+                Animation = "open",
+                Code = "open",
+                AnimationSpeed = 1.8f,
+                EaseOutSpeed = 6,
+                EaseInSpeed = 6                
+            });
+
+            //применяем цвет и яркость
+            Block.LightHsv = new byte[] { 7, 7, 11 };
+
+            //добавляем звук
+            _capi.World.PlaySoundAt(new ("electricalprogressiveqol:sounds/freezer_open.ogg"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F);
+
+        }
+
+    }
+
+
+    /// <summary>
+    /// Закрывает дверцу генератора, останавливая анимацию открытия, если она запущена
+    /// </summary>
+    public void CloseLid()
+    {
+        if (animUtil?.activeAnimationsByAnimCode.ContainsKey("open") == true)
+        {
+            animUtil?.StopAnimation("open");
+
+            //применяем цвет и яркость
+            Block.LightHsv = new byte[] { 7, 7, 0 };
+
+            //добавляем звук
+            _capi.World.PlaySoundAt(new ("electricalprogressiveqol:sounds/freezer_close.ogg"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F);
+        }
+    }
+
+
+
+    /// <summary>
+    /// Получает угол поворота блока в градусах
+    /// </summary>
+    /// <returns></returns>
+    public int GetRotation()
+    {
+        string side = Block.Variant["side"];
+        int adjustedIndex = ((BlockFacing.FromCode(side)?.HorizontalAngleIndex ?? 1) + 3) & 3;
+        return adjustedIndex * 90;
+    }
+
+
+    /// <summary>
+    /// Инициализация блока
+    /// </summary>
+    /// <param name="api"></param>
     public override void Initialize(ICoreAPI api)
     {
         // Инициализируем инвентарь
@@ -54,7 +128,16 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         base.Initialize(api);
 
         if (api.Side == EnumAppSide.Client)
+        {
             _capi = api as ICoreClientAPI;
+
+            // инициализируем аниматор
+            if (animUtil != null)
+            {
+                animUtil.InitializeAnimator(InventoryClassName, null, null, new Vec3f(0, GetRotation(), 0f));
+                
+            }
+        }
 
         _meshes = new MeshData[_inventory.Count];
 
@@ -72,6 +155,11 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         RegisterGameTickListener(FreezerTick, 500);
     }
 
+
+    /// <summary>
+    /// Обновляем mesh для конкретного слота
+    /// </summary>
+    /// <param name="slotid"></param>
     public void UpdateMesh(int slotid)
     {
         if (Api == null || Api.Side == EnumAppSide.Server)
@@ -145,6 +233,13 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 
     public Size2i AtlasSize => _capi.BlockTextureAtlas.Size;
 
+
+
+    /// <summary>
+    /// Получаем позицию текстуры по коду текстуры
+    /// </summary>
+    /// <param name="textureCode"></param>
+    /// <returns></returns>
     public TextureAtlasPosition this[string textureCode]
     {
         get
@@ -217,7 +312,11 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         return textureAtlasPosition;
     }
 
-    // Рисуем meshы
+    /// <summary>
+    /// Рисуем meshы
+    /// </summary>
+    /// <param name="stack"></param>
+    /// <returns></returns>
     public MeshData? GenMesh(ItemStack stack)
     {
         var meshSource = stack.Collectible as IContainedMeshSource;
@@ -260,16 +359,33 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         return meshData;
     }
 
+    /// <summary>
+    /// Вызывается при тесселяции блока
+    /// </summary>
+    /// <param name="mesher"></param>
+    /// <param name="tessThreadTesselator"></param>
+    /// <returns></returns>
     public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
     {
+        base.OnTesselation(mesher, tessThreadTesselator); // вызываем базовую логику тесселяции
+
+ 
         for (var i = 0; i < _meshes.Length; i++)
         {
             if (_meshes[i] != null)
                 mesher.AddMeshData(_meshes[i]);
         }
 
-        return false;
+        // если анимации нет, то рисуем блок базовый
+        if (animUtil?.activeAnimationsByAnimCode.ContainsKey("open") == false)
+        {
+            return false;
+        }
+
+        return true;  // не рисует базовый блок, если есть анимация
     }
+
+
 
     public void UpdateMeshes()
     {
@@ -290,11 +406,12 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 
         TryRefuel();
 
+
     }
 
     private void TryRefuel()
     {
-        var beh = GetBehavior<BEBehaviorEFreezer>();
+        var beh=GetBehavior<BEBehaviorEFreezer2>();
 
         if (beh is null)
             return;
@@ -399,7 +516,7 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
 
                 if (_freezerDialog == null)
                 {
-                    _freezerDialog = new(Lang.Get("freezer-title-gui"), Inventory, Pos, Api as ICoreClientAPI);
+                    _freezerDialog = new(Lang.Get("freezer-title-gui"), Inventory, Pos, Api as ICoreClientAPI, this);
                     _freezerDialog.OnClosed += () =>
                     {
                         _freezerDialog = null;
@@ -419,16 +536,27 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
         }
     }
 
+
+    /// <summary>
+    /// Возвращает скорость порчи предметов в холодильнике
+    /// </summary>
+    /// <returns></returns>
     public override float GetPerishRate()
     {
         var initial = base.GetPerishRate();
         var side = Api.Side;
-        if (GetBehavior<BEBehaviorEFreezer>().PowerSetting < _maxConsumption * 0.1F)
+        if (GetBehavior<BEBehaviorEFreezer2>().PowerSetting < _maxConsumption * 0.1F)
             return initial;
 
         return 0.05F;
     }
 
+
+
+    /// <summary>
+    /// Вызывается при установке блока в мир
+    /// </summary>
+    /// <param name="byItemStack"></param>
     public override void OnBlockPlaced(ItemStack? byItemStack = null)
     {
         base.OnBlockPlaced(byItemStack);
@@ -449,6 +577,11 @@ class BlockEntityEFreezer : ContainerEFreezer, ITexPositionSource
             FacingHelper.Faces(Facing.DownAll).First().Index);
     }
 
+
+
+    /// <summary>
+    /// Вызывается при удалении блока
+    /// </summary>
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();

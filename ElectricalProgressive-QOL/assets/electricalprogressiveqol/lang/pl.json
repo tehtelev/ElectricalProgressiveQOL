@@ -5,9 +5,7 @@
   "block-estove-*": "Płyta elektryczna",
   "block-estove-burned-south": "Płyta elektryczna (spalona)",
 
-  "block-efreezer-*": "Lodówka elektryczna",
-  "block-efreezer-burned-closed-north": "Lodówka elektryczna (spalona)",
-  "block-efreezer-burned-open-north": "Lodówka elektryczna (spalona)",
+
 
   "block-eoven-*": "Piec elektryczny",
   "block-eoven-burned-north": "Piec elektryczny (spalony)",
@@ -93,8 +91,7 @@
   "block-handbooktitle-estove": "Użycie",
   "block-handbooktext-estove": "Płyta elektryczna zastępuje ognisko.<br><br>Maksymalna temperatura: 1325 °C.",
 
-  "block-handbooktitle-efreezer": "Użycie",
-  "block-handbooktext-efreezer": "Lodówka elektryczna do dłuższego przechowywania żywności.<br><br>Miejsca: 6.<br>Prędkość psucia: 0,05×",
+
 
 
   "game:BlockEStove": "Płyta elektryczna",
@@ -105,7 +102,19 @@
   "game:Put-into-4-items": "Potrzeba co najmniej 4 przedmiotów do pieczenia.",
 
   "game:max-light": "Maksymalne światło",
-  "game:height": "Wysokość"
+  "game:height": "Wysokość",
+
+  "block-efreezer2-*": "Lodówka Elektryczna",
+  "block-efreezer2-burned-north": "Lodówka Elektryczna (spalona)",
+  "block-handbooktitle-efreezer2": "W użyciu",
+  "block-handbooktext-efreezer2": "Elektryczna lodówka pozwala na dłuższe przechowywanie żywności. <br><br>Miejsca do przechowywania: 6.<br>Szybkość psucia się żywności: 0,05×",
+
+  // usunąć w wersji 1.0.6
+  "block-efreezer-*": "Lodówka Elektryczna (przestarzałe)",
+  "block-efreezer-burned-closed-north": "Lodówka Elektryczna (spalona) (przestarzałe)",
+  "block-efreezer-burned-open-north": "Lodówka Elektryczna (spalona) (przestarzałe)",
+  "block-handbooktitle-efreezer": "W użyciu",
+  "block-handbooktext-efreezer": "Umieść w siatce rzemiosła, aby ją ulepszyć."
 
 
 

@@ -5,9 +5,7 @@
   "block-estove-*": "Електрична плита",
   "block-estove-burned-south": "Електрична плита (згоріла)",
 
-  "block-efreezer-*": "Електричний холодильник",
-  "block-efreezer-burned-closed-north": "Електричний холодильник (згорілий)",
-  "block-efreezer-burned-open-north": "Електричний холодильник (згорілий)",
+
 
   "block-eoven-*": "Електрична духовка",
   "block-eoven-burned-north": "Електрична духовка (згоріла)",
@@ -92,8 +90,6 @@
   "block-handbooktitle-estove": "Використання",
   "block-handbooktext-estove": "Електрична плита замінює вогнище.<br><br>Максимальна температура: 1325 °C.",
 
-  "block-handbooktitle-efreezer": "Використання",
-  "block-handbooktext-efreezer": "Електричний холодильник для довшого зберігання їжі.<br><br>Слоти: 6.<br>Швидкість псування: 0,05×",
 
 
   "game:BlockEStove": "Електрична плита",
@@ -104,7 +100,20 @@
   "game:Put-into-4-items": "Потрібно мінімум 4 предмети для випікання.",
 
   "game:max-light": "Максимальне світло",
-  "game:height": "Висота"
+  "game:height": "Висота",
+
+
+  "block-efreezer2-*": "Електричний холодильник",
+  "block-efreezer2-burned-north": "Електричний холодильник (згорілий)",
+  "block-handbooktitle-efreezer2": "Використовується",
+  "block-handbooktext-efreezer2": "Електричний холодильник дозволяє довше зберігати продукти. <br><br>Слоти для зберігання: 6.<br>Швидкість псування їжі: 0,05×",
+
+  // видалити в 1.0.6
+  "block-efreezer-*": "Електричний холодильник (застаріло)",
+  "block-efreezer-burned-closed-north": "Електричний холодильник (згорілий) (застаріло)",
+  "block-efreezer-burned-open-north": "Електричний холодильник (згорілий) (застаріло)",
+  "block-handbooktitle-efreezer": "Використовується",
+  "block-handbooktext-efreezer": "Помістіть у сітку крафту, щоб оновити його."
 
 
 
