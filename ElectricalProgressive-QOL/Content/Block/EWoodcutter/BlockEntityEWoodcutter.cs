@@ -15,11 +15,8 @@ namespace ElectricalProgressive.Content.Block.EWoodcutter;
 
 public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
 {
-    private ICoreClientAPI? _clientApi;
-    private ICoreServerAPI? _serverApi;
-
     private BlockPos? _currentTreePos;
-    private Stack<BlockPos>? _allTreePos;
+    private Stack<BlockPos> _allTreePos = new();
 
     /// <summary>
     /// Радиус посадки саженцев
@@ -102,12 +99,6 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
     {
         base.Initialize(api);
 
-        if (api.Side.IsClient())
-            _clientApi = api as ICoreClientAPI;
-
-        if (Api.Side.IsServer())
-            _serverApi = api as ICoreServerAPI;
-
         _plantSaplingRadius = MyMiniLib.GetAttributeInt(Block, "plantSaplingRadius", 3);
         _treeChopRadius = MyMiniLib.GetAttributeInt(Block, "treeChopRadius", 5);
         _flyTreeRadius = MyMiniLib.GetAttributeInt(Block, "flyTreeRadius", 5);
@@ -116,8 +107,11 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
         _inventory.Pos = Pos;
         _inventory.LateInitialize($"{InventoryClassName}-{Pos.X}/{Pos.Y}/{Pos.Z}", api);
 
-        RegisterGameTickListener(StageWatcher, 100);
-        RegisterGameTickListener(ChopTreeUpdate, 300);
+        if (Api.Side.IsClient())
+            return;
+
+        RegisterGameTickListener(StageWatcher, 500);
+        RegisterGameTickListener(ChopTreeUpdate, 500);
         RegisterGameTickListener(ChopFlyingTreeUpdate, 5000);
     }
 
@@ -132,7 +126,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             // Если деревьев и семян нет, то ждем
             if (!HasSeed)
             {
-                Stage = WoodcutterStage.WaitFullGrowth;
+                ChangeStage(WoodcutterStage.WaitFullGrowth);
                 return;
             }
 
@@ -141,11 +135,11 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             // Если семена есть, но нет свободных мест, то ждем
             if (!canPlantSapling)
             {
-                Stage = WoodcutterStage.WaitFullGrowth;
+                ChangeStage(WoodcutterStage.WaitFullGrowth);
                 return;
             }
 
-            Stage = WoodcutterStage.PlantTree;
+            ChangeStage(WoodcutterStage.PlantTree);
             PlantSapling(plantPos);
             return;
         }
@@ -159,11 +153,23 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             Stage = HasSeed
                 ? WoodcutterStage.PlantTree
                 : WoodcutterStage.None;
+
+            MarkDirty();
             return;
         }
 
         if (CanBreakBlock(currentTreeBlock))
-            Stage = WoodcutterStage.ChopTree;
+            ChangeStage(WoodcutterStage.ChopTree);
+    }
+
+    private void ChangeStage(WoodcutterStage newStage)
+    {
+        if (newStage == Stage)
+            return;
+
+        Stage = newStage;
+
+        MarkDirty();
     }
 
     /// <summary>
@@ -241,6 +247,9 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
     /// </summary>
     private void PlantSapling(BlockPos pos)
     {
+        if (Api.Side.IsClient())
+            return;
+
         if (IsNotEnoughEnergy || !HasSeed)
             return;
 
@@ -261,7 +270,6 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
 
         _inventory[0].TakeOut(1);
         _inventory[0].MarkDirty();
-        MarkDirty();
     }
 
     private int _blocksBroken;
@@ -276,30 +284,24 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
         if (Stage != WoodcutterStage.ChopTree || IsNotEnoughEnergy)
             return;
 
-        // Завершение обработки при отсутствии блоков
-        if (_allTreePos is { Count: 0 })
-        {
-            ResetChoppingState();
-            return;
-        }
-
-        if (_allTreePos == null && _currentTreePos != null)
+        if (_currentTreePos != null)
         {
             _allTreePos = FindTree(Api.World, _currentTreePos, out int resistance, out int woodTier);
 
             TreeResistance = resistance;
             WoodTier = woodTier;
 
-            if (Api.Side.IsServer() && _allTreePos.Count == 0)
+            MarkDirty();
+
+            // Если FindTree не нашел дерево, то скорее всего это бревна поставленные игроком.
+            // Это проблемно, рубка таких блоков почти ничего не стоит
+            if (_allTreePos.Count == 0)
             {
                 var singleTree = Api.World.BlockAccessor.GetBlock(_currentTreePos);
                 BreakBlockAndCollect(singleTree, _currentTreePos, 1f);
                 return;
             }
         }
-
-        if (Api.Side.IsClient() || _allTreePos == null)
-            return;
 
         var blocksProcessed = 0;
 
@@ -346,7 +348,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
     /// </summary>
     private void ChopFlyingTreeUpdate(float dt)
     {
-        if (Stage == WoodcutterStage.ChopTree)
+        if (Stage == WoodcutterStage.ChopTree || IsNotEnoughEnergy)
             return;
 
         var centerPos = Pos.Copy();
@@ -360,6 +362,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             {
                 _currentTreePos = existTreePos;
                 Stage = WoodcutterStage.ChopTree;
+                MarkDirty();
                 break;
             }
         }
@@ -376,7 +379,6 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
         _blocksBroken = 0;
         _leavesMul = 1;
         _leavesBranchyMul = 0.8f;
-        _allTreePos = null;
         _currentTreePos = null;
 
         MarkDirty();
@@ -387,6 +389,9 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
     /// </summary>
     private void BreakBlockAndCollect(Vintagestory.API.Common.Block block, BlockPos pos, float dropQuantityMultiplier = 1f)
     {
+        if (Api.Side.IsClient())
+            return;
+
         var drops = block.GetDrops(Api.World, pos, null, dropQuantityMultiplier);
         if (drops == null)
             return;
@@ -398,9 +403,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
 
             var remainingStack = stack.Clone();
             if (!TryPutStackToInventory(remainingStack))
-            {
                 Api.World.SpawnItemEntity(remainingStack, pos.ToVec3d());
-            }
         }
 
         Api.World.BlockAccessor.SetBlock(0, pos);
@@ -438,14 +441,16 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
                 continue;
 
             var moveAmount = Math.Min(stack.StackSize, availableSpace);
+            if (moveAmount == 0)
+                continue;
+
             slot.Itemstack.StackSize += moveAmount;
             stack.StackSize -= moveAmount;
 
+            slot.MarkDirty();
+
             if (stack.StackSize <= 0)
-            {
-                slot.MarkDirty();
                 return true;
-            }
         }
 
         return false;
@@ -481,11 +486,11 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
 
     public override bool OnPlayerRightClick(IPlayer byPlayer, BlockSelection blockSel)
     {
-        if (Api.Side.IsClient() && _clientApi is not null)
+        if (Api.Side.IsClient())
         {
             toggleInventoryDialogClient(byPlayer, delegate
             {
-                invDialog = new GuiBlockEntityEWoodcutter(_inventory, Pos, _clientApi);
+                invDialog = new GuiBlockEntityEWoodcutter(_inventory, Pos, Api as ICoreClientAPI);
                 return invDialog;
             });
         }
@@ -537,6 +542,14 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
         var inventoryTree = new TreeAttribute();
         _inventory.ToTreeAttributes(inventoryTree);
         tree["inventory"] = inventoryTree;
+
+        tree.SetInt("stage", (int)Stage);
+        tree.SetInt("woodTier", WoodTier);
+        tree.SetInt("treeResistance", TreeResistance);
+        tree.SetBool("isNotEnoughEnergy", IsNotEnoughEnergy);
+
+        if (_currentTreePos != null)
+            tree.SetBlockPos("currentTreePos", _currentTreePos);
     }
 
 
@@ -550,17 +563,14 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
         base.FromTreeAttributes(tree, worldForResolving);
 
         _inventory.FromTreeAttributes(tree.GetTreeAttribute("inventory"));
+        if (Api != null)
+            _inventory.AfterBlocksLoaded(worldForResolving);
 
-        if (Api is null)
-            return;
-
-        _inventory.AfterBlocksLoaded(worldForResolving);
-
-        if (Api.Side.IsClient() && invDialog is GuiBlockEntityEWoodcutter guiBlockEntityEWoodcutter)
-        {
-            guiBlockEntityEWoodcutter.Update();
-            MarkDirty(true);
-        }
+        Stage = (WoodcutterStage)tree.GetInt("stage");
+        WoodTier = tree.GetInt("woodTier");
+        TreeResistance = tree.GetInt("treeResistance");
+        IsNotEnoughEnergy = tree.GetBool("isNotEnoughEnergy");
+        _currentTreePos = tree.GetBlockPos("currentTreePos");
     }
 
     #endregion
