@@ -132,7 +132,10 @@
   "block-efreezer-burned-closed-north": "Электрический холодильник (сгоревший) (устарело)",
   "block-efreezer-burned-open-north": "Электрический холодильник (сгоревший) (устарело)",
   "block-handbooktitle-efreezer": "Используется",
-  "block-handbooktext-efreezer": "Поместите в сетку крафта, чтобы обновить его."
+  "block-handbooktext-efreezer": "Поместите в сетку крафта, чтобы обновить его.",
 
 
+  "game:ewoodcutter-title-gui": "Электрический лесоруб",
+  "block-ewoodcutter-normal": "Электрический лесоруб",
+  "block-ewoodcutter-normal-burned": "Электрический лесоруб (сгоревший)"
 }
