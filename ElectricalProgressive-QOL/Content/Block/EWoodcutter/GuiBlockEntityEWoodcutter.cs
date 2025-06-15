@@ -54,7 +54,7 @@ public class GuiBlockEntityEWoodcutter : GuiDialogBlockEntity
         SingleComposer = capi.Gui.CreateCompo("ewoodcutter" + BlockEntityPosition, window)
             .AddShadedDialogBG(dialog)
             
-            .AddDialogTitleBar(Lang.Get("ewoodcutter"), OnTitleBarClose)
+            .AddDialogTitleBar(DialogTitle, OnTitleBarClose)
             .BeginChildElements(dialog)
 
             .AddItemSlotGrid(Inventory, SendInvPacket, 1, new[] { 0 }, inputGrid, "inputSlot")
