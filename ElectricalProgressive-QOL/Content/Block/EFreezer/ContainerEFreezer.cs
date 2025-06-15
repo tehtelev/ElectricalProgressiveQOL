@@ -23,8 +23,7 @@ public abstract class ContainerEFreezer : BlockEntityEBase, IBlockEntityContaine
 
 
 
-    // Fix for CS0144: Replace the instantiation of the abstract type InventoryBase with a concrete implementation.
-    // Assuming there is a concrete class that inherits from InventoryBase, such as InventoryGeneric.
+
 
     protected ContainerEFreezer()
     {

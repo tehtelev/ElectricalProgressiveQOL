@@ -1,4 +1,4 @@
-[
+﻿[
   {
     "ingredientPattern": "MHM,MXM,ESE",
     "width": 3,
@@ -33,7 +33,7 @@
     },
     "output": {
       "type": "block",
-      "code": "electricalprogressiveqol:efreezer-melted-closed-north",
+      "code": "electricalprogressiveqol:efreezer-melted-north",
       "quantity": 1
     }
   }
