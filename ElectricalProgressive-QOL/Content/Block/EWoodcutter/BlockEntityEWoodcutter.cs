@@ -340,7 +340,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
         if (Stage != WoodcutterStage.ChopTree || IsNotEnoughEnergy)
             return;
 
-        if (_currentTreePos != null)
+        if (_currentTreePos != null && _allTreePos.Count == 0)
         {
             _allTreePos = FindTree(Api.World, _currentTreePos, out int resistance, out int woodTier);
 
@@ -363,10 +363,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
 
         while (blocksProcessed < _maxBlocksPerBatch && _allTreePos.Count > 0)
         {
-            if (IsNotEnoughEnergy)
-                break;
-
-            if (!_allTreePos.TryPop(out var pos))
+            if (IsNotEnoughEnergy || !_allTreePos.TryPop(out var pos))
                 break;
 
             var block = Api.World.BlockAccessor.GetBlock(pos);
@@ -687,10 +684,11 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             var pos = queue.Dequeue();
             foundPositions.Push(new(pos.X, pos.Y, pos.Z));   // dimension-correct because pos.Y contains the dimension
             resistance += pos.W + 1;      // leaves -> 1; branchyleaves -> 2; softwood -> 4 etc.
+
             if (woodTier == 0)
                 woodTier = pos.W;
 
-            if (foundPositions.Count > 5000)
+            if (foundPositions.Count > 10000)
                 break;
 
             block = world.BlockAccessor.GetBlockRaw(pos.X, pos.Y, pos.Z, BlockLayersAccess.Solid);
@@ -700,7 +698,15 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             if (bh == EnumTreeFellingBehavior.NoChop)
                 continue;
 
-            onTreeBlock(pos, world.BlockAccessor, checkedPositions, startPos, bh == EnumTreeFellingBehavior.ChopSpreadVertical, treeFellingGroupCode, queue, leafqueue, adjacentLeafGroupsCounts);
+            onTreeBlock(pos,
+                world.BlockAccessor,
+                checkedPositions,
+                startPos,
+                bh == EnumTreeFellingBehavior.ChopSpreadVertical,
+                treeFellingGroupCode,
+                queue,
+                leafqueue,
+                adjacentLeafGroupsCounts);
         }
 
         // Find which is the most prevalent of the 7 possible adjacentLeafGroups
@@ -728,13 +734,31 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             if (foundPositions.Count > 10000)
                 break;
 
-            onTreeBlock(pos, world.BlockAccessor, checkedPositions, startPos, bh == EnumTreeFellingBehavior.ChopSpreadVertical, treeFellingGroupCode, leafqueue, null, null);
+            onTreeBlock(pos,
+                world.BlockAccessor,
+                checkedPositions,
+                startPos,
+                bh == EnumTreeFellingBehavior.ChopSpreadVertical,
+                treeFellingGroupCode,
+                leafqueue,
+                null,
+                null);
         }
 
         return foundPositions;
     }
 
-    private void onTreeBlock(Vec4i pos, IBlockAccessor blockAccessor, HashSet<BlockPos> checkedPositions, BlockPos startPos, bool chopSpreadVertical, string treeFellingGroupCode, Queue<Vec4i> queue, Queue<Vec4i> leafqueue, int[] adjacentLeaves)
+    private void onTreeBlock(
+        Vec4i pos,
+        IBlockAccessor blockAccessor,
+        HashSet<BlockPos> checkedPositions,
+        BlockPos startPos,
+        bool chopSpreadVertical,
+        string treeFellingGroupCode,
+        Queue<Vec4i> queue,
+        Queue<Vec4i> leafqueue,
+        int[] adjacentLeaves
+    )
     {
         Queue<Vec4i> outqueue;
         for (var i = 0; i < Vec3i.DirectAndIndirectNeighbours.Length; i++)
@@ -742,15 +766,15 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             var facing = Vec3i.DirectAndIndirectNeighbours[i];
             var neibPos = new BlockPos(pos.X + facing.X, pos.Y + facing.Y, pos.Z + facing.Z);
 
+            if (checkedPositions.Contains(neibPos))
+                continue;
+
             var hordist = GameMath.Sqrt(neibPos.HorDistanceSqTo(startPos.X, startPos.Z));
             var vertdist = (neibPos.Y - startPos.Y);
 
             // "only breaks blocks inside an upside down square base pyramid"
-            var f = chopSpreadVertical ? 0.5f : 2;
-            if (hordist - 1 >= f * vertdist)
-                continue;
-
-            if (checkedPositions.Contains(neibPos))
+            var horFactor = chopSpreadVertical ? 0.5f : 2;
+            if (hordist - 1 >= horFactor * vertdist)
                 continue;
 
             var block = blockAccessor.GetBlock(neibPos, BlockLayersAccess.Solid);
