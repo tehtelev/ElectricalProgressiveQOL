@@ -85,13 +85,14 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
         public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
         {
-            var newState = this.Variant["status"] switch
+            var newState = this.Variant["state"] switch
             {
                 "enabled" => "disabled",
                 "disabled" => "disabled",
                 _ => "burned"
             };
-            var blockCode = CodeWithVariants(new Dictionary<string, string>
+
+            var blockCode = CodeWithVariants(new()
             {
                 { "tempK", this.Variant["tempK"] },
                 { "state", newState }
