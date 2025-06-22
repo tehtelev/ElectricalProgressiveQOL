@@ -30,20 +30,31 @@
   "attributesByType": {
     "*-i-*": {
       "maxConsumption": 16,
-      "HSV": [ 58, 32, 20 ]
+      "HSV":  20 
     },
     "*-r-*": {
       "maxConsumption": 16,
-      "HSV": [ 58, 32, 20 ]
+      "HSV":  20 
     },
     "*-t-*": {
       "maxConsumption": 32,
-      "HSV": [ 58, 32, 26 ]
+      "HSV":  26 
     },
     "*-x-*": {
       "maxConsumption": 64,
-      "HSV": [ 58, 32, 31 ]
+      "HSV":  31 
     }
+  },
+
+
+
+  "lightHsvByType": {
+    "*-disabled": [ 0, 0, 0 ],
+    "*-burned": [ 0, 0, 0 ],
+    "*-i-enabled": [ 10, 5, 20 ],
+    "*-r-enabled": [ 10, 5, 20 ],
+    "*-t-enabled": [ 10, 5, 26 ],
+    "*-x-enabled": [ 10, 5, 31 ]
   },
 
 
@@ -84,9 +95,9 @@
 
 
 
-  "shape":  {
-      "base": "block/fonari/stolb_fonar-{height}-{format}-{state}"
-    },
+  "shape": {
+    "base": "block/fonari/stolb_fonar-{height}-{format}-{state}"
+  },
 
 
   "resistance": 1,

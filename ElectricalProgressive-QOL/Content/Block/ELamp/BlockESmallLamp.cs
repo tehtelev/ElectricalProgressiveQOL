@@ -23,7 +23,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
         /// <summary>
         /// Заглушка нулевого света
         /// </summary>
-        private int[] null_HSV = { 0, 0, 0 };
+        //private int[] null_HSV = { 0, 0, 0 };
 
         public override void OnUnloaded(ICoreAPI api)
         {
@@ -529,7 +529,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
             dsc.AppendLine(Lang.Get("Voltage") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "voltage", 0) + " " + Lang.Get("V"));
             dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
-            dsc.AppendLine(Lang.Get("max-light") + ": " + MyMiniLib.GetAttributeArrayInt(inSlot.Itemstack.Block, "HSV", null_HSV)[2]);
+            dsc.AppendLine(Lang.Get("max-light") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "HSv", 0));
             dsc.AppendLine(Lang.Get("WResistance") + ": " + ((MyMiniLib.GetAttributeBool(inSlot.Itemstack.Block, "isolatedEnvironment", false)) ? Lang.Get("Yes") : Lang.Get("No")));
         }
 

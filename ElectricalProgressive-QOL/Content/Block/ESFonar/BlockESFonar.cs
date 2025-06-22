@@ -14,7 +14,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
     {
         private readonly static Dictionary<CacheDataKey, MeshData> MeshDataCache = new();
 
-        private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
+        //private int[] null_HSV = { 0, 0, 0 };   //заглушка нулевого света
         public override void OnLoaded(ICoreAPI coreApi)
         {
             base.OnLoaded(coreApi);
@@ -275,7 +275,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             base.GetHeldItemInfo(inSlot, dsc, world, withDebugInfo);
             dsc.AppendLine(Lang.Get("Voltage") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "voltage", 0) + " " + Lang.Get("V"));
             dsc.AppendLine(Lang.Get("Consumption") + ": " + MyMiniLib.GetAttributeFloat(inSlot.Itemstack.Block, "maxConsumption", 0) + " " + Lang.Get("W"));
-            dsc.AppendLine(Lang.Get("max-light") + ": " + MyMiniLib.GetAttributeArrayInt(inSlot.Itemstack.Block, "HSV", null_HSV)[2]);
+            dsc.AppendLine(Lang.Get("max-light") + ": " + MyMiniLib.GetAttributeInt(inSlot.Itemstack.Block, "HSV", 0));
             dsc.AppendLine(Lang.Get("height") + ": " + this.Variant["height"]);
             dsc.AppendLine(Lang.Get("WResistance") + ": " + ((MyMiniLib.GetAttributeBool(inSlot.Itemstack.Block, "isolatedEnvironment", false)) ? Lang.Get("Yes") : Lang.Get("No")));
         }

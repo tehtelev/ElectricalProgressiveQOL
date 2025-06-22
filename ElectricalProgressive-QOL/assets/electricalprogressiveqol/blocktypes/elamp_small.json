@@ -16,6 +16,7 @@
     "maxCurrent": 20.0,
     "isolated": true,
     "isolatedEnvironment": false,
+    "HSV": 14, //яркость свечения по умолчанию
     "handbook": {
       "groupBy": [ "elamp_small-*" ],
       "extraSections": [
@@ -27,14 +28,16 @@
     }
   },
 
-  "attributesByType": {
-    "*-3000-*": { "HSV": [ 58, 40, 14 ] },
-    "*-4000-*": { "HSV": [ 58, 32, 14 ] },
-    "*-5000-*": { "HSV": [ 57, 16, 14 ] },
-    "*-6000-*": { "HSV": [ 0, 0, 14 ] },
-    "*-7000-*": { "HSV": [ 203, 9, 14 ] },
-    "*-8000-*": { "HSV": [ 201, 25, 14 ] },
-    "*-9000-*": { "HSV": [ 199, 40, 14 ] }
+  "lightHsvByType": {
+    "*-disabled": [ 0, 0, 0 ],
+    "*-burned": [ 0, 0, 0 ],
+    "*-3000-enabled": [ 10, 7, 14 ],
+    "*-4000-enabled": [ 10, 5, 14 ],
+    "*-5000-enabled": [ 10, 3, 14 ],
+    "*-6000-enabled": [ 0, 0, 14 ],
+    "*-7000-enabled": [ 34, 2, 14 ],
+    "*-8000-enabled": [ 34, 4, 14 ],
+    "*-9000-enabled": [ 33, 7, 14 ]
   },
 
 
@@ -55,7 +58,7 @@
     },
     {
       "code": "state",
-      "states": [ "disabled", "enabled","burned" ]
+      "states": [ "disabled", "enabled", "burned" ]
     }
   ],
 
