@@ -57,7 +57,7 @@ public class BEBehaviorEStove : BEBehaviorBase, IElectricConsumer
             {
                 stringBuilder.AppendLine(StringHelper.Progressbar(PowerSetting * 100.0f / _maxConsumption));
                 stringBuilder.AppendLine("├ " + Lang.Get("Consumption") + ": " + PowerSetting + "/" + _maxConsumption + " " + Lang.Get("W"));
-                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + _stoveTemperature + "°");
+                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + ((int)_stoveTemperature).ToString() + "°");
             }
         }
 

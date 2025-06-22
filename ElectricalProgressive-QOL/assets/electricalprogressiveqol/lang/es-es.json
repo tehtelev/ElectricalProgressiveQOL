@@ -105,14 +105,9 @@
   "block-efreezer2-*": "Nevera eléctrica",
   "block-efreezer2-burned-north": "Nevera eléctrica (quemada)",
   "block-handbooktitle-efreezer2": "En uso",
-  "block-handbooktext-efreezer2": "La nevera eléctrica permite conservar los alimentos durante más tiempo. <br><br>Ranuras de almacenamiento: 6.<br>Tasa de descomposición de los alimentos: 0,05×",
+  "block-handbooktext-efreezer2": "La nevera eléctrica permite conservar los alimentos durante más tiempo. <br><br>Ranuras de almacenamiento: 6.<br>Tasa de descomposición de los alimentos: 0,05×"
 
-  // eliminar en 1.0.6
-  "block-efreezer-*": "Nevera eléctrica (obsoleta)",
-  "block-efreezer-burned-closed-north": "Nevera eléctrica (quemada) (obsoleta)",
-  "block-efreezer-burned-open-north": "Nevera eléctrica (quemada) (obsoleta)",
-  "block-handbooktitle-efreezer": "En uso",
-  "block-handbooktext-efreezer": "Coloca en la cuadrícula de fabricación para actualizarla."
+
 
 
 }

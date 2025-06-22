@@ -112,14 +112,7 @@
   "block-efreezer2-*": "Electric Refrigerator",
   "block-efreezer2-burned-north": "Electric Refrigerator (Burned)",
   "block-handbooktitle-efreezer2": "In Use",
-  "block-handbooktext-efreezer2": "The electric refrigerator allows you to keep food fresh for longer. <br><br>Storage slots: 6.<br>Food spoilage rate: 0.05×",
-
-  // remove in 1.0.6
-  "block-efreezer-*": "Electric Refrigerator (Deprecated)",
-  "block-efreezer-burned-closed-north": "Electric Refrigerator (Burned) (Deprecated)",
-  "block-efreezer-burned-open-north": "Electric Refrigerator (Burned) (Deprecated)",
-  "block-handbooktitle-efreezer": "In Use",
-  "block-handbooktext-efreezer": "Place in the crafting grid to upgrade it."
+  "block-handbooktext-efreezer2": "The electric refrigerator allows you to keep food fresh for longer. <br><br>Storage slots: 6.<br>Food spoilage rate: 0.05×"
 
 
 

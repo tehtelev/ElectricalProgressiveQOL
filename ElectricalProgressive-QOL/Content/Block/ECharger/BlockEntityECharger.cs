@@ -263,7 +263,8 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
         var clientApi = (ICoreClientAPI)Api;
         var block = Api.World.BlockAccessor.GetBlock(Pos);
         var mesh = clientApi.TesselatorManager.GetDefaultBlockMesh(block);
-        if (mesh == null)
+
+        if (mesh == null || mesher==null)
             return true;
 
         mesher.AddMeshData(mesh);

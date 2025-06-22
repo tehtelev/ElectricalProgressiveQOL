@@ -90,7 +90,7 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
             {
                 stringBuilder.AppendLine(StringHelper.Progressbar(PowerSetting * 100.0f / _maxConsumption));
                 stringBuilder.AppendLine("├ " + Lang.Get("Consumption") + ": " + PowerSetting + "/" + _maxConsumption + " " + Lang.Get("W"));
-                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + _ovenTemperature + "°");
+                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + ((int)_ovenTemperature).ToString() + "°");
             }
         }
 

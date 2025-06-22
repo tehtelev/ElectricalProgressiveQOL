@@ -63,8 +63,8 @@ public class BEBehaviorEHorn : BEBehaviorBase, IElectricConsumer
             else
             {
                 stringBuilder.AppendLine(StringHelper.Progressbar(_powerReceive / _maxConsumption * 100));
-                stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + _powerReceive + "/" + _maxConsumption + " " + Lang.Get("W"));
-                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + _maxTemp + "° (" + Lang.Get("max") + ")");
+                stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + ((int)_powerReceive).ToString() + "/" + _maxConsumption + " " + Lang.Get("W"));
+                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + ((int)_maxTemp).ToString() + "° (" + Lang.Get("max") + ")");
             }
         }
 

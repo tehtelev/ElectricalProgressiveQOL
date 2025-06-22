@@ -667,7 +667,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             if (temp <= 25)
                 stringBuilder.AppendLine(Lang.Get("Contents") + " " + inputStack.StackSize + "×" + inputStack.GetName() + "\n└ " + Lang.Get("Temperature") + " " + Lang.Get("Cold"));
             else
-                stringBuilder.AppendLine(Lang.Get("Contents") + inputStack.StackSize + "×" + inputStack.GetName() + "\n└ " + Lang.Get("Temperature") + " " + temp + " °C");
+                stringBuilder.AppendLine(Lang.Get("Contents") + " " + inputStack.StackSize + "×" + inputStack.GetName() + "\n└ " + Lang.Get("Temperature") + " " + temp + " °C");
         }
     }
 }

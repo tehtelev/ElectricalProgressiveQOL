@@ -108,14 +108,7 @@
   "block-efreezer2-*": "Réfrigérateur électrique",
   "block-efreezer2-burned-north": "Réfrigérateur électrique (brûlé)",
   "block-handbooktitle-efreezer2": "En service",
-  "block-handbooktext-efreezer2": "Le réfrigérateur électrique permet de conserver les aliments plus longtemps. <br><br>Emplacements de stockage : 6.<br>Vitesse de détérioration des aliments : 0,05×",
-
-  // à supprimer dans la 1.0.6
-  "block-efreezer-*": "Réfrigérateur électrique (obsolète)",
-  "block-efreezer-burned-closed-north": "Réfrigérateur électrique (brûlé) (obsolète)",
-  "block-efreezer-burned-open-north": "Réfrigérateur électrique (brûlé) (obsolète)",
-  "block-handbooktitle-efreezer": "En service",
-  "block-handbooktext-efreezer": "Placez dans la grille d’artisanat pour le mettre à niveau."
+  "block-handbooktext-efreezer2": "Le réfrigérateur électrique permet de conserver les aliments plus longtemps. <br><br>Emplacements de stockage : 6.<br>Vitesse de détérioration des aliments : 0,05×"
 
 
 }

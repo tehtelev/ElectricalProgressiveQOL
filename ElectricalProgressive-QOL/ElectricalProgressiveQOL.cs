@@ -1,5 +1,4 @@
 ﻿using ElectricalProgressive.Content.Block.ECharger;
-using ElectricalProgressive.Content.Block.EFreezer;
 using ElectricalProgressive.Content.Block.EHorn;
 using ElectricalProgressive.Content.Block.EStove;
 using ElectricalProgressive.Content.Block.ELamp;
@@ -23,7 +22,7 @@ using ElectricalProgressive.Content.Block.EFreezer2;
     "electricalprogressiveqol",
     Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
     Description = "Brings electricity into the game!",
-    Version = "1.0.5",
+    Version = "1.1.0",
     Authors = new[] {
         "Tehtelev",
         "Kotl"
@@ -82,10 +81,6 @@ public class ElectricalProgressiveQOL : ModSystem
         api.RegisterBlockEntityClass("BlockEntityEFreezer2", typeof(BlockEntityEFreezer2));
         api.RegisterBlockEntityBehaviorClass("BEBehaviorEFreezer2", typeof(BEBehaviorEFreezer2));
 
-        //холодильник без анимации (старый)
-        api.RegisterBlockClass("BlockEFreezer", typeof(BlockEFreezer));
-        api.RegisterBlockEntityClass("BlockEntityEFreezer", typeof(BlockEntityEFreezer));
-        api.RegisterBlockEntityBehaviorClass("BEBehaviorEFreezer", typeof(BEBehaviorEFreezer));
 
         api.RegisterBlockClass("BlockEOven", typeof(BlockEOven));
         api.RegisterBlockEntityClass("BlockEntityEOven", typeof(BlockEntityEOven));
