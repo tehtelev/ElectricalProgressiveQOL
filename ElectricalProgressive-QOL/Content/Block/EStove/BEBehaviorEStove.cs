@@ -46,20 +46,35 @@ public class BEBehaviorEStove : BEBehaviorBase, IElectricConsumer
         base.GetBlockInfo(forPlayer, stringBuilder);
 
         //проверяем не сгорел ли прибор
-        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityEStove entity)
+        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is not BlockEntityEStove entity)
+            return;
+
+        if (IsBurned)
         {
-            if (IsBurned)
+            // выясняем причину сгорания (надо куда-то вынести сей кусочек)
+            string cause = "";
+            if (entity.AllEparams.Any(e => e.causeBurnout == 1))
             {
-                stringBuilder.AppendLine(Lang.Get("Burned"));
-                entity.IsBurning = false;
+                cause = ElectricalProgressiveBasics.causeBurn[1];
             }
-            else
+            else if (entity.AllEparams.Any(e => e.causeBurnout == 2))
             {
-                stringBuilder.AppendLine(StringHelper.Progressbar(PowerSetting * 100.0f / _maxConsumption));
-                stringBuilder.AppendLine("├ " + Lang.Get("Consumption") + ": " + PowerSetting + "/" + _maxConsumption + " " + Lang.Get("W"));
-                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + ((int)_stoveTemperature).ToString() + "°");
+                cause = ElectricalProgressiveBasics.causeBurn[2];
             }
+            else if (entity.AllEparams.Any(e => e.causeBurnout == 3))
+            {
+                cause = ElectricalProgressiveBasics.causeBurn[3];
+            }
+
+            stringBuilder.AppendLine(Lang.Get("Burned") + " " + cause);
+            entity.IsBurning = false;
+
+            return;
         }
+
+        stringBuilder.AppendLine(StringHelper.Progressbar(PowerSetting * 100.0f / _maxConsumption));
+        stringBuilder.AppendLine("├ " + Lang.Get("Consumption") + ": " + PowerSetting + "/" + _maxConsumption + " " + Lang.Get("W"));
+        stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + ((int)_stoveTemperature).ToString() + "°");
 
         stringBuilder.AppendLine();
     }

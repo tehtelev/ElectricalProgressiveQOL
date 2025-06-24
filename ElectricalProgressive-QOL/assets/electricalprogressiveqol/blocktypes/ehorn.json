@@ -31,7 +31,7 @@
   },
 
   "shape": {
-    "base": "block/ehorn/ehorn-{state}-{status}"
+    "base": "block/ehorn/ehorn-{state}"
   },
 
   "creativeInventory": {

@@ -40,7 +40,7 @@ class BlockEFreezer2 : BlockEBase
 
     public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
     {
-        var newState = this.Variant["status"] switch
+        var newState = this.Variant["state"] switch
         {
             "frozen" => "melted",
             "melted" => "melted",
@@ -48,7 +48,7 @@ class BlockEFreezer2 : BlockEBase
         };
         var blockCode = CodeWithVariants(new()
         {
-            { "status", newState },
+            { "state", newState },
             { "side", "north" }
         });
 

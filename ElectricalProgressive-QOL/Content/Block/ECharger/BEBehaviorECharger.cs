@@ -79,18 +79,32 @@ public class BEBehaviorECharger : BEBehaviorBase, IElectricConsumer
         base.GetBlockInfo(forPlayer, stringBuilder);
 
         //проверяем не сгорел ли прибор
-        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityECharger entity)
+        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is not BlockEntityECharger entity)
+            return;
+
+        if (IsBurned)
         {
-            if (IsBurned)
+            // выясняем причину сгорания (надо куда-то вынести сей кусочек)
+            string cause = "";
+            if (entity.AllEparams.Any(e => e.causeBurnout == 1))
             {
-                stringBuilder.AppendLine(Lang.Get("Burned"));
+                cause = ElectricalProgressiveBasics.causeBurn[1];
             }
-            else
+            else if (entity.AllEparams.Any(e => e.causeBurnout == 2))
             {
-                stringBuilder.AppendLine(StringHelper.Progressbar(PowerSetting * 100.0f / _maxConsumption));
-                stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + PowerSetting + "/" + _maxConsumption + " " + Lang.Get("W"));
+                cause = ElectricalProgressiveBasics.causeBurn[2];
             }
+            else if (entity.AllEparams.Any(e => e.causeBurnout == 3))
+            {
+                cause = ElectricalProgressiveBasics.causeBurn[3];
+            }
+
+            stringBuilder.AppendLine(Lang.Get("Burned") + " " + cause);
+            return;
         }
+
+        stringBuilder.AppendLine(StringHelper.Progressbar(PowerSetting * 100.0f / _maxConsumption));
+        stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + PowerSetting + "/" + _maxConsumption + " " + Lang.Get("W"));
 
         stringBuilder.AppendLine();
     }

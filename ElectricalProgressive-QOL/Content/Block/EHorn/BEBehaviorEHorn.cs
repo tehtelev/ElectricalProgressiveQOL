@@ -53,20 +53,35 @@ public class BEBehaviorEHorn : BEBehaviorBase, IElectricConsumer
         base.GetBlockInfo(forPlayer, stringBuilder);
 
         //проверяем не сгорел ли прибор
-        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityEHorn entity)
+        if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is not BlockEntityEHorn entity)
+            return;
+
+        if (IsBurned)
         {
-            if (IsBurned)
+            // выясняем причину сгорания (надо куда-то вынести сей кусочек)
+            string cause = "";
+            if (entity.AllEparams.Any(e => e.causeBurnout == 1))
             {
-                stringBuilder.AppendLine(Lang.Get("Burned"));
-                entity.IsBurning = false;
+                cause = ElectricalProgressiveBasics.causeBurn[1];
             }
-            else
+            else if (entity.AllEparams.Any(e => e.causeBurnout == 2))
             {
-                stringBuilder.AppendLine(StringHelper.Progressbar(_powerReceive / _maxConsumption * 100));
-                stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + ((int)_powerReceive).ToString() + "/" + _maxConsumption + " " + Lang.Get("W"));
-                stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + ((int)_maxTemp).ToString() + "° (" + Lang.Get("max") + ")");
+                cause = ElectricalProgressiveBasics.causeBurn[2];
             }
+            else if (entity.AllEparams.Any(e => e.causeBurnout == 3))
+            {
+                cause = ElectricalProgressiveBasics.causeBurn[3];
+            }
+
+            stringBuilder.AppendLine(Lang.Get("Burned") + " " + cause);
+            entity.IsBurning = false;
+
+            return;
         }
+
+        stringBuilder.AppendLine(StringHelper.Progressbar(_powerReceive / _maxConsumption * 100));
+        stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + ((int)_powerReceive).ToString() + "/" + _maxConsumption + " " + Lang.Get("W"));
+        stringBuilder.AppendLine("└ " + Lang.Get("Temperature") + ": " + ((int)_maxTemp).ToString() + "° (" + Lang.Get("max") + ")");
 
         stringBuilder.AppendLine();
     }

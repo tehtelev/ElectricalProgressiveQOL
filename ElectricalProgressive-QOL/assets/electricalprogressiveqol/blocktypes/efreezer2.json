@@ -59,7 +59,7 @@
 
   "variantgroups": [
     {
-      "code": "status",
+      "code": "state",
       "states": [ "frozen", "melted", "burned" ]
     },
     {
@@ -73,19 +73,19 @@
 
   "shapebytype": {
     "*-north": {
-      "base": "block/efreezer2/efreezer2-{status}",
+      "base": "block/efreezer2/efreezer2-{state}",
       "rotateY": 0
     },
     "*-east": {
-      "base": "block/efreezer2/efreezer2-{status}",
+      "base": "block/efreezer2/efreezer2-{state}",
       "rotateY": 270
     },
     "*-south": {
-      "base": "block/efreezer2/efreezer2-{status}",
+      "base": "block/efreezer2/efreezer2-{state}",
       "rotateY": 180
     },
     "*-west": {
-      "base": "block/efreezer2/efreezer2-{status}",
+      "base": "block/efreezer2/efreezer2-{state}",
       "rotateY": 90
     }
   },

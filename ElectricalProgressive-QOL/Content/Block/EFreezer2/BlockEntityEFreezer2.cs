@@ -401,8 +401,8 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     /// <param name="dt"></param>
     private void FreezerTick(float dt)
     {
-        if (Api.Side != EnumAppSide.Server || this.Block.Variant["status"] == "burned")
-            return;
+        if (Api.Side != EnumAppSide.Server || this.Block.Variant["state"] == "burned")
+            return; 
 
         TryRefuel();
 
@@ -417,19 +417,19 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
             return;
 
         // Энергии хватает?
-        if (beh.PowerSetting >= _maxConsumption * 0.1F && this.Block.Variant["status"] != "frozen")
+        if (beh.PowerSetting >= _maxConsumption * 0.1F && this.Block.Variant["state"] != "frozen")
         {
             var originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
-            var newBlockAL = originalBlock.CodeWithVariant("status", "frozen");
+            var newBlockAL = originalBlock.CodeWithVariant("state", "frozen");
             var newBlock = Api.World.GetBlock(newBlockAL);
             Api.World.BlockAccessor.ExchangeBlock(newBlock.Id, Pos);
             MarkDirty();
         }
 
-        if (beh.PowerSetting < _maxConsumption * 0.1F && this.Block.Variant["status"] != "melted")
+        if (beh.PowerSetting < _maxConsumption * 0.1F && this.Block.Variant["state"] != "melted")
         {
             var originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
-            var newBlockAL = originalBlock.CodeWithVariant("status", "melted");
+            var newBlockAL = originalBlock.CodeWithVariant("state", "melted");
             var newBlock = Api.World.GetBlock(newBlockAL);
             Api.World.BlockAccessor.ExchangeBlock(newBlock.Id, Pos);
             MarkDirty();

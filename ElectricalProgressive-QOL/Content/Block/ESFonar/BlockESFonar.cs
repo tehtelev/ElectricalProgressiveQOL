@@ -46,8 +46,8 @@ namespace ElectricalProgressive.Content.Block.ESFonar
         /// <returns></returns>
         public override bool DoPlaceBlock(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel, ItemStack byItemStack)
         {
-            if (byItemStack.Block.Variant["status"] == "burned")
-                return false;
+            //if (byItemStack.Block.Variant["state"] == "burned")
+            //    return false;
 
             var selection = new Selection(blockSel);
             var facing = FacingHelper.From(BlockFacing.DOWN, selection.Direction);

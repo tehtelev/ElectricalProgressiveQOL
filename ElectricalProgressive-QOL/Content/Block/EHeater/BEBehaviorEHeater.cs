@@ -40,18 +40,32 @@ namespace ElectricalProgressive.Content.Block.EHeater
             base.GetBlockInfo(forPlayer, stringBuilder);
 
             //проверяем не сгорел ли прибор
-            if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is BlockEntityEHeater entity)
+            if (this.Api.World.BlockAccessor.GetBlockEntity(this.Blockentity.Pos) is not BlockEntityEHeater entity)
+                return;
+
+            if (IsBurned)
             {
-                if (IsBurned)
+                // выясняем причину сгорания (надо куда-то вынести сей кусочек)
+                string cause = "";
+                if (entity.AllEparams.Any(e => e.causeBurnout == 1))
                 {
-                    stringBuilder.AppendLine(Lang.Get("Burned"));
+                    cause = ElectricalProgressiveBasics.causeBurn[1];
                 }
-                else
+                else if (entity.AllEparams.Any(e => e.causeBurnout == 2))
                 {
-                    stringBuilder.AppendLine(StringHelper.Progressbar(this.HeatLevel * 100.0f / _maxConsumption));
-                    stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + this.HeatLevel + "/" + _maxConsumption + " " + Lang.Get("W"));
+                    cause = ElectricalProgressiveBasics.causeBurn[2];
                 }
+                else if (entity.AllEparams.Any(e => e.causeBurnout == 3))
+                {
+                    cause = ElectricalProgressiveBasics.causeBurn[3];
+                }
+
+                stringBuilder.AppendLine(Lang.Get("Burned") + " " + cause);
+                return;
             }
+
+            stringBuilder.AppendLine(StringHelper.Progressbar(this.HeatLevel * 100.0f / _maxConsumption));
+            stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + this.HeatLevel + "/" + _maxConsumption + " " + Lang.Get("W"));
 
             stringBuilder.AppendLine();
         }
@@ -69,7 +83,7 @@ namespace ElectricalProgressive.Content.Block.EHeater
                 return;
 
             var roundAmount = (int)Math.Round(amount, MidpointRounding.AwayFromZero);
-            if (roundAmount == this.HeatLevel || this.Block.Variant["status"] == "burned")
+            if (roundAmount == this.HeatLevel || this.Block.Variant["state"] == "burned")
                 return;
 
             // включаем если питание больше 1

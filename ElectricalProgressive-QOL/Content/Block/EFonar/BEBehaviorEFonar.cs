@@ -59,7 +59,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
                 return;
 
             //включаем если питание больше 25 %
-            if (roundAmount*4>= _maxConsumption && Block.Variant["state"] == "disabled")
+            if (roundAmount * 4 >= _maxConsumption && Block.Variant["state"] == "disabled")
             {
                 Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
                 Blockentity.MarkDirty(true);
@@ -75,7 +75,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
 
             // в любом случае обновляем значение
             LightLevel = roundAmount;
-            
+
         }
 
         public float getPowerReceive()
@@ -111,19 +111,33 @@ namespace ElectricalProgressive.Content.Block.EFonar
             base.GetBlockInfo(forPlayer, stringBuilder);
 
             //проверяем не сгорел ли прибор
-            if (Api.World.BlockAccessor.GetBlockEntity(Blockentity.Pos) is BlockEntityEFonar entity)
+            if (Api.World.BlockAccessor.GetBlockEntity(Blockentity.Pos) is not BlockEntityEFonar entity)
+                return;
+
+            if (IsBurned)
             {
-                if (IsBurned)
+                // выясняем причину сгорания (надо куда-то вынести сей кусочек)
+                string cause = "";
+                if (entity.AllEparams.Any(e => e.causeBurnout == 1))
                 {
-                    stringBuilder.AppendLine(Lang.Get("Burned"));
+                    cause = ElectricalProgressiveBasics.causeBurn[1];
                 }
-                else
+                else if (entity.AllEparams.Any(e => e.causeBurnout == 2))
                 {
-                    stringBuilder.AppendLine(StringHelper.Progressbar(LightLevel * 100.0f / _maxConsumption));
-                    stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + LightLevel + "/" + _maxConsumption + " " + Lang.Get("W"));
+                    cause = ElectricalProgressiveBasics.causeBurn[2];
+                }
+                else if (entity.AllEparams.Any(e => e.causeBurnout == 3))
+                {
+                    cause = ElectricalProgressiveBasics.causeBurn[3];
                 }
 
+                stringBuilder.AppendLine(Lang.Get("Burned") + " " + cause);
+                return;
             }
+
+            stringBuilder.AppendLine(StringHelper.Progressbar(LightLevel * 100.0f / _maxConsumption));
+            stringBuilder.AppendLine("└ " + Lang.Get("Consumption") + ": " + LightLevel + "/" + _maxConsumption + " " + Lang.Get("W"));
+
             stringBuilder.AppendLine();
         }
     }
