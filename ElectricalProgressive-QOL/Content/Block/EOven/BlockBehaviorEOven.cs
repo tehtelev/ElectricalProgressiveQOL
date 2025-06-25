@@ -85,22 +85,6 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
 
         if (IsBurned)
         {
-            // выясняем причину сгорания (надо куда-то вынести сей кусочек)
-            string cause = "";
-            if (entity.AllEparams.Any(e => e.causeBurnout == 1))
-            {
-                cause = ElectricalProgressiveBasics.causeBurn[1];
-            }
-            else if (entity.AllEparams.Any(e => e.causeBurnout == 2))
-            {
-                cause = ElectricalProgressiveBasics.causeBurn[2];
-            }
-            else if (entity.AllEparams.Any(e => e.causeBurnout == 3))
-            {
-                cause = ElectricalProgressiveBasics.causeBurn[3];
-            }
-
-            stringBuilder.AppendLine(Lang.Get("Burned") + " " + cause);
             return;
         }
 
