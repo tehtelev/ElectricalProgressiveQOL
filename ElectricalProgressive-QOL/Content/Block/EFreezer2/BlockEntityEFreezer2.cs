@@ -30,6 +30,9 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
 
     private readonly int _maxConsumption;
 
+    private long listenerId;
+
+
     public BlockEntityEFreezer2()
     {
         _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
@@ -52,6 +55,30 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     {
         get { return GetBehavior<BEBehaviorAnimatable>()?.animUtil; }
     }
+
+
+    /// <summary>
+    /// Вызывается при выгрузке блока из мира
+    /// </summary>
+    public override void OnBlockUnloaded()
+    {
+        base.OnBlockUnloaded();
+
+        // Очищаем ссылки на объекты для предотвращения утечек памяти
+        _freezerDialog?.TryClose();
+        _freezerDialog?.Dispose();
+        _freezerDialog = null;
+        _capi = null;
+        _meshes = null;
+        _nowTesselatingShape = null;
+        _nowTesselatingObj = null;
+        animUtil?.Dispose();
+
+        // Удаляем слушатель тиков
+        UnregisterGameTickListener(listenerId);
+    }
+
+
 
 
     /// <summary>
@@ -152,7 +179,7 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
         MarkDirty(true);
 
         // Слушатель для обновления содержимого 
-        RegisterGameTickListener(FreezerTick, 500);
+        listenerId=RegisterGameTickListener(FreezerTick, 500);
     }
 
 
@@ -186,6 +213,12 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
         }
     }
 
+
+    /// <summary>
+    /// Перемещаем mesh в нужную позицию в зависимости от слота
+    /// </summary>
+    /// <param name="meshData"></param>
+    /// <param name="slotId"></param>
     public void TranslateMesh(MeshData? meshData, int slotId)
     {
         if (meshData == null)
@@ -386,7 +419,9 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     }
 
 
-
+    /// <summary>
+    /// Обновляет все meshы в инвентаре
+    /// </summary>
     public void UpdateMeshes()
     {
         for (var i = 0; i < _inventory.Count; i++)
@@ -401,14 +436,17 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     /// <param name="dt"></param>
     private void FreezerTick(float dt)
     {
-        if (Api.Side != EnumAppSide.Server || this.Block.Variant["state"] == "burned")
+        if (Api.Side != EnumAppSide.Server || this.Block.Variant["state"] == "burned") // если сгорел, то не тикаем
             return; 
 
         TryRefuel();
 
-
     }
 
+
+    /// <summary>
+    /// Проверяет, нужно ли размораживать или замораживать блок
+    /// </summary>
     private void TryRefuel()
     {
         var beh=GetBehavior<BEBehaviorEFreezer2>();
@@ -417,7 +455,7 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
             return;
 
         // Энергии хватает?
-        if (beh.PowerSetting >= _maxConsumption * 0.1F && this.Block.Variant["state"] != "frozen")
+        if (beh.PowerSetting >= _maxConsumption * 0.1F && this.Block.Variant["state"] == "melted")
         {
             var originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
             var newBlockAL = originalBlock.CodeWithVariant("state", "frozen");
@@ -426,7 +464,7 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
             MarkDirty();
         }
 
-        if (beh.PowerSetting < _maxConsumption * 0.1F && this.Block.Variant["state"] != "melted")
+        if (beh.PowerSetting < _maxConsumption * 0.1F && this.Block.Variant["state"] == "frozen")
         {
             var originalBlock = Api.World.BlockAccessor.GetBlock(Pos);
             var newBlockAL = originalBlock.CodeWithVariant("state", "melted");
@@ -436,6 +474,14 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
         }
     }
 
+
+
+    /// <summary>
+    /// Вызывается при взаимодействии с блоком игроком
+    /// </summary>
+    /// <param name="byPlayer"></param>
+    /// <param name="isOwner"></param>
+    /// <param name="blockSel"></param>
     public void OnBlockInteract(IPlayer byPlayer, bool isOwner, BlockSelection blockSel)
     {
         if (Api.Side == EnumAppSide.Server)
@@ -530,9 +576,13 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
         if (packetid == (int)EnumBlockEntityPacketId.Close)
         {
             clientWorld.Player.InventoryManager.CloseInventory(Inventory);
-            _freezerDialog?.TryClose();
-            _freezerDialog?.Dispose();
-            _freezerDialog = null;
+
+            if (_freezerDialog != null)
+            {
+                _freezerDialog?.TryClose();
+                _freezerDialog?.Dispose();
+                _freezerDialog = null;
+            }
         }
     }
 
@@ -586,8 +636,11 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     {
         base.OnBlockRemoved();
 
-        _freezerDialog?.TryClose();
-        _freezerDialog?.Dispose();
-        _freezerDialog = null;
+        if (_freezerDialog != null)
+        {
+            _freezerDialog?.TryClose();
+            _freezerDialog?.Dispose();
+            _freezerDialog = null;
+        }
     }
 }

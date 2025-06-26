@@ -23,6 +23,10 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
 
     CollectibleObject tmpItem;
 
+    private long listenerId;
+
+
+
     public TextureAtlasPosition this[string textureCode]
     {
         get
@@ -39,11 +43,19 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
         }
     }
 
+    /// <summary>
+    /// Конструктор блока-зарядника
+    /// </summary>
     public BlockEntityECharger()
     {
         Inventory = new(1, "charger", null, null, null);
     }
 
+
+    /// <summary>
+    /// Инициализация блока-зарядника
+    /// </summary>
+    /// <param name="api"></param>
     public override void Initialize(ICoreAPI api)
     {
         base.Initialize(api);
@@ -56,14 +68,35 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
         }
         else
         {
-            RegisterGameTickListener(OnTick, 500);
+            listenerId=RegisterGameTickListener(OnTick, 500);
         }
     }
+
+
+    /// <summary>
+    /// Вызывается при выгрузке блока из мира
+    /// </summary>
+    public override void OnBlockUnloaded()
+    {
+        base.OnBlockUnloaded();
+
+        // Очистка мусора
+        toolMeshes[0] = null;
+        tmpItem = null;
+
+        UnregisterGameTickListener(listenerId); //отменяем слушатель тика, если он есть
+    }
+
+
 
     //проверка, нужно ли заряжать
     private void OnTick(float dt)
     {
+        if (this.Block.Variant["state"] == "burned") //если прибор сгорел, то нечего тут делать
+            return;
+
         var stack = Inventory[0]?.Itemstack;
+
 
         if (stack?.Item != null && stack.Collectible.Attributes["chargable"].AsBool(false))
         {
@@ -72,7 +105,7 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
 
             if (durability < maxDurability && GetBehavior<BEBehaviorECharger>().PowerSetting > 0)
             {
-                if (this.Block.Variant["state"] != "enabled")     //чтобы лишний раз не обновлять модель
+                if (this.Block.Variant["state"] == "disabled")     //чтобы лишний раз не обновлять модель
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
                     MarkDirty(true);
@@ -87,7 +120,7 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
             }
             else
             {
-                if (this.Block.Variant["state"] != "disabled")   //чтобы лишний раз не обновлять модель
+                if (this.Block.Variant["state"] == "enabled")   //чтобы лишний раз не обновлять модель
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
                     Api.World.PlaySoundAt(new("electricalprogressiveqol:sounds/din_din_din"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F); //звоним если зарядилось таки
@@ -102,7 +135,7 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
 
             if (durability < maxDurability && GetBehavior<BEBehaviorECharger>().PowerSetting > 0)
             {
-                if (this.Block.Variant["state"] != "enabled")     //чтобы лишний раз не обновлять модель
+                if (this.Block.Variant["state"] == "disabled")     //чтобы лишний раз не обновлять модель
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "enabled")).BlockId, Pos);
                     MarkDirty(true);
@@ -112,7 +145,7 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
             }
             else
             {
-                if (this.Block.Variant["state"] != "disabled")   //чтобы лишний раз не обновлять модель
+                if (this.Block.Variant["state"] == "enabled")   //чтобы лишний раз не обновлять модель
                 {
                     Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
                     Api.World.PlaySoundAt(new("electricalprogressiveqol:sounds/din_din_din"), Pos.X, Pos.Y, Pos.Z, null, false, 8.0F, 0.4F); //звоним если зарядилось таки
@@ -200,6 +233,12 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
         return true;
     }
 
+    /// <summary>
+    /// Извлекает предмет из слота инвентаря
+    /// </summary>
+    /// <param name="player"></param>
+    /// <param name="slot"></param>
+    /// <returns></returns>
     bool TakeFromSlot(IPlayer player, int slot)
     {
         var stack = Inventory[slot].TakeOutWhole();
@@ -207,7 +246,13 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
         if (!player.InventoryManager.TryGiveItemstack(stack))
             Api.World.SpawnItemEntity(stack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
 
-        Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
+        // обновляем модель блока
+        if (this.Block.Variant["state"] == "enabled") 
+            Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "disabled")).BlockId, Pos);
+        else if (this.Block.Variant["state"] == "burned")
+            Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "burned")).BlockId, Pos);
+
+
         didInteract(player);
 
         return true;
@@ -244,12 +289,19 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
             FacingHelper.Faces(Facing.DownAll).First().Index);
     }
 
+    /// <summary>
+    /// Вызывается при удалении блока из мира
+    /// </summary>
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
-
     }
 
+
+    /// <summary>
+    /// Вызывается при разрушении блока игроком
+    /// </summary>
+    /// <param name="byPlayer"></param>
     public override void OnBlockBroken(IPlayer? byPlayer = null)
     {
         base.OnBlockBroken(byPlayer);
@@ -258,6 +310,13 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
             Api.World.SpawnItemEntity(stack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
     }
 
+
+    /// <summary>
+    /// Вызывается при тесселяции блока
+    /// </summary>
+    /// <param name="mesher"></param>
+    /// <param name="tesselator"></param>
+    /// <returns></returns>
     public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tesselator)
     {
         var clientApi = (ICoreClientAPI)Api;
@@ -371,6 +430,9 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
     }
 }
 
+/// <summary>
+/// Класс для хранения текстур инструментов
+/// </summary>
 public class ToolTextures
 {
     public Dictionary<string, int> TextureSubIdsByCode = new Dictionary<string, int>();

@@ -27,6 +27,7 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
     private ForgeContentsRenderer? renderer;
     private WeatherSystemBase? weatherSystem;
 
+    private long listenerId;
 
     public ItemStack? Contents { get; private set; }
 
@@ -80,7 +81,9 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
 
         this.weatherSystem = api.ModLoader.GetModSystem<WeatherSystemBase>();
 
-        this.RegisterGameTickListener(this.OnCommonTick, 200);
+        listenerId=this.RegisterGameTickListener(this.OnCommonTick, 200);
+
+        this.lastTickTotalHours = this.Api.World.Calendar.TotalHours;
     }
 
     /// <summary>
@@ -220,6 +223,14 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
         this.ambientSound.Start();
     }
 
+
+    /// <summary>
+    /// Вызывается при взаимодействии игрока с блоком
+    /// </summary>
+    /// <param name="world"></param>
+    /// <param name="byPlayer"></param>
+    /// <param name="blockSel"></param>
+    /// <returns></returns>
     internal bool OnPlayerInteract(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
     {
         //проверяем не сгорел ли прибор
@@ -261,7 +272,7 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
         var heatable = firstCodePart == "ingot" || firstCodePart == "metalplate" ||
                        firstCodePart == "workitem" || forgableGeneric;
 
-        // Add heatable item
+        // Добавляем в горн предметы, которые можно нагреть
         if (this.Contents == null && heatable)
         {
             this.Contents = slot.Itemstack.Clone();
@@ -307,6 +318,13 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
         return false;
     }
 
+
+
+
+    /// <summary>
+    /// Вызывается при установке блока в мир
+    /// </summary>
+    /// <param name="byItemStack"></param>
     public override void OnBlockPlaced(ItemStack? byItemStack = null)
     {
         base.OnBlockPlaced(byItemStack);
@@ -330,6 +348,11 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
             FacingHelper.Faces(Facing.DownAll).First().Index);
     }
 
+
+
+    /// <summary>
+    /// Вызывается при удалении блока из мира
+    /// </summary>
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
@@ -338,8 +361,17 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
         this.renderer = null;
 
         this.ambientSound?.Dispose();
+        this.ambientSound = null;
+
+        this.weatherSystem?.Dispose();
+        this.weatherSystem = null;
+
     }
 
+    /// <summary>
+    /// Вызывается при разрушении блока игроком
+    /// </summary>
+    /// <param name="byPlayer"></param>
     public override void OnBlockBroken(IPlayer? byPlayer = null)
     {
         base.OnBlockBroken(byPlayer);
@@ -348,6 +380,14 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
             this.Api.World.SpawnItemEntity(this.Contents, this.Pos.ToVec3d().Add(0.5, 0.5, 0.5));
 
         this.ambientSound?.Dispose();
+        this.ambientSound = null;
+
+        this.weatherSystem?.Dispose();
+        this.weatherSystem = null;
+
+        this.renderer?.Dispose();
+        this.renderer = null;
+
     }
 
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldForResolving)
@@ -375,7 +415,11 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
         tree.SetDouble("lastTickTotalHours", this.lastTickTotalHours);
     }
 
-
+    /// <summary>
+    /// Получение информации о блоке 
+    /// </summary>
+    /// <param name="forPlayer"></param>
+    /// <param name="dsc"></param>
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder dsc)
     {
         base.GetBlockInfo(forPlayer, dsc);
@@ -390,6 +434,7 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
             dsc.AppendLine(Lang.Get("forge-contentsandtemp", (object)this.Contents.StackSize, (object)this.Contents.GetName(), (object)temperature));
     }
 
+
     public override void OnLoadCollectibleMappings(IWorldAccessor worldForResolve,
         Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping,
         int schematicSeed)
@@ -402,6 +447,12 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
         }
     }
 
+
+    /// <summary>
+    /// Сохраняет соответствия блоков и предметов в словари
+    /// </summary>
+    /// <param name="blockIdMapping"></param>
+    /// <param name="itemIdMapping"></param>
     public override void OnStoreCollectibleMappings(Dictionary<int, AssetLocation> blockIdMapping,
         Dictionary<int, AssetLocation> itemIdMapping)
     {
@@ -420,10 +471,26 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
         }
     }
 
+
+    /// <summary>
+    /// Вызывается при выгрузке блока
+    /// </summary>
     public override void OnBlockUnloaded()
     {
         base.OnBlockUnloaded();
 
+        // очистка мусора
         this.renderer?.Dispose();
+        this.renderer = null;
+
+        this.ambientSound?.Dispose();
+        this.ambientSound = null;
+
+        weatherSystem?.Dispose();
+        weatherSystem = null;
+
+        // отписываемся от тиков
+        UnregisterGameTickListener(listenerId);
+
     }
 }

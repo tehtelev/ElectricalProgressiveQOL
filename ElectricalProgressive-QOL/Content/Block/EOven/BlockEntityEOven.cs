@@ -13,8 +13,10 @@ using Vintagestory.GameContent;
 namespace ElectricalProgressive.Content.Block.EOven;
 public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
 {
-    public static int BakingStageThreshold = 100;
-    public const int maxBakingTemperatureAccepted = 260;
+    public static readonly int BakingStageThreshold = 100;
+    public static readonly int maxBakingTemperatureAccepted = 260;
+
+
     private bool burning;
     private bool clientSidePrevBurning;
     public float prevOvenTemperature = 20f;
@@ -22,8 +24,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     private readonly OvenItemData[] bakingData;
     private ItemStack lastRemoved;
     private int rotationDeg;
-    private Random prng;
-    //private int syncCount;
+
 
     internal InventoryEOven ovenInv;
 
@@ -99,37 +100,47 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
 
     public bool IsBurning;
 
+    private long listenerId;
+
+    /// <summary>
+    /// Инициализация блока
+    /// </summary>
+    /// <param name="api"></param>
     public override void Initialize(ICoreAPI api)
     {
         this.capi = api as ICoreClientAPI;
         base.Initialize(api);
         this.ovenInv.LateInitialize(this.InventoryClassName + "-" + this.Pos?.ToString(), api);
-        this.RegisterGameTickListener(new Action<float>(this.OnBurnTick), 100);
-        this.prng = new Random(this.Pos.GetHashCode());
+        listenerId=this.RegisterGameTickListener(new Action<float>(this.OnBurnTick), 100);
+
         this.SetRotation();
 
         _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
     }
 
+
+    /// <summary>
+    /// Устанавливает поворот духовки в зависимости от ее стороны
+    /// </summary>
     private void SetRotation()
     {
-        switch (this.Block.Variant["side"])
+        this.rotationDeg = this.Block.Variant["side"] switch
         {
-            case "south":
-                this.rotationDeg = 270;
-                break;
-            case "west":
-                this.rotationDeg = 180;
-                break;
-            case "east":
-                this.rotationDeg = 0;
-                break;
-            default:
-                this.rotationDeg = 90;
-                break;
-        }
+            "south" => 270,
+            "west" => 180,
+            "east" => 0,
+            _ => 90
+        };
+
     }
 
+
+    /// <summary>
+    /// Обработка взаимодействия с духовкой
+    /// </summary>
+    /// <param name="byPlayer"></param>
+    /// <param name="bs"></param>
+    /// <returns></returns>
     public virtual bool OnInteract(IPlayer byPlayer, BlockSelection bs)
     {
         ItemSlot activeHotbarSlot = byPlayer.InventoryManager.ActiveHotbarSlot;
@@ -200,6 +211,11 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         return false;
     }
 
+    /// <summary>
+    /// Пробуем положить предмет в духовку
+    /// </summary>
+    /// <param name="slot"></param>
+    /// <returns></returns>
     protected virtual bool TryPut(ItemSlot slot)
     {
         BakingProperties bakingProperties1 = BakingProperties.ReadFrom(slot.Itemstack);
@@ -523,7 +539,11 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     }
 
 
-    //выводит содержимое и температуры
+    /// <summary>
+    /// Получение информации о блоке для игрока
+    /// </summary>
+    /// <param name="forPlayer"></param>
+    /// <param name="stringBuilder"></param>
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
         base.GetBlockInfo(forPlayer, stringBuilder);
@@ -540,7 +560,10 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     }
 
 
-    //поставили духовку
+    /// <summary>
+    /// Вызывается при установке блока в мир
+    /// </summary>
+    /// <param name="byItemStack"></param>
     public override void OnBlockPlaced(ItemStack? byItemStack = null)
     {
         base.OnBlockPlaced(byItemStack);
@@ -612,17 +635,57 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         return base.getMeshCacheKey(stack) + str;
     }
 
+    /// <summary>
+    /// Вызывается при тесселяции блока
+    /// </summary>
+    /// <param name="mesher"></param>
+    /// <param name="tessThreadTesselator"></param>
+    /// <returns></returns>
     public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
     {
         this.tfMatrices = this.genTransformationMatrices();
         return base.OnTesselation(mesher, tessThreadTesselator);
     }
 
+
+    /// <summary>
+    /// Получает или создает меш для предмета в духовке
+    /// </summary>
+    /// <param name="stack"></param>
+    /// <param name="index"></param>
+    /// <returns></returns>
     protected override MeshData getOrCreateMesh(ItemStack stack, int index)
     {
         return base.getOrCreateMesh(stack, index);
     }
 
+    /// <summary>
+    /// Вызывается при удалении блока из мира
+    /// </summary>
+    public override void OnBlockRemoved()
+    {
+        base.OnBlockRemoved();
 
+        // Очистка мусора
+        this.lastRemoved = null;
+        this.capi = null;
+
+    }
+
+    /// <summary>
+    /// Вызывается при выгрузке блока из мира
+    /// </summary>
+    public override void OnBlockUnloaded()
+    {
+        base.OnBlockUnloaded();
+
+        // Очистка мусора
+        this.lastRemoved = null;
+        this.capi = null;
+
+        // Удаляем слушателя тика игры
+        UnregisterGameTickListener(listenerId);
+
+    }
 
 }

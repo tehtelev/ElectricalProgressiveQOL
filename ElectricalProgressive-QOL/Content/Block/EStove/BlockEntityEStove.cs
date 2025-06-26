@@ -17,16 +17,19 @@ namespace ElectricalProgressive.Content.Block.EStove;
 
 public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPositionSource
 {
+    public static float maxTemperature = 1350f;
+
     protected Shape nowTesselatingShape;
     protected CollectibleObject nowTesselatingObj;
     protected MeshData[] meshes;
     ICoreClientAPI capi;
     ICoreServerAPI sapi;
+
     internal InventorySmelting inventory;
     private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
 
     public float prevStoveTemperature = 20;
-    const float maxTemperature = 1350f;
+    
     public int maxConsumption;
     public float stoveTemperature = 20;
     public float inputStackCookingTime;
@@ -45,6 +48,13 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     public virtual string DialogTitle => Lang.Get("BlockEStove");
     #endregion
 
+
+    private long listenerId;
+    private long listenerId2;
+
+    /// <summary>
+    /// Constructor for BlockEntityEStove
+    /// </summary>
     public BlockEntityEStove()
     {
         inventory = new InventorySmelting(null, null);
@@ -70,6 +80,11 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         }
     }
 
+
+    /// <summary>
+    /// Инициализация блока
+    /// </summary>
+    /// <param name="api"></param>
     public override void Initialize(ICoreAPI api)
     {
         base.Initialize(api);
@@ -79,17 +94,22 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             sapi = (api as ICoreServerAPI)!;
         else
             capi = (api as ICoreClientAPI)!;
+
         UpdateMeshes();
         MarkDirty(true);
-        RegisterGameTickListener(OnBurnTick, 250);
-        RegisterGameTickListener(On500msTick, 500);
+
+        listenerId=RegisterGameTickListener(OnBurnTick, 250);
+        listenerId2=RegisterGameTickListener(On500msTick, 500);
+
         maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 150);
     }
 
     public void UpdateMesh(int slotid)
     {
-        if (Api == null || Api.Side == EnumAppSide.Server) return;
-        if (slotid == 0) return;
+        if (Api == null || Api.Side == EnumAppSide.Server)
+            return;
+        if (slotid == 0)
+            return;
         if (inventory[slotid].Empty)
         {
             meshes[slotid] = null;
@@ -107,6 +127,11 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         }
     }
 
+    /// <summary>
+    /// Позиционирование меша в зависимости от слота
+    /// </summary>
+    /// <param name="meshData"></param>
+    /// <param name="slotId"></param>
     public void TranslateMesh(MeshData meshData, int slotId)
     {
         if (meshData == null) return;
@@ -131,10 +156,15 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             }
         }
         meshData.Translate(x, y, 0.025f);
-        int orientationRotate = 0;
-        if (Block.Variant["horizontalorientation"] == "east") orientationRotate = 270;
-        if (Block.Variant["horizontalorientation"] == "south") orientationRotate = 180;
-        if (Block.Variant["horizontalorientation"] == "west") orientationRotate = 90;
+
+        int orientationRotate = Block.Variant["horizontalorientation"] switch
+        {
+            "east" => 270,
+            "south" => 180,
+            "west" => 90,
+            _ => 0
+        };
+
         meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, orientationRotate * GameMath.DEG2RAD, 0);
     }
 
@@ -242,6 +272,12 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         return meshData;
     }
 
+    /// <summary>
+    /// Вызывается при тесселяции блока
+    /// </summary>
+    /// <param name="mesher"></param>
+    /// <param name="tessThreadTesselator"></param>
+    /// <returns></returns>
     public override bool OnTesselation(ITerrainMeshPool mesher, ITesselatorAPI tessThreadTesselator)
     {
         for (int i = 0; i < meshes.Length; i++)
@@ -251,6 +287,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         return false;
     }
 
+    /// <summary>
+    /// Обновляет меши для всех слотов
+    /// </summary>
     public void UpdateMeshes()
     {
         for (int i = 0; i < inventory.Count - 1; i++)
@@ -264,7 +303,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     {
         Block = Api.World.BlockAccessor.GetBlock(Pos);
         MarkDirty(Api.Side == EnumAppSide.Server);
-        if (Api is ICoreClientAPI && clientDialog != null) SetDialogValues(clientDialog.Attributes);
+        if (Api is ICoreClientAPI && clientDialog != null)
+            SetDialogValues(clientDialog.Attributes);
         Api.World.BlockAccessor.GetChunkAtBlockPos(Pos).MarkModified();
     }
 
@@ -309,7 +349,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
     private void On500msTick(float dt)
     {
-        if (Api is ICoreServerAPI && (IsBurning || prevStoveTemperature != stoveTemperature)) MarkDirty();
+        if (Api is ICoreServerAPI && (IsBurning || prevStoveTemperature != stoveTemperature))
+            MarkDirty();
+
         prevStoveTemperature = stoveTemperature;
     }
 
@@ -527,6 +569,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             FacingHelper.Faces(Facing.DownAll).First().Index);
     }
 
+    /// <summary>
+    /// Вызывается при удалении блока
+    /// </summary>
     public override void OnBlockRemoved()
     {
         base.OnBlockRemoved();
@@ -536,13 +581,70 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             clientDialog?.Dispose();
             clientDialog = null;
         }
+
+        // Освобождение ссылок на API
+        capi = null;
+        sapi = null;
+
+        // Очистка ссылок на меши
+        if (meshes != null)
+        {
+            for (int i = 0; i < meshes.Length; i++)
+            {
+                meshes[i] = null;
+            }
+        }
+        nowTesselatingObj = null;
+        nowTesselatingShape = null;
     }
 
+
+    /// <summary>
+    /// Вызывается при выгрузке блока
+    /// </summary>
+    public override void OnBlockUnloaded()
+    {
+        base.OnBlockUnloaded();
+
+        if (clientDialog != null)
+        {
+            clientDialog.TryClose();
+            clientDialog.Dispose();
+            clientDialog = null;
+        }
+
+        // Отменяем слушателей тика игры
+        UnregisterGameTickListener(listenerId);
+        UnregisterGameTickListener(listenerId2);
+
+
+        // Освобождение ссылок на API
+        capi = null;
+        sapi = null;
+
+        // Очистка ссылок на меши
+        if (meshes != null)
+        {
+            for (int i = 0; i < meshes.Length; i++)
+            {
+                meshes[i] = null;
+            }
+        }
+        nowTesselatingObj = null;
+        nowTesselatingShape = null;
+    }
+
+    /// <summary>
+    /// Вызывается при разрушении блока
+    /// </summary>
+    /// <param name="byPlayer"></param>
     public override void OnBlockBroken(IPlayer? byPlayer = null)
     {
         base.OnBlockBroken(byPlayer);
         if (inputStack != null)
             Api.World.SpawnItemEntity(inputStack, Pos.ToVec3d().Add(0.5, 0.5, 0.5));
+
+
     }
 
     public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
@@ -657,6 +759,11 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         }
     }
 
+    /// <summary>
+    /// Получает информацию о блоке для игрока
+    /// </summary>
+    /// <param name="forPlayer"></param>
+    /// <param name="stringBuilder"></param>
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
         base.GetBlockInfo(forPlayer, stringBuilder);
