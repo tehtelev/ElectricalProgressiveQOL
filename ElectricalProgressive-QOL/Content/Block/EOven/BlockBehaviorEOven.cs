@@ -50,25 +50,29 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
                 {
                     var blockCode = itemstack.Block.Code.ToString();
                     if (blockCode.Contains("perfect") || blockCode.Contains("charred"))
+                    {
                         stack_count_perfect++;
+                    }
                 }
                 else
                 {
                     var itemCode = itemstack.Item.Code.ToString();
                     if (itemCode.Contains("perfect") || itemCode.Contains("rot") || itemCode.Contains("charred"))
+                    {
                         stack_count_perfect++;
+                    }
                 }
 
                 stack_count++;
             }
 
-            if (stack_count > 0)   // если еда есть - греем печку
-            {
-                // если еда вся готова - не греем
-                working = stack_count_perfect != stack_count;
-            }
-            else                      // если еды нет - не греем
+            if (stack_count_perfect > 0)   // если хоть что-то готово - не греем уже
+            {                
                 working = false;
+            }
+            else                      // если еда есть и подходящая - греем
+                if (stack_count > 0)
+                    working = true;
 
             return working;
         }
