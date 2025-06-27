@@ -97,7 +97,8 @@
   "game:freezer-over-sneak-help": "Tür öffnen/schließen.",
   "game:freezer-over-help": "Öffne die Tür und lege Lebensmittel hinein, um sie aufzubewahren.",
 
-  "game:Put-into-4-items": "Mindestens 4 Gegenstände zum Backen erforderlich.",
+  "game:Put-into-1-items": "Benötigt mindestens 1 Gegenstand zum Backen.",
+
 
   "game:max-light": "Maximales Licht",
   "game:height": "Höhe",

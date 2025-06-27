@@ -100,7 +100,8 @@
   "game:freezer-over-sneak-help": "Ouvrir/fermer la porte.",
   "game:freezer-over-help": "Ouvrez la porte et placez la nourriture pour la conserver.",
 
-  "game:Put-into-4-items": "Au moins 4 objets requis pour la cuisson.",
+  "game:Put-into-1-items": "Il faut au moins 1 objet pour la cuisson.",
+
   "game:max-light": "Lumière maximale",
   "game:height": "Hauteur",
 

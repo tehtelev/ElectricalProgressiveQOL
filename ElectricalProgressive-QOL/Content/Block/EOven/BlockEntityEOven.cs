@@ -164,13 +164,17 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         }
         else
         {
-            AssetLocation code = activeHotbarSlot.Itemstack?.Collectible?.Code;
+            
             if (this.TryPut(activeHotbarSlot))
             {
                 AssetLocation place = activeHotbarSlot.Itemstack?.Block?.Sounds?.Place;
                 this.Api.World.PlaySoundAt(place != (AssetLocation)null ? place : new AssetLocation("sounds/player/buildhigh"), (Entity)byPlayer.Entity, byPlayer, true, 16f, 1f);
                 byPlayer.InventoryManager.BroadcastHotbarSlot();
-                this.Api.World.Logger.Audit("{0} Put 1-4x{1} into Clay oven at {2}.", (object)byPlayer.PlayerName, (object)code, (object)this.Pos);
+
+                //если предмет успешно положили в духовку - логируем это событие
+                //AssetLocation code = activeHotbarSlot.Itemstack?.Collectible?.Code;
+                //this.Api.World.Logger.Audit("{0} Put 1-4x{1} into Clay oven at {2}.", (object)byPlayer.PlayerName, (object)code, (object)this.Pos);
+
                 return true;
             }
 
@@ -178,7 +182,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
             {
                 if (activeHotbarSlot.Empty)     //если слот пустой
                 {
-                    api.TriggerIngameError((object)this, "notbakeable", Lang.Get("Put-into-4-items"));
+                    api.TriggerIngameError((object)this, "notbakeable", Lang.Get("Put-into-1-items"));
                     return true;
                 }
                 else
@@ -197,9 +201,9 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
                     }
 
 
-                    if (activeHotbarSlot.Itemstack?.StackSize < 4 & !bakingProperties1.LargeItem)   //если айтемы в стаке меньше 4 
+                    if (activeHotbarSlot.Itemstack?.StackSize < 1 & !bakingProperties1.LargeItem)   //если айтемы в стаке меньше 1 
                     {
-                        api.TriggerIngameError((object)this, "notbakeable", Lang.Get("Put-into-4-items"));
+                        api.TriggerIngameError((object)this, "notbakeable", Lang.Get("Put-into-1-items"));
                         return true;
                     }
 
@@ -222,7 +226,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         if (bakingProperties1 == null || !slot.Itemstack.Attributes.GetBool("bakeable", true) || bakingProperties1.LargeItem && !this.ovenInv.Empty)
             return false;
 
-        if (slot.Itemstack.StackSize < 4 & !bakingProperties1.LargeItem)   //если айтемы в стаке меньше 4 - выход
+        if (slot.Itemstack.StackSize < 1 & !bakingProperties1.LargeItem)   //если айтемы в стаке меньше 1 - выход
             return false;
 
         for (int index = 0; index < this.bakeableCapacity; ++index)
@@ -266,7 +270,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
                 }
                 if (itemstack.StackSize > 0)
                     this.Api.World.SpawnItemEntity(itemstack, this.Pos);
-                this.Api.World.Logger.Audit("{0} Took 1x{1} from Clay oven at {2}.", (object)byPlayer.PlayerName, (object)itemstack.Collectible.Code, (object)this.Pos);
+                //this.Api.World.Logger.Audit("{0} Took 1x{1} from Clay oven at {2}.", (object)byPlayer.PlayerName, (object)itemstack.Collectible.Code, (object)this.Pos);
                 this.bakingData[bakeableCapacity].CurHeightMul = 1f;
                 this.updateMesh(bakeableCapacity);
                 this.MarkDirty(true);
@@ -291,6 +295,10 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         return Math.Max((float)(((double)this.ovenTemperature - 20.0) / ((double)this.maxTemperature - 20.0) * MyMiniLib.GetAttributeFloat(this.Block, "maxHeat", 0.0F)), 0.0f);
     }
 
+    /// <summary>
+    /// Вызывается при каждом тике игры для обработки горения духовки
+    /// </summary>
+    /// <param name="dt"></param>
     protected virtual void OnBurnTick(float dt)
     {
         dt *= 1.0f;
@@ -370,7 +378,11 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         this.prevOvenTemperature = this.ovenTemperature;
     }
 
-    //греем содержимое всей печи
+    /// <summary>
+    /// греем содержимое всей печи
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <param name="Up"></param>
     protected virtual void HeatInput(float dt, bool Up)
     {
         for (int index = 0; index < this.bakeableCapacity; ++index)
@@ -382,7 +394,14 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         }
     }
 
-    //греем конкретно один предмет
+    /// <summary>
+    /// греем конкретно один предмет
+    /// </summary>
+    /// <param name="stack"></param>
+    /// <param name="dt"></param>
+    /// <param name="i"></param>
+    /// <param name="Up"></param>
+    /// <returns></returns>
     protected virtual float HeatStack(ItemStack stack, float dt, int i, bool Up)
     {
         float temp = this.bakingData[i].temp;
@@ -494,7 +513,13 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         return (int)this.Api.World.BlockAccessor.GetClimateAt(this.Pos, EnumGetClimateMode.ForSuppliedDate_TemperatureOnly, this.Api.World.Calendar.TotalDays).Temperature;
     }
 
-    //считает прирост температуры
+    /// <summary>
+    /// считает прирост температуры
+    /// </summary>
+    /// <param name="fromTemp"></param>
+    /// <param name="toTemp"></param>
+    /// <param name="dt"></param>
+    /// <returns></returns>
     public virtual float ChangeTemperature(float fromTemp, float toTemp, float dt)
     {
         float num1 = Math.Abs(fromTemp - toTemp);

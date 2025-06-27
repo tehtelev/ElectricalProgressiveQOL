@@ -99,7 +99,8 @@
   "game:freezer-over-sneak-help": "Otwórz/zamknij drzwi.",
   "game:freezer-over-help": "Otwórz drzwi i włóż jedzenie, aby je przechować.",
 
-  "game:Put-into-4-items": "Potrzeba co najmniej 4 przedmiotów do pieczenia.",
+  "game:Put-into-1-items": "Do pieczenia potrzebny jest co najmniej 1 przedmiot.",
+
 
   "game:max-light": "Maksymalne światło",
   "game:height": "Wysokość",

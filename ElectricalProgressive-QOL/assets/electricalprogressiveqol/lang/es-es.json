@@ -96,7 +96,8 @@
   "game:freezer-over-sneak-help": "Abrir/cerrar puerta",
   "game:freezer-over-help": "Abre la puerta y coloca comida para conservarla.",
 
-  "game:Put-into-4-items": "Se necesitan al menos 4 objetos para hornear.",
+  "game:Put-into-1-items": "Se necesita al menos 1 objeto para hornear.",
+
 
   "game:max-light": "Luz máxima",
   "game:height": "Altura",

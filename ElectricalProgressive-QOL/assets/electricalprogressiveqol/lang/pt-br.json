@@ -98,7 +98,8 @@
   "game:freezer-over-sneak-help": "Abrir/fechar porta.",
   "game:freezer-over-help": "Abra a porta e coloque alimentos para preservá-los.",
 
-  "game:Put-into-4-items": "Pelo menos 4 itens são necessários para assar.",
+  "game:Put-into-1-items": "É necessário no mínimo 1 item para assar.",
+
   "game:max-light": "Luz máxima",
   "game:height": "Altura",
 

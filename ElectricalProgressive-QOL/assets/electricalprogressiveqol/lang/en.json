@@ -104,7 +104,9 @@
   "game:freezer-over-sneak-help": "Open/close door.",
   "game:freezer-over-help": "Open the door and place food to preserve it.",
 
-  "game:Put-into-4-items": "At least 4 items required for baking.",
+  "game:Put-into-1-items": "Need at least 1 item for baking.",
+
+
   "game:max-light": "Max light",
   "game:height": "Height",
 
