@@ -15,13 +15,13 @@ using ElectricalProgressive.Content.Block.EFreezer2;
 
 
 [assembly: ModDependency("game", "1.20.0")]
-[assembly: ModDependency("electricalprogressivecore", "1.0.5")]
-[assembly: ModDependency("electricalprogressivebasics", "1.0.5")]
+[assembly: ModDependency("electricalprogressivecore", "1.1.0")]
+[assembly: ModDependency("electricalprogressivebasics", "1.1.0")]
 [assembly: ModInfo(
     "Electrical Progressive: QoL",
     "electricalprogressiveqol",
     Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
-    Description = "Brings electricity into the game!",
+    Description = "Additional electrical devices.",
     Version = "1.1.0",
     Authors = new[] {
         "Tehtelev",

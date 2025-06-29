@@ -402,11 +402,13 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     {
         base.OnTesselation(mesher, tessThreadTesselator); // вызываем базовую логику тесселяции
 
- 
-        for (var i = 0; i < _meshes.Length; i++)
+        if (_meshes != null)
         {
-            if (_meshes[i] != null)
-                mesher.AddMeshData(_meshes[i]);
+            for (var i = 0; i < _meshes.Length; i++)
+            {
+                if (_meshes[i] != null)
+                    mesher.AddMeshData(_meshes[i]);
+            }
         }
 
         // если анимации нет, то рисуем блок базовый
