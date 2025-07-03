@@ -577,7 +577,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         base.OnBlockRemoved();
         if (clientDialog != null)
         {
-            clientDialog.TryClose();
+            clientDialog?.TryClose();
             clientDialog?.Dispose();
             clientDialog = null;
         }
@@ -608,8 +608,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
         if (clientDialog != null)
         {
-            clientDialog.TryClose();
-            clientDialog.Dispose();
+            clientDialog?.TryClose();
+            clientDialog?.Dispose();
             clientDialog = null;
         }
 
