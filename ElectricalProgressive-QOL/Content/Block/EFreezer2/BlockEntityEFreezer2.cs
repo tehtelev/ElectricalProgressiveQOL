@@ -64,6 +64,8 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     {
         base.OnBlockUnloaded();
 
+        this.ElectricalProgressive?.OnBlockUnloaded(); // вызываем метод OnBlockUnloaded у BEBehaviorElectricalProgressive
+
         // Очищаем ссылки на объекты для предотвращения утечек памяти
         _freezerDialog?.TryClose();
         _freezerDialog?.Dispose();

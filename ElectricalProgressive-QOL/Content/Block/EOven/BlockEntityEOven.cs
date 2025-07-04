@@ -704,6 +704,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     {
         base.OnBlockUnloaded();
 
+        this.ElectricalProgressive?.OnBlockUnloaded(); // вызываем метод OnBlockUnloaded у BEBehaviorElectricalProgressive
         // Очистка мусора
         this.lastRemoved = null;
         this.capi = null;

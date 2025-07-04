@@ -80,6 +80,7 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
     {
         base.OnBlockUnloaded();
 
+
         // Очистка мусора
         toolMeshes[0] = null;
         tmpItem = null;

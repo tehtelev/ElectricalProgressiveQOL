@@ -606,6 +606,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     {
         base.OnBlockUnloaded();
 
+        this.ElectricalProgressive?.OnBlockUnloaded(); // вызываем метод OnBlockUnloaded у BEBehaviorElectricalProgressive
+
         if (clientDialog != null)
         {
             clientDialog?.TryClose();
