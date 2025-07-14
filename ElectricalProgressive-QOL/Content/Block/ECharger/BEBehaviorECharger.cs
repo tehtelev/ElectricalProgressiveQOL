@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 
 namespace ElectricalProgressive.Content.Block.ECharger;
 
@@ -13,6 +14,10 @@ public class BEBehaviorECharger : BEBehaviorBase, IElectricConsumer
     /// Мощность в заряднике
     /// </summary>
     public int PowerSetting { get; set; }
+
+
+    public const string PowerSettingKey = "electricalprogressive:powersetting";
+
 
     /// <summary>
     /// Максимальное потребление
@@ -133,5 +138,23 @@ public class BEBehaviorECharger : BEBehaviorBase, IElectricConsumer
         var variants = new string[2] { "burned", side };  //нужный вариант 
 
         this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariants(types, variants)).BlockId, Pos);
+
+        // MarkDirty не нужен тут
+    }
+
+
+
+
+
+    public override void ToTreeAttributes(ITreeAttribute tree)
+    {
+        base.ToTreeAttributes(tree);
+        tree.SetInt(PowerSettingKey, PowerSetting);
+    }
+
+    public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+    {
+        base.FromTreeAttributes(tree, worldAccessForResolve);
+        PowerSetting = tree.GetInt(PowerSettingKey);
     }
 }

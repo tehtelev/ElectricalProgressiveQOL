@@ -11,12 +11,14 @@ namespace ElectricalProgressive.Content.Block.EHorn;
 
 public class BEBehaviorEHorn : BEBehaviorBase, IElectricConsumer
 {
-
-
     /// <summary>
     /// Дали энергии  (сохраняется)
     /// </summary>
     private float _powerReceive = 0;
+    
+    public const string PowerReceiveKey = "electricalprogressive:powerReceive";
+
+
 
     private float _maxTemp;
 
@@ -111,6 +113,8 @@ public class BEBehaviorEHorn : BEBehaviorBase, IElectricConsumer
             ParticleManager.SpawnWhiteSlowSmoke(this.Api.World, Pos.ToVec3d().Add(0.1, 0, 0.1));
         }
 
+        Blockentity.MarkDirty();
+
         if (!hasBurnout || entity.Block.Variant["state"] == "burned")
             return;
 
@@ -136,4 +140,21 @@ public class BEBehaviorEHorn : BEBehaviorBase, IElectricConsumer
     }
 
     #endregion
+
+
+
+
+    public override void ToTreeAttributes(ITreeAttribute tree)
+    {
+        base.ToTreeAttributes(tree);
+        tree.SetFloat(PowerReceiveKey, _powerReceive);
+
+    }
+
+    public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+    {
+        base.FromTreeAttributes(tree, worldAccessForResolve);
+        _powerReceive = tree.GetFloat(PowerReceiveKey);
+
+    }
 }

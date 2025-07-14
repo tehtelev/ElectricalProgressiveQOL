@@ -13,6 +13,9 @@ namespace ElectricalProgressive.Content.Block.EHeater
     {
         public int HeatLevel { get; private set; }
 
+
+        public const string HeatLevelKey = "electricalprogressive:heatlevel";
+
         /// <summary>
         /// Максимальное потребление
         /// </summary>
@@ -23,17 +26,7 @@ namespace ElectricalProgressive.Content.Block.EHeater
             _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 4);
         }
 
-        public override void ToTreeAttributes(ITreeAttribute tree)
-        {
-            base.ToTreeAttributes(tree);
-            tree.SetInt("electricalprogressive:HeatLevel", HeatLevel);
-        }
 
-        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
-        {
-            base.FromTreeAttributes(tree, worldAccessForResolve);
-            HeatLevel = tree.GetInt("electricalprogressive:HeatLevel");
-        }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
         {
@@ -101,6 +94,8 @@ namespace ElectricalProgressive.Content.Block.EHeater
                 ParticleManager.SpawnWhiteSlowSmoke(this.Api.World, Pos.ToVec3d().Add(0.1, 0, 0.1));
             }
 
+            Blockentity.MarkDirty();
+
             if (!hasBurnout || entity.Block.Variant["state"] == "burned")
                 return;
 
@@ -108,6 +103,8 @@ namespace ElectricalProgressive.Content.Block.EHeater
             var variants = new string[1] { "burned" };     //нужный вариант лампы
 
             this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariants(types, variants)).BlockId, Pos);
+
+            
         }
 
         public float getPowerReceive()
@@ -121,5 +118,20 @@ namespace ElectricalProgressive.Content.Block.EHeater
         }
 
         #endregion
+
+
+        public override void ToTreeAttributes(ITreeAttribute tree)
+        {
+            base.ToTreeAttributes(tree);
+            tree.SetInt(HeatLevelKey, HeatLevel);
+        }
+
+        public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+        {
+            base.FromTreeAttributes(tree, worldAccessForResolve);
+            HeatLevel = tree.GetInt(HeatLevelKey);
+        }
+
+
     }
 }

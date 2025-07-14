@@ -4,12 +4,16 @@ using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 
 namespace ElectricalProgressive.Content.Block.EOven;
 
 public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
 {
     public int PowerSetting { get; set; }
+
+
+    public const string PowerSettingKey = "electricalprogressive:powersetting";
 
     /// <summary>
     /// Температура печи
@@ -146,6 +150,8 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
         var variants = new string[2] { "burned", side };  //нужный вариант 
 
         this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariants(types, variants)).BlockId, Pos);
+
+        // MarkDirty не нужен тут
     }
 
     public float getPowerReceive()
@@ -162,4 +168,18 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
     }
 
     #endregion
+
+
+
+    public override void ToTreeAttributes(ITreeAttribute tree)
+    {
+        base.ToTreeAttributes(tree);
+        tree.SetInt(PowerSettingKey, PowerSetting);
+    }
+
+    public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+    {
+        base.FromTreeAttributes(tree, worldAccessForResolve);
+        PowerSetting = tree.GetInt(PowerSettingKey);
+    }
 }

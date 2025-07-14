@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
+using Vintagestory.API.Datastructures;
 
 namespace ElectricalProgressive.Content.Block.EFreezer2;
 
@@ -11,10 +12,14 @@ public class BEBehaviorEFreezer2 : BEBehaviorBase, IElectricConsumer
 {
     public int PowerSetting { get; set; }
 
+    public const string PowerSettingKey = "electricalprogressive:powersetting";
+
     /// <summary>
     /// Максимальное потребление
     /// </summary>
     private readonly int _maxConsumption;
+
+
 
     public BEBehaviorEFreezer2(BlockEntity blockEntity) : base(blockEntity)
     {
@@ -77,11 +82,31 @@ public class BEBehaviorEFreezer2 : BEBehaviorBase, IElectricConsumer
             ParticleManager.SpawnWhiteSlowSmoke(this.Api.World, Pos.ToVec3d().Add(0.1, 1, 0.1));
         }
 
+        Blockentity.MarkDirty();
+
         if (!hasBurnout || entity.Block.Variant["state"] == "burned")
             return;
 
         var type = "state";
         var variant = "burned";
         this.Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant(type, variant)).BlockId, Pos);
+
+        
+    }
+
+
+
+
+
+    public override void ToTreeAttributes(ITreeAttribute tree)
+    {
+        base.ToTreeAttributes(tree);
+        tree.SetInt(PowerSettingKey, PowerSetting);
+    }
+
+    public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
+    {
+        base.FromTreeAttributes(tree, worldAccessForResolve);
+        PowerSetting = tree.GetInt(PowerSettingKey);
     }
 }

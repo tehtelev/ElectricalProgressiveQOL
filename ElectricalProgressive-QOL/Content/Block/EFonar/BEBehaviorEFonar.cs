@@ -16,6 +16,13 @@ namespace ElectricalProgressive.Content.Block.EFonar
         /// </summary>
         public int LightLevel { get; private set; }
 
+
+        /// <summary>
+        /// Ключ для сохранения уровня света в дереве атрибутов
+        /// </summary>
+        public const string LightLevelKey = "electricalprogressive:LightLevel";
+
+
         /// <summary>
         /// Максимальное потребление
         /// </summary>
@@ -34,13 +41,13 @@ namespace ElectricalProgressive.Content.Block.EFonar
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
-            tree.SetInt("electricalprogressive:LightLevel", LightLevel);
+            tree.SetInt(LightLevelKey, LightLevel);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
-            LightLevel = tree.GetInt("electricalprogressive:LightLevel");
+            LightLevel = tree.GetInt(LightLevelKey);
         }
 
         public float Consume_request()
@@ -106,6 +113,8 @@ namespace ElectricalProgressive.Content.Block.EFonar
             {
                 ParticleManager.SpawnWhiteSlowSmoke(this.Api.World, Pos.ToVec3d().Add(0.1, 0.3, 0.1));
             }
+
+            Blockentity.MarkDirty();
 
             if (hasBurnout && entity.Block.Variant["state"] != "burned")
                 Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "burned")).BlockId, Pos);

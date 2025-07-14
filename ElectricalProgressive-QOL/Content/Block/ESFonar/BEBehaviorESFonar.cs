@@ -18,9 +18,9 @@ namespace ElectricalProgressive.Content.Block.ESFonar
         public int LightLevel { get; private set; }
 
         /// <summary>
-        /// Заглушка нулевого света
+        /// Ключ для сохранения уровня света в дереве атрибутов
         /// </summary>
-        //private readonly int[] null_HSV = { 0, 0, 0 };
+        public const string LightLevelKey = "electricalprogressive:LightLevel";
 
         /// <summary>
         /// Максимальное потребление
@@ -35,13 +35,13 @@ namespace ElectricalProgressive.Content.Block.ESFonar
         public override void ToTreeAttributes(ITreeAttribute tree)
         {
             base.ToTreeAttributes(tree);
-            tree.SetInt("electricalprogressive:LightLevel", LightLevel);
+            tree.SetInt(LightLevelKey, LightLevel);
         }
 
         public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
         {
             base.FromTreeAttributes(tree, worldAccessForResolve);
-            LightLevel = tree.GetInt("electricalprogressive:LightLevel");
+            LightLevel = tree.GetInt(LightLevelKey);
         }
 
         public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
@@ -128,6 +128,8 @@ namespace ElectricalProgressive.Content.Block.ESFonar
             {
                 ParticleManager.SpawnWhiteSlowSmoke(this.Api.World, Pos.ToVec3d().Add(0.1, entity.Block.Variant["height"].ToFloat() - 1, 0.1));
             }
+
+            Blockentity.MarkDirty();
 
             if (!hasBurnout || entity.Block.Variant["state"] == "burned")
                 return;
