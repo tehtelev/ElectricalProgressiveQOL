@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ElectricalProgressive.Utils;
+using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -538,14 +539,17 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
         tree.SetBool("isOpened", IsOpened);
     }
 
-    public override void OnReceivedClientPacket(IPlayer fromPlayer, int packetid, byte[] data)
+    public override void OnReceivedClientPacket (IPlayer fromPlayer, int packetid, byte[] data)
     {
+        base.OnReceivedClientPacket(fromPlayer, packetid, data);
+
         if (packetid <= (int)EnumBlockEntityPacketId.Open)
             _inventory.InvNetworkUtil.HandleClientPacket(fromPlayer, packetid, data);
 
         if (packetid == (int)EnumBlockEntityPacketId.Close)
             fromPlayer.InventoryManager?.CloseInventory(Inventory);
     }
+
 
     public override void OnReceivedServerPacket(int packetid, byte[] data)
     {
@@ -647,4 +651,7 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
             _freezerDialog = null;
         }
     }
+
+
+
 }

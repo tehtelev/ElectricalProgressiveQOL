@@ -572,6 +572,8 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
         base.GetBlockInfo(forPlayer, stringBuilder);
+
+
         stringBuilder.AppendLine();
         for (int slotId = 0; slotId < this.bakeableCapacity; ++slotId)
         {
@@ -583,6 +585,8 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
             }
         }
     }
+
+
 
 
     /// <summary>

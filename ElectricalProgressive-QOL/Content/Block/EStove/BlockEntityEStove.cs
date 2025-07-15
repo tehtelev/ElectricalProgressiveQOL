@@ -651,6 +651,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
     public override void OnReceivedClientPacket(IPlayer player, int packetid, byte[] data)
     {
+        base.OnReceivedClientPacket(player, packetid, data);
+
         if (packetid < 1000)
         {
             Inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
@@ -769,6 +771,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     public override void GetBlockInfo(IPlayer forPlayer, StringBuilder stringBuilder)
     {
         base.GetBlockInfo(forPlayer, stringBuilder);
+
+
+
         if (inputStack != null)
         {
             var temp = (int)inputStack.Collectible.GetTemperature(Api.World, inputStack);

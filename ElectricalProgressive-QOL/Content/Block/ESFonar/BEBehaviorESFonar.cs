@@ -129,7 +129,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
                 ParticleManager.SpawnWhiteSlowSmoke(this.Api.World, Pos.ToVec3d().Add(0.1, entity.Block.Variant["height"].ToFloat() - 1, 0.1));
             }
 
-            Blockentity.MarkDirty();
+            
 
             if (!hasBurnout || entity.Block.Variant["state"] == "burned")
                 return;

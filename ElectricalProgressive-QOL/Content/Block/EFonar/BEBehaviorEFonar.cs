@@ -28,10 +28,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
         /// </summary>
         private readonly int _maxConsumption;
 
-        /// <summary>
-        /// Заглушка нулевого света
-        /// </summary>
-        //private readonly int[] null_HSV = { 0, 0, 0 };
+
 
         public BEBehaviorEFonar(BlockEntity blockEntity) : base(blockEntity)
         {
@@ -114,7 +111,7 @@ namespace ElectricalProgressive.Content.Block.EFonar
                 ParticleManager.SpawnWhiteSlowSmoke(this.Api.World, Pos.ToVec3d().Add(0.1, 0.3, 0.1));
             }
 
-            Blockentity.MarkDirty();
+            
 
             if (hasBurnout && entity.Block.Variant["state"] != "burned")
                 Api.World.BlockAccessor.ExchangeBlock(Api.World.GetBlock(Block.CodeWithVariant("state", "burned")).BlockId, Pos);

@@ -94,8 +94,7 @@ namespace ElectricalProgressive.Content.Block.EHeater
                 ParticleManager.SpawnWhiteSlowSmoke(this.Api.World, Pos.ToVec3d().Add(0.1, 0, 0.1));
             }
 
-            Blockentity.MarkDirty();
-
+            
             if (!hasBurnout || entity.Block.Variant["state"] == "burned")
                 return;
 
