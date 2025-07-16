@@ -13,7 +13,7 @@ namespace ElectricalProgressive.Content.Block.ESFonar
 
         public bool IsEnabled => this.Behavior.LightLevel >= 1;
 
-        protected override Facing GetConnection(Facing value)
+        public override Facing GetConnection(Facing value)
         {
             return Facing.DownAll;
         }

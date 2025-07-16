@@ -14,7 +14,7 @@ namespace ElectricalProgressive.Content.Block.EHeater
 
         public bool IsEnabled => this.Behavior?.HeatLevel >= 1;
 
-        protected override Facing GetConnection(Facing value)
+        public override Facing GetConnection(Facing value)
         {
             return FacingHelper.FullFace(value);
         }

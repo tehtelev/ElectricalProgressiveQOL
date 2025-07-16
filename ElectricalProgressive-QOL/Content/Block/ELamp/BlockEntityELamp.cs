@@ -12,7 +12,7 @@ namespace ElectricalProgressive.Content.Block.ELamp
 
         public bool IsEnabled => this.Behavior.LightLevel >= 1;
 
-        protected override Facing GetConnection(Facing value)
+        public override Facing GetConnection(Facing value)
         {
             // если лампа маленькая
             if (Block.Code.ToString().Contains("small") || Block.Code.ToString().Contains("nasteniy"))
