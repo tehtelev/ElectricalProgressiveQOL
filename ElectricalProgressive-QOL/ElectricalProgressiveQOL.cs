@@ -22,7 +22,7 @@ using ElectricalProgressive.Content.Block.EFreezer2;
     "electricalprogressiveqol",
     Website = "https://github.com/tehtelev/ElectricalProgressiveQOL",
     Description = "Additional electrical devices.",
-    Version = "2.0.0-rc.1",
+    Version = "2.0.0-rc.2",
     Authors = new[] {
         "Tehtelev",
         "Kotl"

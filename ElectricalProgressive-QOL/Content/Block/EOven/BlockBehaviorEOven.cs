@@ -5,6 +5,7 @@ using System.Text;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
 using Vintagestory.API.Datastructures;
+using Vintagestory.GameContent;
 
 namespace ElectricalProgressive.Content.Block.EOven;
 
@@ -14,6 +15,7 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
 
 
     public const string PowerSettingKey = "electricalprogressive:powersetting";
+    public const string OvenTemperatureKey = "electricalprogressive:oventemperature";
 
     /// <summary>
     /// Температура печи
@@ -50,10 +52,26 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
                 if (itemstack == null)
                     continue;
 
+                BakingProperties bakingProperties = BakingProperties.ReadFrom(itemstack);
+                if (bakingProperties == null ||
+                    
+                    !itemstack.Attributes.GetBool("bakeable", true)) //если свойства выпекания не найдены
+                {
+                    stack_count_perfect++;
+                    stack_count++;
+                    continue;    // продолжаем цикл, если не выпекаемая еда в этом слоте
+                }
+
                 if (itemstack.Class == EnumItemClass.Block)
                 {
                     var blockCode = itemstack.Block.Code.ToString();
-                    if (blockCode.Contains("perfect") || blockCode.Contains("charred"))
+                    if (blockCode.Contains("perfect") ||
+                        blockCode.Contains("charred") ||
+                        blockCode.Contains("rot") ||
+                        blockCode.Contains("bake1") ||
+                        blockCode.Contains("bake2") ||
+                        blockCode.Contains("cooked") ||
+                        blockCode.Contains("dry"))
                     {
                         stack_count_perfect++;
                     }
@@ -61,7 +79,13 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
                 else
                 {
                     var itemCode = itemstack.Item.Code.ToString();
-                    if (itemCode.Contains("perfect") || itemCode.Contains("rot") || itemCode.Contains("charred"))
+                    if (itemCode.Contains("perfect") ||
+                        itemCode.Contains("charred") ||
+                        itemCode.Contains("rot") ||
+                        itemCode.Contains("bake1") ||
+                        itemCode.Contains("bake2") ||
+                        itemCode.Contains("cooked") ||
+                        itemCode.Contains("dry"))
                     {
                         stack_count_perfect++;
                     }
@@ -70,13 +94,12 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
                 stack_count++;
             }
 
-            if (stack_count_perfect > 0)   // если хоть что-то готово - не греем уже
-            {                
-                working = false;
-            }
-            else                      // если еда есть и подходящая - греем
-                if (stack_count > 0)
-                    working = true;
+            if (stack_count_perfect == stack_count)   // если все готово - не работаем
+                return false;
+            
+
+            if (stack_count > 0)
+                return true;
 
             return working;
         }
@@ -175,11 +198,13 @@ public class BEBehaviorEOven : BEBehaviorBase, IElectricConsumer
     {
         base.ToTreeAttributes(tree);
         tree.SetInt(PowerSettingKey, PowerSetting);
+        tree.SetFloat(OvenTemperatureKey, _ovenTemperature);
     }
 
     public override void FromTreeAttributes(ITreeAttribute tree, IWorldAccessor worldAccessForResolve)
     {
         base.FromTreeAttributes(tree, worldAccessForResolve);
         PowerSetting = tree.GetInt(PowerSettingKey);
+        _ovenTemperature = tree.GetFloat(OvenTemperatureKey, 0f);
     }
 }

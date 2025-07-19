@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using ElectricalProgressive.Utils;
+using System.Runtime.CompilerServices;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -21,7 +22,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     private bool clientSidePrevBurning;
     public float prevOvenTemperature = 20f;
     public float ovenTemperature = 20f;
-    private readonly OvenItemData[] bakingData;
+    public readonly OvenItemData[] bakingData;
     private ItemStack lastRemoved;
     private int rotationDeg;
 
@@ -66,7 +67,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
 
 
-    private EnumOvenContentMode OvenContentMode  //как отображать содержимое
+    public EnumOvenContentMode OvenContentMode  //как отображать содержимое
     {
         get
         {
@@ -96,7 +97,6 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
 
     public override string InventoryClassName => "eoven";
 
-    public ItemSlot FuelSlot => this.ovenInv[0];
 
     public bool IsBurning;
 
@@ -114,7 +114,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         listenerId=this.RegisterGameTickListener(new Action<float>(this.OnBurnTick), 100);
 
         this.SetRotation();
-
+        
         _maxConsumption = MyMiniLib.GetAttributeInt(this.Block, "maxConsumption", 100);
     }
 
@@ -215,6 +215,38 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         return false;
     }
 
+
+    /// <summary>
+    /// Проверяет валидность предмета для помещения в духовку
+    /// </summary>
+    /// <param name="slot"></param>
+    /// <param name="inv"></param>
+    /// <returns></returns>
+    public static bool IsValidInput(ItemSlot slot, InventoryEOven inv)
+    {
+        BakingProperties bakingProperties1 = BakingProperties.ReadFrom(slot.Itemstack);
+        if (bakingProperties1 == null || !slot.Itemstack.Attributes.GetBool("bakeable", true)) //если свойства выпекания не найдены
+            return false;
+
+        if (!inv[0].Empty) //если в духовке уже что-то лежит в первом слоте
+        {
+            BakingProperties bakingProperties2 = BakingProperties.ReadFrom(slot.Itemstack);
+            if (bakingProperties2!=null && bakingProperties2.LargeItem)  //если уже лежит большое - выход
+                return false;
+
+            if (bakingProperties1.LargeItem) //если пытаемся положить большое в духовку, где уже что-то лежит
+                return false;
+        }
+
+
+        if (slot.Itemstack.StackSize < 1)   //если айтемы в стаке меньше 1 - выход
+            return false;
+
+        return true;
+    }
+
+
+
     /// <summary>
     /// Пробуем положить предмет в духовку
     /// </summary>
@@ -222,11 +254,8 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
     /// <returns></returns>
     protected virtual bool TryPut(ItemSlot slot)
     {
-        BakingProperties bakingProperties1 = BakingProperties.ReadFrom(slot.Itemstack);
-        if (bakingProperties1 == null || !slot.Itemstack.Attributes.GetBool("bakeable", true) || bakingProperties1.LargeItem && !this.ovenInv.Empty)
-            return false;
-
-        if (slot.Itemstack.StackSize < 1 & !bakingProperties1.LargeItem)   //если айтемы в стаке меньше 1 - выход
+        // проверка валидности предмета
+        if (!IsValidInput(slot, ovenInv))
             return false;
 
         for (int index = 0; index < this.bakeableCapacity; ++index)
@@ -272,6 +301,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
                     this.Api.World.SpawnItemEntity(itemstack, this.Pos);
                 //this.Api.World.Logger.Audit("{0} Took 1x{1} from Clay oven at {2}.", (object)byPlayer.PlayerName, (object)itemstack.Collectible.Code, (object)this.Pos);
                 this.bakingData[bakeableCapacity].CurHeightMul = 1f;
+                this.bakingData[bakeableCapacity].temp = 20;
                 this.updateMesh(bakeableCapacity);
                 this.MarkDirty(true);
                 return true;

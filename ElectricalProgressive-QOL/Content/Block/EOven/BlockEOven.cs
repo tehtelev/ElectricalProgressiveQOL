@@ -80,6 +80,7 @@ public class BlockEOven : BlockEBase
     {
         base.OnNeighbourBlockChange(world, pos, neibpos);
 
+        /* // Если снизу нет блока, то ломаем духовку
         if (
             !world.BlockAccessor
                 .GetBlock(pos.AddCopy(BlockFacing.DOWN))
@@ -88,6 +89,7 @@ public class BlockEOven : BlockEBase
         {
             world.BlockAccessor.BreakBlock(pos, null);
         }
+        */
     }
 
     public override ItemStack OnPickBlock(IWorldAccessor world, BlockPos pos)
