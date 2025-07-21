@@ -27,7 +27,7 @@
       },
       "M": {
         "type": "item",
-        "code": "game:metalplate-copper",
+        "code": "game:metalplate-iron",
         "quantity": 2
       }
     },

@@ -192,7 +192,7 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     /// <param name="slotid"></param>
     public void UpdateMesh(int slotid)
     {
-        if (Api == null || Api.Side == EnumAppSide.Server)
+        if (Api == null || Api.Side == EnumAppSide.Server || _capi==null)
             return;
 
         if (slotid >= _inventory.Count)
@@ -355,6 +355,9 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     /// <returns></returns>
     public MeshData? GenMesh(ItemStack stack)
     {
+        if (stack == null) // если стек пустой, то ничего не рисуем
+            return null;
+
         var meshSource = stack.Collectible as IContainedMeshSource;
         MeshData meshData;
 
