@@ -1,4 +1,5 @@
-﻿using ElectricalProgressive.Utils;
+﻿using ElectricalProgressive.Content.Block.EOven;
+using ElectricalProgressive.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +26,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     ICoreClientAPI capi;
     ICoreServerAPI sapi;
 
-    internal InventorySmelting inventory;
+    internal InventoryEStove inventory;
     private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
 
     public float prevStoveTemperature = 20;
@@ -57,8 +58,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     /// </summary>
     public BlockEntityEStove()
     {
-        inventory = new InventorySmelting(null, null);
+        inventory = new InventoryEStove(null, null);
         inventory.SlotModified += OnSlotModifid;
+        
         meshes = new MeshData[6];
     }
 
@@ -490,7 +492,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
     public void OnBlockInteract(IPlayer byPlayer, bool isOwner, BlockSelection blockSel)
     {
-        if (Api.Side == EnumAppSide.Client) return;
+        if (Api.Side == EnumAppSide.Client)
+            return;
         byte[] data;
         using (MemoryStream ms = new MemoryStream())
         {
@@ -667,6 +670,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
     public override void OnReceivedServerPacket(int packetid, byte[] data)
     {
+        base.OnReceivedServerPacket(packetid, data);
+
         if (packetid == (int)EnumBlockStovePacket.OpenGUI)
         {
             using (MemoryStream ms = new MemoryStream(data))
