@@ -259,8 +259,11 @@ public class InventoryEStove : InventoryBase, ISlotProvider
                     return CookingSlots[i];
                 }
 
-                if (CookingSlots[i].Itemstack != null &&
-                    CookingSlots[i].Itemstack.StackSize < CookingContainerMaxSlotStackSize) // слот не пустой и в нем меньше максимального количества предметов?
+                if (CookingSlots[i].Itemstack != null &&  // слот не пустой
+                    CookingSlots[i].Itemstack.StackSize < CookingContainerMaxSlotStackSize && // в нем меньше максимального количества предметов
+                    fromSlot.Itemstack!=null && // слот входящий не пустой
+                    CookingSlots[i].Itemstack.Collectible.Code== fromSlot.Itemstack.Collectible.Code // предметы одинаковые
+                    )
                 {
                     return CookingSlots[i];
                 }
