@@ -122,15 +122,15 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
             .AddDialogTitleBar(DialogTitle, OnTitleBarClose)
             .BeginChildElements(bgBounds)
             .AddDynamicCustomDraw(stoveBounds, OnBgDraw, "symbolDrawer")
-            .AddDynamicText("", CairoFont.WhiteDetailText(), EnumTextOrientation.Left,
+            .AddDynamicText("", CairoFont.WhiteDetailText(),
                 ElementBounds.Fixed(0, 30, 210, 45), "outputText")
             .AddIf(haveCookingContainer)
             .AddItemSlotGrid(Inventory, SendInvPacket, 4, cookingSlotIds, cookingSlotsSlotBounds, "ingredientSlots")
             .EndIf()
-            .AddDynamicText("", CairoFont.WhiteDetailText(), EnumTextOrientation.Left,
+            .AddDynamicText("", CairoFont.WhiteDetailText(),
                 fuelSlotBounds.RightCopy(17, 16).WithFixedSize(60, 30), "fueltemp")
             .AddItemSlotGrid(Inventory, SendInvPacket, 1, new[] { 1 }, inputSlotBounds, "oreslot")
-            .AddDynamicText("", CairoFont.WhiteDetailText(), EnumTextOrientation.Left,
+            .AddDynamicText("", CairoFont.WhiteDetailText(),
                 inputSlotBounds.RightCopy(23, 16).WithFixedSize(60, 30), "oretemp")
 
             .AddItemSlotGrid(Inventory, SendInvPacket, 1, new[] { 2 }, outputSlotBounds, "outputslot")

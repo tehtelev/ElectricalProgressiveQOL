@@ -106,7 +106,7 @@ public class BlockECharger : BlockEBase
                         var ctex = new CompositeTexture(val.Value.Clone());
                         ctex.Bake(api.Assets);
 
-                        textureDict.AddTextureLocation(new(ctex.Baked.BakedName, "Shape code " + item.Shape.Base));
+                        textureDict.AddTextureLocation(new AssetLocationAndSource(ctex.Baked.BakedName, "Shape code " + item.Shape.Base));
                         toolTextures.TextureSubIdsByCode[val.Key] = textureDict[new(ctex.Baked.BakedName)];
                     }
                 }

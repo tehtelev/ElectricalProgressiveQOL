@@ -379,19 +379,21 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
         }
     }
 
-    public override void OnLoadCollectibleMappings(IWorldAccessor worldForResolve, Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping, int schematicSeed)
+
+    public override void OnLoadCollectibleMappings(IWorldAccessor worldForNewMappings, Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping, int schematicSeed, bool resolveImports)
     {
         foreach (var slot in Inventory)
         {
             if (slot.Itemstack == null)
                 continue;
 
-            if (!slot.Itemstack.FixMapping(oldBlockIdMapping, oldItemIdMapping, worldForResolve))
+            if (!slot.Itemstack.FixMapping(oldBlockIdMapping, oldItemIdMapping, worldForNewMappings))
             {
                 slot.Itemstack = null;
             }
         }
     }
+
 
 
     /// <summary>

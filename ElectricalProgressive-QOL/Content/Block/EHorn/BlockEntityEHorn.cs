@@ -435,17 +435,24 @@ public class BlockEntityEHorn : BlockEntityEBase, IHeatSource
     }
 
 
-    public override void OnLoadCollectibleMappings(IWorldAccessor worldForResolve,
-        Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping,
-        int schematicSeed)
+    /// <summary>
+    /// Маппинг блоков и предметов при загрузке схемы
+    /// </summary>
+    /// <param name="worldForNewMappings"></param>
+    /// <param name="oldBlockIdMapping"></param>
+    /// <param name="oldItemIdMapping"></param>
+    /// <param name="schematicSeed"></param>
+    /// <param name="resolveImports"></param>
+    public override void OnLoadCollectibleMappings(IWorldAccessor worldForNewMappings, Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping, int schematicSeed, bool resolveImports)
     {
-        base.OnLoadCollectibleMappings(worldForResolve, oldBlockIdMapping, oldItemIdMapping, schematicSeed);
+        base.OnLoadCollectibleMappings(worldForNewMappings, oldBlockIdMapping, oldItemIdMapping, schematicSeed, resolveImports);
 
-        if (this.Contents?.FixMapping(oldBlockIdMapping, oldItemIdMapping, worldForResolve) == false)
+        if (this.Contents?.FixMapping(oldBlockIdMapping, oldItemIdMapping, worldForNewMappings) == false)
         {
             this.Contents = null;
         }
     }
+
 
 
     /// <summary>

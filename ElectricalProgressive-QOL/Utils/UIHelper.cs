@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Vintagestory.API.Client;
-using Vintagestory.API.Common;
+﻿using Vintagestory.API.Client;
 
 namespace ElectricalProgressive.Utils;
 

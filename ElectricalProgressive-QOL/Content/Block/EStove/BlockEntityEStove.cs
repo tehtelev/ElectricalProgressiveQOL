@@ -659,7 +659,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         if (packetid < 1000)
         {
             Inventory.InvNetworkUtil.HandleClientPacket(player, packetid, data);
-            Api.World.BlockAccessor.GetChunkAtBlockPos(Pos.X, Pos.Y, Pos.Z).MarkModified();
+            Api.World.BlockAccessor.GetChunkAtBlockPos(Pos).MarkModified();
             return;
         }
         if (packetid == (int)EnumBlockStovePacket.CloseGUI)
@@ -748,25 +748,29 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         }
     }
 
-    public override void OnLoadCollectibleMappings(IWorldAccessor worldForResolve, Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping, int schematicSeed)
+    public override void OnLoadCollectibleMappings(IWorldAccessor worldForResolve, Dictionary<int, AssetLocation> oldBlockIdMapping, Dictionary<int, AssetLocation> oldItemIdMapping, int schematicSeed, bool resolveImports)
     {
         foreach (var slot in Inventory)
         {
-            if (slot.Itemstack == null) continue;
+            if (slot.Itemstack == null)
+                continue;
             if (!slot.Itemstack.FixMapping(oldBlockIdMapping, oldItemIdMapping, worldForResolve))
                 slot.Itemstack = null;
             else
-                slot.Itemstack.Collectible.OnLoadCollectibleMappings(worldForResolve, slot, oldBlockIdMapping, oldItemIdMapping);
+                slot.Itemstack.Collectible.OnLoadCollectibleMappings(worldForResolve, slot, oldBlockIdMapping, oldItemIdMapping, false);
         }
         foreach (ItemSlot slot in inventory.CookingSlots)
         {
-            if (slot.Itemstack == null) continue;
+            if (slot.Itemstack == null)
+                continue;
             if (!slot.Itemstack.FixMapping(oldBlockIdMapping, oldItemIdMapping, Api.World))
                 slot.Itemstack = null;
             else
-                slot.Itemstack.Collectible.OnLoadCollectibleMappings(worldForResolve, slot, oldBlockIdMapping, oldItemIdMapping);
+                slot.Itemstack.Collectible.OnLoadCollectibleMappings(worldForResolve, slot, oldBlockIdMapping, oldItemIdMapping, false);
         }
+
     }
+
 
     /// <summary>
     /// Получает информацию о блоке для игрока
