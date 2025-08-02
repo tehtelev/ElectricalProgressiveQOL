@@ -30,7 +30,7 @@ public class BlockECharger : BlockEBase
         return result;
     }
 
-    private WorldInteraction[] _interactions;
+    private WorldInteraction[]? _interactions;
     private int _output;
 
     public override void OnLoaded(ICoreAPI api)
@@ -38,7 +38,7 @@ public class BlockECharger : BlockEBase
         if (api.Side != EnumAppSide.Client)
             return;
 
-        ICoreClientAPI capi = api as ICoreClientAPI;
+        ICoreClientAPI? capi = api as ICoreClientAPI;
 
 
         _output = MyMiniLib.GetAttributeInt(this, "output", 1000);
@@ -128,7 +128,7 @@ public class BlockECharger : BlockEBase
         return _interactions.Append(base.GetPlacedBlockInteractionHelp(world, selection, forPlayer));
     }
 
-    public override bool CanAttachBlockAt(IBlockAccessor blockAccessor, Vintagestory.API.Common.Block block, BlockPos pos, BlockFacing blockFace, Cuboidi attachmentArea = null)
+    public override bool CanAttachBlockAt(IBlockAccessor blockAccessor, Vintagestory.API.Common.Block block, BlockPos pos, BlockFacing blockFace, Cuboidi attachmentArea = null!)
     {
         return blockFace == BlockFacing.DOWN;
     }

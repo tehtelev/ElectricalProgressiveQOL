@@ -21,7 +21,7 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
 
     public Size2i AtlasSize => ((ICoreClientAPI)Api).BlockTextureAtlas.Size;
 
-    CollectibleObject tmpItem;
+    CollectibleObject? tmpItem;
 
     private long listenerId;
 
@@ -31,7 +31,7 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
     {
         get
         {
-            if (BlockECharger.ToolTextureSubIds(Api).TryGetValue((Item)tmpItem, out var toolTextures))
+            if (BlockECharger.ToolTextureSubIds(Api).TryGetValue((Item)tmpItem!, out var toolTextures))
             {
                 if (toolTextures.TextureSubIdsByCode.TryGetValue(textureCode, out var textureSubId))
                     return ((ICoreClientAPI)Api).BlockTextureAtlas.Positions[textureSubId];
@@ -82,8 +82,8 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
 
 
         // Очистка мусора
-        toolMeshes[0] = null;
-        tmpItem = null;
+        toolMeshes[0] = null!;
+        tmpItem = null!;
 
         UnregisterGameTickListener(listenerId); //отменяем слушатель тика, если он есть
     }
@@ -164,7 +164,7 @@ public class BlockEntityECharger : BlockEntityEBase, ITexPositionSource
     /// </summary>
     void loadToolMeshes()
     {
-        toolMeshes[0] = null; //должна быть сброшена сразу же 
+        toolMeshes[0] = null!; //должна быть сброшена сразу же 
 
         var stack = Inventory[0].Itemstack;
         if (stack == null) //пустой стак нам не интересен

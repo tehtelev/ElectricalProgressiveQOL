@@ -12,7 +12,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
 
     private ItemSlot[] slots;
     private ItemSlot[] cookingSlots;
-    public BlockPos pos;
+    public BlockPos? pos;
     private int defaultStorageType = 189;
 
     public ItemSlot[] CookingSlots
@@ -24,7 +24,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
 
     public override Size3f MaxContentDimensions
     {
-        get => this.slots[1].Itemstack?.ItemAttributes?["maxContentDimensions"].AsObject<Size3f>();
+        get => this.slots[1].Itemstack?.ItemAttributes?["maxContentDimensions"].AsObject<Size3f>()!;
         set
         {
         }
@@ -100,7 +100,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
 
     public override ItemSlot this[int slotId]
     {
-        get => slotId < 0 || slotId >= this.Count ? (ItemSlot)null : this.slots[slotId];
+        get => slotId < 0 || slotId >= this.Count ? null! : this.slots[slotId];
         set
         {
             if (slotId < 0 || slotId >= this.Count)
@@ -109,7 +109,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
         }
     }
 
-    public override void DidModifyItemSlot(ItemSlot slot, ItemStack extractedStack = null)
+    public override void DidModifyItemSlot(ItemSlot slot, ItemStack extractedStack = null!)
     {
         base.DidModifyItemSlot(slot, extractedStack);
         if (this.slots[1] != slot)
@@ -117,7 +117,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
         if ((slot != null ? ((!slot.Itemstack?.ItemAttributes?["storageType"].Exists ?? false) ? 1 : 0) : 1) != 0)
             this.discardCookingSlots();
         else
-            this.updateStorageTypeFromContainer(slot.Itemstack);
+            this.updateStorageTypeFromContainer(slot!.Itemstack!);
     }
 
     private void updateStorageTypeFromContainer(ItemStack stack)
@@ -129,7 +129,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
         {
             this.cookingSlots[index].StorageType = (EnumItemStorageFlags)num;
             this.cookingSlots[index].MaxSlotStackSize = this.CookingContainerMaxSlotStackSize;
-            (this.cookingSlots[index] as ItemSlotWatertight).capacityLitres = this.CookingSlotCapacityLitres;
+            (this.cookingSlots[index] as ItemSlotWatertight)!.capacityLitres = this.CookingSlotCapacityLitres;
         }
     }
 
@@ -140,13 +140,13 @@ public class InventoryEStove : InventoryBase, ISlotProvider
 
     public void discardCookingSlots()
     {
-        Vec3d position = this.pos.ToVec3d().Add(0.5, 0.5, 0.5);
+        Vec3d position = this.pos!.ToVec3d().Add(0.5, 0.5, 0.5);
         for (int index = 0; index < this.cookingSlots.Length; ++index)
         {
             if (this.cookingSlots[index] != null)
             {
                 this.Api.World.SpawnItemEntity(this.cookingSlots[index].Itemstack, position);
-                this.cookingSlots[index].Itemstack = (ItemStack)null;
+                this.cookingSlots[index].Itemstack = null!;
             }
         }
     }
@@ -156,7 +156,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
         List<ItemSlot> modifiedSlots = new List<ItemSlot>();
         this.slots = this.SlotsFromTreeAttributes(tree, this.slots, modifiedSlots);
         for (int index = 0; index < modifiedSlots.Count; ++index)
-            this.DidModifyItemSlot(modifiedSlots[index], (ItemStack)null);
+            this.DidModifyItemSlot(modifiedSlots[index], (ItemStack)null!);
         if (this.Api == null)
             return;
         for (int index = 0; index < this.cookingSlots.Length; ++index)
@@ -188,7 +188,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
     public override WeightedSlot GetBestSuitedSlot(
       ItemSlot sourceSlot,
       ItemStackMoveOperation op,
-      List<ItemSlot> skipSlots = null)
+      List<ItemSlot> skipSlots = null!)
     {
         if (!this.HaveCookingContainer)
         {
@@ -217,19 +217,20 @@ public class InventoryEStove : InventoryBase, ISlotProvider
     {
         ItemStack itemstack = this.slots[1].Itemstack;
         if (itemstack == null)
-            return (string)null;
+            return null!;
+
         if (itemstack.Collectible is BlockSmeltingContainer)
             return ((BlockSmeltingContainer)itemstack.Collectible).GetOutputText(this.Api.World, (ISlotProvider)this, this.slots[1]);
         if (itemstack.Collectible is BlockCookingContainer)
-            return ((BlockCookingContainer)itemstack.Collectible).GetOutputText(this.Api.World, (ISlotProvider)this, this.slots[1]);
-        ItemStack resolvedItemstack = itemstack.Collectible.CombustibleProps?.SmeltedStack?.ResolvedItemstack;
+            return ((BlockCookingContainer)itemstack.Collectible).GetOutputText(this.Api.World, (ISlotProvider)this, this.slots[1])!;
+        ItemStack resolvedItemstack = itemstack.Collectible.CombustibleProps?.SmeltedStack?.ResolvedItemstack!;
         if (resolvedItemstack == null)
-            return (string)null;
-        if (itemstack.Collectible.CombustibleProps.SmeltingType == EnumSmeltType.Fire)
+            return (string)null!;
+        if (itemstack?.Collectible?.CombustibleProps?.SmeltingType == EnumSmeltType.Fire)
             return Lang.Get("Can't smelt, requires a kiln");
-        if (itemstack.Collectible.CombustibleProps.RequiresContainer)
+        if (itemstack?.Collectible?.CombustibleProps?.RequiresContainer ?? false)
             return Lang.Get("Can't smelt, requires smelting container (i.e. Crucible)");
-        return Lang.Get("firepit-gui-willcreate", (object)(itemstack.StackSize / itemstack.Collectible.CombustibleProps.SmeltedRatio), (object)resolvedItemstack.GetName());
+        return Lang.Get("firepit-gui-willcreate", (object)(itemstack!.StackSize / itemstack!.Collectible!.CombustibleProps!.SmeltedRatio), (object)resolvedItemstack.GetName());
     }
   
 
@@ -268,7 +269,7 @@ public class InventoryEStove : InventoryBase, ISlotProvider
         }
         
 
-        return null;
+        return null!;
     }
 
 

@@ -34,8 +34,8 @@ public class BEBehaviorECharger : BEBehaviorBase, IElectricConsumer
         get
         {
             var working = false;
-            var durability = 0;         //текущая прочность
-            var maxDurability = 0;      //максимальная прочность
+            int durability;         //текущая прочность
+            int maxDurability;      //максимальная прочность
 
             if (Blockentity is not BlockEntityECharger entityECharger)
                 return working;

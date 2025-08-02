@@ -36,7 +36,7 @@ namespace ElectricalProgressive.Content.Block.EOven;
 
     public override ItemSlot this[int slotId]
     {
-      get => slotId < 0 || slotId >= this.Count ? (ItemSlot) null : this.slots[slotId];
+      get => slotId < 0 || slotId >= this.Count ? null! : this.slots[slotId];
       set
       {
         if (slotId < 0 || slotId >= this.Count)
@@ -105,7 +105,7 @@ namespace ElectricalProgressive.Content.Block.EOven;
     {
         // если поместить в слот для готовки нельзя, то выдаем null
         if (!BlockEntityEOven.IsValidInput(fromSlot, this))
-            return null;
+            return null!;
 
         // если в слоты для готовки есть свободные, то выдаем первый из них
         for (int i = 0; i < this.cookingSize; i++)
@@ -126,7 +126,7 @@ namespace ElectricalProgressive.Content.Block.EOven;
         }
         
 
-        return null;
+        return null!;
     }
 
     /// <summary>
@@ -167,7 +167,7 @@ namespace ElectricalProgressive.Content.Block.EOven;
             }
         }
 
-        return null;
+        return null!;
     }
 
   }

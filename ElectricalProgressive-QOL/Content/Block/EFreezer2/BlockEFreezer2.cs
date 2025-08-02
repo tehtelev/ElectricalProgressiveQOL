@@ -10,11 +10,11 @@ namespace ElectricalProgressive.Content.Block.EFreezer2;
 
 class BlockEFreezer2 : BlockEBase
 {
-    private BlockEntityEFreezer2 _blockEntityEFreezer;
+    private BlockEntityEFreezer2? _blockEntityEFreezer;
 
     public override bool OnBlockInteractStart(IWorldAccessor world, IPlayer byPlayer, BlockSelection blockSel)
     {
-        _blockEntityEFreezer = null;
+        _blockEntityEFreezer = null!;
         if (blockSel.Position != null && world.BlockAccessor.GetBlockEntity(blockSel.Position) is BlockEntityEFreezer2 blockEntityEFreezer)
             _blockEntityEFreezer = blockEntityEFreezer;
 

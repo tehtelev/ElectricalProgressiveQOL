@@ -82,7 +82,7 @@ public class InventoryEWoodcutter : InventoryGeneric, ISlotProvider
                 return slot;
         }
 
-        return null;
+        return null!;
     }
 
     public override void ToTreeAttributes(ITreeAttribute tree)

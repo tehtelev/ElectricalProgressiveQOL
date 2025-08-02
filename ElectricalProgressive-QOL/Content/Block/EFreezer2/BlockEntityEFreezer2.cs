@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using ElectricalProgressive.Utils;
-using System.Text;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Config;
@@ -54,7 +52,7 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
     /// </summary>
     public BlockEntityAnimationUtil animUtil
     {
-        get { return GetBehavior<BEBehaviorAnimatable>()?.animUtil; }
+        get { return GetBehavior<BEBehaviorAnimatable>()?.animUtil!; }
     }
 
 
@@ -71,10 +69,10 @@ class BlockEntityEFreezer2 : ContainerEFreezer2, ITexPositionSource
         _freezerDialog?.TryClose();
         _freezerDialog?.Dispose();
         _freezerDialog = null;
-        _capi = null;
-        _meshes = null;
+        _capi = null!;
+        _meshes = null!;
         _nowTesselatingShape = null;
-        _nowTesselatingObj = null;
+        _nowTesselatingObj = null!;
         animUtil?.Dispose();
 
         // Удаляем слушатель тиков

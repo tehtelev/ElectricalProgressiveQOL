@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Text;
 using ElectricalProgressive.Utils;
-using System.Runtime.CompilerServices;
 using Vintagestory.API.Client;
 using Vintagestory.API.Common;
 using Vintagestory.API.Common.Entities;
@@ -167,8 +166,8 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
             
             if (this.TryPut(activeHotbarSlot))
             {
-                AssetLocation place = activeHotbarSlot.Itemstack?.Block?.Sounds?.Place;
-                this.Api.World.PlaySoundAt(place != (AssetLocation)null ? place : new AssetLocation("sounds/player/buildhigh"), (Entity)byPlayer.Entity, byPlayer, true, 16f, 1f);
+                AssetLocation place = activeHotbarSlot.Itemstack?.Block?.Sounds?.Place!;
+                this.Api.World.PlaySoundAt(place != null ? place : new AssetLocation("sounds/player/buildhigh"), (Entity)byPlayer.Entity, byPlayer, true, 16f, 1f);
                 byPlayer.InventoryManager.BroadcastHotbarSlot();
 
                 //если предмет успешно положили в духовку - логируем это событие
@@ -268,7 +267,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
                     this.bakingData[index] = new OvenItemData(this.ovenInv[index].Itemstack);
                     this.updateMesh(index);
                     this.MarkDirty(true);
-                    this.lastRemoved = (ItemStack)null;
+                    this.lastRemoved = null!;
                 }
 
             }
@@ -291,13 +290,13 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
             if (!this.ovenInv[bakeableCapacity].Empty)
             {
                 ItemStack itemstack = this.ovenInv[bakeableCapacity].TakeOut(1);
-                this.lastRemoved = itemstack == null ? (ItemStack)null : itemstack.Clone();
+                this.lastRemoved = itemstack == null ? null! : itemstack.Clone();
                 if (byPlayer.InventoryManager.TryGiveItemstack(itemstack))
                 {
-                    AssetLocation place = itemstack.Block?.Sounds?.Place;
-                    this.Api.World.PlaySoundAt(place != (AssetLocation)null ? place : new AssetLocation("sounds/player/throw"), (Entity)byPlayer.Entity, byPlayer, true, 16f, 1f);
+                    AssetLocation place = itemstack?.Block?.Sounds?.Place!;
+                    this.Api.World.PlaySoundAt(place != null ? place : new AssetLocation("sounds/player/throw"), (Entity)byPlayer.Entity, byPlayer, true, 16f, 1f);
                 }
-                if (itemstack.StackSize > 0)
+                if (itemstack?.StackSize > 0)
                     this.Api.World.SpawnItemEntity(itemstack, this.Pos);
                 //this.Api.World.Logger.Audit("{0} Took 1x{1} from Clay oven at {2}.", (object)byPlayer.PlayerName, (object)itemstack.Collectible.Code, (object)this.Pos);
                 this.bakingData[bakeableCapacity].CurHeightMul = 1f;
@@ -489,10 +488,10 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         if ((double)num4 > (double)num6)
         {
             float temp = ovenItemData.temp;
-            string resultCode = bakingProperties?.ResultCode;
+            string resultCode = bakingProperties?.ResultCode ?? null!;
             if (resultCode != null)                            //степень готовности изменилась
             {
-                ItemStack itemStack = (ItemStack)null;
+                ItemStack itemStack = null!;
                 if (itemSlot.Itemstack.Class == EnumItemClass.Block)
                 {
                     Vintagestory.API.Common.Block block = this.Api.World.GetBlock(new AssetLocation(resultCode));
@@ -517,8 +516,8 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
             }
             else
             {
-                ItemSlot outputSlot = (ItemSlot)new DummySlot((ItemStack)null);
-                if (itemSlot.Itemstack.Collectible.CanSmelt(this.Api.World, (ISlotProvider)this.ovenInv, itemSlot.Itemstack, (ItemStack)null))
+                ItemSlot outputSlot = (ItemSlot)new DummySlot(null);
+                if (itemSlot.Itemstack.Collectible.CanSmelt(this.Api.World, (ISlotProvider)this.ovenInv, itemSlot.Itemstack, null!))
                 {
                     itemSlot.Itemstack.Collectible.DoSmelt(this.Api.World, (ISlotProvider)this.ovenInv, this.ovenInv[slotIndex], outputSlot);
                     if (!outputSlot.Empty)
@@ -726,7 +725,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
         base.OnBlockRemoved();
 
         // Очистка мусора
-        this.lastRemoved = null;
+        this.lastRemoved = null!;
         this.capi = null;
 
     }
@@ -740,7 +739,7 @@ public class BlockEntityEOven : BlockEntityDisplay, IHeatSource
 
         this.ElectricalProgressive?.OnBlockUnloaded(); // вызываем метод OnBlockUnloaded у BEBehaviorElectricalProgressive
         // Очистка мусора
-        this.lastRemoved = null;
+        this.lastRemoved = null!;
         this.capi = null;
 
         // Удаляем слушателя тика игры

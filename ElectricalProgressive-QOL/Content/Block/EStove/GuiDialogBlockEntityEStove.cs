@@ -10,9 +10,9 @@ namespace ElectricalProgressive.Content.Block.EStove;
 public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
 {
     bool haveCookingContainer;
-    string currentOutputText;
+    string? currentOutputText;
 
-    ElementBounds cookingSlotsSlotBounds;
+    ElementBounds? cookingSlotsSlotBounds;
 
     const float maxTemperature = 1350f;
 
@@ -45,7 +45,7 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
         if (hoveredSlot != null && hoveredSlot.Inventory.InventoryID != Inventory.InventoryID)
         {
             //capi.Input.TriggerOnMouseLeaveSlot(hoveredSlot); - wtf is this for?
-            hoveredSlot = null;
+            hoveredSlot = null!;
         }
 
 
@@ -190,7 +190,7 @@ public class GuiDialogBlockEntityEStove : GuiDialogBlockEntity
 
     private void OnBgDraw(Context ctx, ImageSurface surface, ElementBounds currentBounds)
     {
-        double top = cookingSlotsSlotBounds.fixedHeight + cookingSlotsSlotBounds.fixedY;
+        double top = cookingSlotsSlotBounds!.fixedHeight + cookingSlotsSlotBounds.fixedY;
 
         // 1. Рисовка огонька
         ctx.Save();

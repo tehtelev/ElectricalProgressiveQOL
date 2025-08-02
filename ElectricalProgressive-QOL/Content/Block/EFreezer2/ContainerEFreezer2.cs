@@ -18,8 +18,8 @@ public abstract class ContainerEFreezer2 : BlockEntityEBase, IBlockEntityContain
 
     IInventory IBlockEntityContainer.Inventory { get { return Inventory; } }
 
-    RoomRegistry roomReg;
-    protected Room room;
+    RoomRegistry? roomReg;
+    protected Room? room;
 
 
 
@@ -74,11 +74,16 @@ public abstract class ContainerEFreezer2 : BlockEntityEBase, IBlockEntityContain
             return;
         }
 
+        if (roomReg == null)
+            return;
+
         temperatureCached = -1000f;     // reset the cached temperature; it will be updated by the first perishable in the loop below, if there is one
-        if (!HasTransitionables()) return;   // Skip the room check if this container currently has no transitionables
+        if (!HasTransitionables())
+            return;   // Skip the room check if this container currently has no transitionables
 
         room = roomReg.GetRoomForPosition(Pos);
-        if (room.AnyChunkUnloaded != 0) return;
+        if (room.AnyChunkUnloaded != 0)
+            return;
 
         foreach (ItemSlot slot in Inventory)
         {
@@ -130,7 +135,7 @@ public abstract class ContainerEFreezer2 : BlockEntityEBase, IBlockEntityContain
 
         if (room == null)
         {
-            room = roomReg.GetRoomForPosition(Pos);
+            room = roomReg!.GetRoomForPosition(Pos);
         }
 
         float soilTempWeight = 0f;
@@ -176,7 +181,7 @@ public abstract class ContainerEFreezer2 : BlockEntityEBase, IBlockEntityContain
         return rate;
     }
 
-    public override void OnBlockPlaced(ItemStack byItemStack = null)
+    public override void OnBlockPlaced(ItemStack byItemStack = null!)
     {
         if (byItemStack?.Block is not BlockContainer container)
             return;
@@ -189,7 +194,7 @@ public abstract class ContainerEFreezer2 : BlockEntityEBase, IBlockEntityContain
             Inventory[i].Itemstack = stacks[i]?.Clone();
     }
 
-    public override void OnBlockBroken(IPlayer byPlayer = null)
+    public override void OnBlockBroken(IPlayer byPlayer = null!)
     {
         if (Api.World is IServerWorldAccessor)
         {
@@ -216,7 +221,7 @@ public abstract class ContainerEFreezer2 : BlockEntityEBase, IBlockEntityContain
         List<ItemStack> stacklist = new List<ItemStack>();
         foreach (var slot in Inventory)
         {
-            stacklist.Add(cloned ? slot.Itemstack?.Clone() : slot.Itemstack);
+            stacklist.Add(cloned ? slot.Itemstack?.Clone()! : slot.Itemstack!);
         }
 
         return stacklist.ToArray();
@@ -271,14 +276,14 @@ public abstract class ContainerEFreezer2 : BlockEntityEBase, IBlockEntityContain
     {
         base.GetBlockInfo(forPlayer, dsc);
 
-        room = roomReg.GetRoomForPosition(Pos);
+        room = roomReg!.GetRoomForPosition(Pos);
         float rate = GetPerishRate();
 
         if (Inventory is InventoryGeneric)
         {
-            InventoryGeneric inv = (InventoryBase)Inventory as InventoryGeneric;
+            InventoryGeneric? inv = (InventoryBase)Inventory as InventoryGeneric;
             float rateMul;
-            if (inv.TransitionableSpeedMulByType != null && inv.TransitionableSpeedMulByType.TryGetValue(EnumTransitionType.Perish, out rateMul))
+            if (inv!.TransitionableSpeedMulByType != null && inv.TransitionableSpeedMulByType.TryGetValue(EnumTransitionType.Perish, out rateMul))
             {
                 rate *= rateMul;
             }

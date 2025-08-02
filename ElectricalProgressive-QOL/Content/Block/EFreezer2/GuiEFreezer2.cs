@@ -6,7 +6,7 @@ namespace ElectricalProgressive.Content.Block.EFreezer2;
 
 class GuiEFreezer2 : GuiDialogBlockEntity
 {
-    BlockEntityEFreezer2 _freezer;
+    BlockEntityEFreezer2? _freezer;
     public GuiEFreezer2(string dialogTitle, InventoryBase inventory, BlockPos blockEntityPos, ICoreClientAPI capi, BlockEntityEFreezer2 freezer) : base(
         dialogTitle, inventory, blockEntityPos, capi)
     {
@@ -38,7 +38,7 @@ class GuiEFreezer2 : GuiDialogBlockEntity
         }
         else
         {
-            hoveredSlot = null;
+            hoveredSlot = null!;
         }
 
         ElementBounds mainBounds = ElementBounds.Fixed(0, 0, 200, 100);
@@ -97,7 +97,7 @@ class GuiEFreezer2 : GuiDialogBlockEntity
         base.OnGuiOpened();
         base.Inventory.SlotModified += this.OnInventorySlotModified;
 
-        _freezer.OpenLid(); //открываем крышку при открытии диалога
+        _freezer?.OpenLid(); //открываем крышку при открытии диалога
     }
 
     public override void OnGuiClosed()
@@ -105,6 +105,6 @@ class GuiEFreezer2 : GuiDialogBlockEntity
         base.Inventory.SlotModified -= this.OnInventorySlotModified;
         base.OnGuiClosed();
 
-        _freezer.CloseLid(); //закрываем крышку генератора при закрытии диалога
+        _freezer?.CloseLid(); //закрываем крышку генератора при закрытии диалога
     }
 }

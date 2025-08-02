@@ -10,7 +10,7 @@ public class BlockEStove : BlockEBase
 {
     private BlockEntityEStove? _blockEntityEStove;
 
-    public override bool CanAttachBlockAt(IBlockAccessor blockAccessor, Vintagestory.API.Common.Block block, BlockPos pos, BlockFacing blockFace, Cuboidi attachmentArea = null)
+    public override bool CanAttachBlockAt(IBlockAccessor blockAccessor, Vintagestory.API.Common.Block block, BlockPos pos, BlockFacing blockFace, Cuboidi attachmentArea = null!)
     {
         return true;
     }

@@ -1,5 +1,4 @@
-﻿using ElectricalProgressive.Content.Block.EOven;
-using ElectricalProgressive.Utils;
+﻿using ElectricalProgressive.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,8 +22,8 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     protected Shape nowTesselatingShape;
     protected CollectibleObject nowTesselatingObj;
     protected MeshData[] meshes;
-    ICoreClientAPI capi;
-    ICoreServerAPI sapi;
+    ICoreClientAPI? capi;
+    ICoreServerAPI? sapi;
 
     internal InventoryEStove inventory;
     private BEBehaviorElectricalProgressive? ElectricalProgressive => GetBehavior<BEBehaviorElectricalProgressive>();
@@ -34,7 +33,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     public int maxConsumption;
     public float stoveTemperature = 20;
     public float inputStackCookingTime;
-    GuiDialogBlockEntityEStove clientDialog;
+    GuiDialogBlockEntityEStove? clientDialog;
     bool clientSidePrevBurning;
 
     #region Config
@@ -58,7 +57,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     /// </summary>
     public BlockEntityEStove()
     {
-        inventory = new InventoryEStove(null, null);
+        inventory = new InventoryEStove(null!, null!);
         inventory.SlotModified += OnSlotModifid;
         
         meshes = new MeshData[6];
@@ -114,7 +113,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
             return;
         if (inventory[slotid].Empty)
         {
-            meshes[slotid] = null;
+            meshes[slotid] = null!;
             return;
         }
         MeshData meshData = GenMesh(inventory[slotid].Itemstack);
@@ -125,7 +124,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         }
         else
         {
-            meshes[slotid] = null;
+            meshes[slotid] = null!;
         }
     }
 
@@ -136,8 +135,9 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     /// <param name="slotId"></param>
     public void TranslateMesh(MeshData meshData, int slotId)
     {
-        if (meshData == null) return;
-        float x = 0, y = 0, stdoffset = 0.2f;
+        if (meshData == null)
+            return;
+        float x = 0, y = 0;
         switch (slotId)
         {
             case 1: y = 1.04f; break;
@@ -170,13 +170,13 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         meshData.Rotate(new Vec3f(0.5f, 0, 0.5f), 0, orientationRotate * GameMath.DEG2RAD, 0);
     }
 
-    public Size2i AtlasSize => capi.BlockTextureAtlas.Size;
+    public Size2i AtlasSize => capi!.BlockTextureAtlas.Size;
 
     public TextureAtlasPosition this[string textureCode]
     {
         get
         {
-            AssetLocation assetLocation = null;
+            AssetLocation assetLocation = null!;
 
             if (nowTesselatingObj is Vintagestory.API.Common.Item item)
             {
@@ -195,7 +195,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
             if (assetLocation == null && nowTesselatingShape != null)
             {
-                nowTesselatingShape.Textures.TryGetValue(textureCode, out assetLocation);
+                nowTesselatingShape.Textures.TryGetValue(textureCode, out assetLocation!);
             }
 
             if (assetLocation == null)
@@ -211,7 +211,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
     private TextureAtlasPosition getOrCreateTexPos(AssetLocation texturePath)
     {
-        TextureAtlasPosition textureAtlasPosition = capi.BlockTextureAtlas[texturePath];
+        TextureAtlasPosition textureAtlasPosition = capi!.BlockTextureAtlas[texturePath];
         if (textureAtlasPosition == null)
         {
             // берем только base текстуру (первую из кучи наваленных)
@@ -232,46 +232,47 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
                 Api.World.Logger.Warning("Texture not found at path: {0}", texturePath);
             }
         }
-        return textureAtlasPosition;
+        return textureAtlasPosition!;
     }
 
     public MeshData GenMesh(ItemStack stack)
     {
-        IContainedMeshSource meshsource = stack.Collectible as IContainedMeshSource;
+        
+        IContainedMeshSource? meshsource = stack.Collectible as IContainedMeshSource;
         MeshData meshData;
         if (meshsource != null)
         {
-            meshData = meshsource.GenMesh(stack, capi.BlockTextureAtlas, Pos);
+            meshData = meshsource.GenMesh(stack, capi!.BlockTextureAtlas, Pos);
             meshData.Rotate(new Vec3f(0.5f, 0.5f, 0.5f), 0f, Block.Shape.rotateY * 0.0174532924f, 0f);
         }
         else
         {
             if (stack.Class == EnumItemClass.Block)
             {
-                meshData = capi.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
+                meshData = capi!.TesselatorManager.GetDefaultBlockMesh(stack.Block).Clone();
             }
             else
             {
                 nowTesselatingObj = stack.Collectible;
-                nowTesselatingShape = null;
-                if (stack.Item.Shape != null)
+                nowTesselatingShape = null!;
+                if (stack.Item.Shape != null!)
                 {
-                    nowTesselatingShape = capi.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
+                    nowTesselatingShape = capi!.TesselatorManager.GetCachedShape(stack.Item.Shape.Base);
                 }
                 try
                 {
-                    capi.Tesselator.TesselateItem(stack.Item, out meshData, this);
+                    capi!.Tesselator.TesselateItem(stack.Item, out meshData, this);
                     meshData.RenderPassesAndExtraBits.Fill((short)2);
                 }
                 catch (Exception e)
                 {
                     Api.World.Logger.Error("Failed to tessellate item {0}: {1}", stack.Item.Code, e.Message);
-                    meshData = null;
+                    meshData = null!;
                 }
-                capi.TesselatorManager.ThreadDispose();
+                capi!.TesselatorManager.ThreadDispose();
             }
         }
-        return meshData;
+        return meshData!;
     }
 
     /// <summary>
@@ -582,7 +583,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         {
             clientDialog?.TryClose();
             clientDialog?.Dispose();
-            clientDialog = null;
+            clientDialog = null!;
         }
 
         // Освобождение ссылок на API
@@ -594,11 +595,11 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         {
             for (int i = 0; i < meshes.Length; i++)
             {
-                meshes[i] = null;
+                meshes[i] = null!;
             }
         }
-        nowTesselatingObj = null;
-        nowTesselatingShape = null;
+        nowTesselatingObj = null!;
+        nowTesselatingShape = null!;
     }
 
 
@@ -615,7 +616,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
         {
             clientDialog?.TryClose();
             clientDialog?.Dispose();
-            clientDialog = null;
+            clientDialog = null!;
         }
 
         // Отменяем слушателей тика игры
@@ -624,19 +625,19 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
 
 
         // Освобождение ссылок на API
-        capi = null;
-        sapi = null;
+        capi = null!;
+        sapi = null!;
 
         // Очистка ссылок на меши
         if (meshes != null)
         {
             for (int i = 0; i < meshes.Length; i++)
             {
-                meshes[i] = null;
+                meshes[i] = null!;
             }
         }
-        nowTesselatingObj = null;
-        nowTesselatingShape = null;
+        nowTesselatingObj = null!;
+        nowTesselatingShape = null!;
     }
 
     /// <summary>
@@ -689,12 +690,12 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
                 if (clientDialog != null)
                 {
                     clientDialog.TryClose();
-                    clientDialog = null;
+                    clientDialog = null!;
                 }
                 else
                 {
-                    clientDialog = new GuiDialogBlockEntityEStove(dialogTitle, Inventory, Pos, dtree, Api as ICoreClientAPI);
-                    clientDialog.OnClosed += () => { clientDialog.Dispose(); clientDialog = null; };
+                    clientDialog = new GuiDialogBlockEntityEStove(dialogTitle, Inventory, Pos, dtree, capi!);
+                    clientDialog.OnClosed += () => { clientDialog.Dispose(); clientDialog = null!; };
                     clientDialog.TryOpen();
                 }
             }
@@ -723,7 +724,7 @@ public class BlockEntityEStove : BlockEntityContainer, IHeatSource, ITexPosition
     public CombustibleProperties getCombustibleOpts(int slotid)
     {
         ItemSlot slot = inventory[slotid];
-        return slot.Itemstack?.Collectible.CombustibleProps;
+        return slot.Itemstack.Collectible.CombustibleProps!;
     }
 
     public override void OnStoreCollectibleMappings(Dictionary<int, AssetLocation> blockIdMapping, Dictionary<int, AssetLocation> itemIdMapping)

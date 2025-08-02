@@ -23,7 +23,7 @@ public class BEBehaviorEWoodcutter : BEBehaviorBase, IElectricConsumer
     public BEBehaviorEWoodcutter(BlockEntity blockentity) : base(blockentity)
     {
         _maxConsumption = MyMiniLib.GetAttributeInt(Block, "maxConsumption", 100);
-        _entityEWoodcutter = blockentity as BlockEntityEWoodcutter;
+        _entityEWoodcutter = (blockentity as BlockEntityEWoodcutter)!;
     }
 
     private float CalculateRequest()

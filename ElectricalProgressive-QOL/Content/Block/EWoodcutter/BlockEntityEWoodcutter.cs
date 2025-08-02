@@ -74,7 +74,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
 
     public BlockEntityEWoodcutter()
     {
-        _inventory = new(null);
+        _inventory = new(null!);
     }
 
     public override void Initialize(ICoreAPI api)
@@ -144,7 +144,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
     /// </summary>
     private bool TryFindPlantingPosition(out BlockPos plantPos)
     {
-        plantPos = null;
+        plantPos = null!;
 
         var blockAccessor = Api.World.BlockAccessor;
         var radius = 3;
@@ -178,7 +178,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
     /// </summary>
     private bool TryFindNearbyTree(out BlockPos treePos)
     {
-        treePos = null;
+        treePos = null!;
 
         var blockAccessor = Api.World.BlockAccessor;
 
@@ -615,7 +615,7 @@ public class BlockEntityEWoodcutter : BlockEntityOpenableContainer
             if (foundPositions.Count > 2500)
                 break;
 
-            onTreeBlock(pos, world.BlockAccessor, checkedPositions, startPos, bh == EnumTreeFellingBehavior.ChopSpreadVertical, treeFellingGroupCode, leafqueue, null, null);
+            onTreeBlock(pos, world.BlockAccessor, checkedPositions, startPos, bh == EnumTreeFellingBehavior.ChopSpreadVertical, treeFellingGroupCode, leafqueue, null!, null!);
         }
 
         return foundPositions;
