@@ -64,7 +64,8 @@
 
 
   "block-handbooktitle-eoven": "Uso",
-  "block-handbooktext-eoven": "O forno elétrico substitui totalmente o forno tradicional. Desliga-se automaticamente quando o cozimento está completo. Chega de itens queimados!",
+  "block-handbooktext-eoven": "O forno elétrico substitui completamente o forno tradicional. Desliga-se automaticamente quando o processo de assamento é concluído. Chega de queimar alimentos!<br>Suporta carregamento e descarregamento automáticos por meio de calhas.",
+
 
   "block-handbooktitle-heater": "Uso",
   "block-handbooktext-heater": "Uma pequena fonte de calor.",
@@ -88,7 +89,8 @@
   "block-handbooktext-charger": "A estação de carregamento permite recarregar baterias e dispositivos com baterias embutidas.",
 
   "block-handbooktitle-estove": "Uso",
-  "block-handbooktext-estove": "O fogão elétrico substitui totalmente a fogueira.<br><br>Temperatura máxima de aquecimento: 1325 °C.",
+  "block-handbooktext-estove": "O fogão elétrico permite substituir completamente uma fogueira comum.<br>Suporta carregamento e descarregamento automáticos por meio de calhas.<br><br>Temperatura máxima de aquecimento da chapa: 1325 °C.",
+
 
 
 

@@ -65,7 +65,8 @@
 
 
   "block-handbooktitle-eoven": "Utilisation",
-  "block-handbooktext-eoven": "Le four électrique remplace entièrement le four traditionnel. Il s'éteint automatiquement une fois la cuisson terminée. Plus de nourriture brûlée !",
+  "block-handbooktext-eoven": "Le four électrique remplace entièrement le four traditionnel. Il s’éteint automatiquement lorsque le processus de cuisson est terminé. Fini les aliments brûlés !<br>Il prend en charge le chargement et le déchargement automatiques via des goulottes.",
+
 
   "block-handbooktitle-heater": "Utilisation",
   "block-handbooktext-heater": "Une petite source de chaleur.",
@@ -90,7 +91,8 @@
   "block-handbooktext-charger": "La station de charge permet de recharger les batteries et les appareils avec batterie intégrée.",
 
   "block-handbooktitle-estove": "Utilisation",
-  "block-handbooktext-estove": "La plaque électrique remplace entièrement le feu de camp.<br><br>Température de chauffe maximale : 1325 °C.",
+  "block-handbooktext-estove": "La cuisinière électrique permet de remplacer entièrement un feu de camp classique.<br>Elle prend en charge le chargement et le déchargement automatiques via des goulottes.<br><br>Température maximale de chauffage de la plaque : 1325 °C.",
+
 
 
 

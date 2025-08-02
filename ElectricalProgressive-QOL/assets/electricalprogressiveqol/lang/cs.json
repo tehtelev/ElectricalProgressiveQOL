@@ -1,4 +1,4 @@
-{
+﻿{
   "block-charger-*": "Nabíjecí Stanice",
   "block-charger-burned-south": "Nabíjecí Stanice (Spálená)",
 
@@ -61,7 +61,8 @@
   "block-elamp_small-9000-burned": "Malá Elektrická Lampa (Spálená)",
 
   "block-handbooktitle-eoven": "Použití",
-  "block-handbooktext-eoven": "Elektrická trouba plně nahrazuje pec. Automaticky se vypne po dokončení pečení. Už žádné spálené předměty!",
+  "block-handbooktext-eoven": "Elektrická trouba plně nahrazuje tradiční pec. Automaticky se vypne, když je proces pečení dokončen. Žádné připálení!<br>Podporuje automatické nakládání a vykládání pomocí žlabů.",
+
 
   "block-handbooktitle-heater": "Použití",
   "block-handbooktext-heater": "Malý zdroj tepla.",
@@ -85,7 +86,8 @@
   "block-handbooktext-charger": "Nabíjecí stanice umožňuje dobíjení baterií a zařízení s vestavěnými bateriemi.",
 
   "block-handbooktitle-estove": "Použití",
-  "block-handbooktext-estove": "Elektrický sporák plně nahrazuje táborák.<br><br>Maximální teplota ohřevu: 1325 °C.",
+  "block-handbooktext-estove": "Elektrosporák umožňuje plně nahradit klasický táborák.<br>Podporuje automatické nakládání a vykládání pomocí žlabů.<br><br>Maximální teplota ohřevu plotny: 1325 °C.",
+
 
   "game:BlockEStove": "Elektrický Sporák",
   "game:freezer-title-gui": "Mrazák",

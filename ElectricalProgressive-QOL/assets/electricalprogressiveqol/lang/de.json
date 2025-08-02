@@ -65,7 +65,8 @@
 
 
   "block-handbooktitle-eoven": "Verwendung",
-  "block-handbooktext-eoven": "Der elektrische Ofen ersetzt vollständig den herkömmlichen Ofen. Er schaltet sich automatisch ab, wenn das Backen beendet ist. Kein Anbrennen mehr!",
+  "block-handbooktext-eoven": "Der Elektrobackofen ersetzt den traditionellen Ofen vollständig. Er schaltet sich automatisch ab, wenn der Backvorgang abgeschlossen ist. Kein Anbrennen mehr!<br>Unterstützt automatisches Be- und Entladen über Rutschen.",
+
 
   "block-handbooktitle-heater": "Verwendung",
   "block-handbooktext-heater": "Kleine Wärmequelle.",
@@ -89,7 +90,8 @@
   "block-handbooktext-charger": "Ladestation für Akkus und Geräte mit integriertem Akku.",
 
   "block-handbooktitle-estove": "Verwendung",
-  "block-handbooktext-estove": "Die elektrische Kochplatte ersetzt ein Lagerfeuer.<br><br>Maximale Temperatur: 1325 °C.",
+  "block-handbooktext-estove": "Der Elektroherd ermöglicht den vollständigen Ersatz eines herkömmlichen Lagerfeuers.<br>Unterstützt automatisches Be- und Entladen über Rutschen.<br><br>Maximale Heiztemperatur des Herdes: 1325 °C.",
+
 
 
   "game:BlockEStove": "Elektrische Kochplatte",

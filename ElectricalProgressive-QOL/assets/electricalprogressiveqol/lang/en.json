@@ -66,7 +66,8 @@
 
 
   "block-handbooktitle-eoven": "Usage",
-  "block-handbooktext-eoven": "The electric oven fully replaces the furnace. Automatically turns off when baking is complete. No more burnt items!",
+  "block-handbooktext-eoven": "The electric oven completely replaces the furnace. It turns off automatically when the baking process is finished. No more burning!<br>Supports automatic loading and unloading via chutes.",
+
 
   "block-handbooktitle-heater": "Usage",
   "block-handbooktext-heater": "A small heat source.",
@@ -94,7 +95,8 @@
   "block-handbooktext-charger": "The charging station allows recharging batteries and devices with built-in batteries.",
 
   "block-handbooktitle-estove": "Usage",
-  "block-handbooktext-estove": "The electric stove fully replaces the campfire.<br><br>Maximum heating temperature: 1325 °C.",
+  "block-handbooktext-estove": "The electric stove completely replaces a conventional campfire.<br>Supports automatic loading and unloading via chutes.<br><br>Maximum heating temperature of the stove: 1325 °C.",
+
 
 
 

@@ -65,7 +65,8 @@
 
 
   "block-handbooktitle-eoven": "Użycie",
-  "block-handbooktext-eoven": "Piec elektryczny całkowicie zastępuje tradycyjny piec. Wyłącza się automatycznie po zakończeniu pieczenia. Koniec z przypaleniami!",
+  "block-handbooktext-eoven": "Piekarnik elektryczny pozwala całkowicie zastąpić tradycyjny piec. Wyłącza się automatycznie po zakończeniu procesu pieczenia. Koniec z przypalaniem!<br>Obsługuje automatyczny załadunek i rozładunek za pomocą zsypów.",
+
 
   "block-handbooktitle-heater": "Użycie",
   "block-handbooktext-heater": "Niewielkie źródło ciepła.",
@@ -89,7 +90,8 @@
   "block-handbooktext-charger": "Stacja ładowania do akumulatorów i urządzeń z wbudowanym akumulatorem.",
 
   "block-handbooktitle-estove": "Użycie",
-  "block-handbooktext-estove": "Płyta elektryczna zastępuje ognisko.<br><br>Maksymalna temperatura: 1325 °C.",
+  "block-handbooktext-estove": "Płyta elektryczna pozwala całkowicie zastąpić zwykłe ognisko.<br>Obsługuje automatyczny załadunek i rozładunek za pomocą zsypów.<br><br>Maksymalna temperatura nagrzewania płyty: 1325 °C.",
+
 
 
 
